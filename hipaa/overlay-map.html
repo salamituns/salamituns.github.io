@@ -61,9 +61,73 @@
     background: #161b22; border-top: 1px solid #30363d;
     padding: 12px 24px; font-size: 11px; color: #484f58;
   }
+
+  /* Editorial nav strip — project chrome */
+  :root {
+    --em-paper: #F6F3EB;
+    --em-ink: #0E0E0E;
+    --em-muted: #5E574C;
+    --em-rule: rgba(14, 14, 14, 0.14);
+    --em-accent: #A23B2A;
+    --em-nav-h: 52px;
+  }
+  .em-nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--em-nav-h);
+    background: var(--em-paper); color: var(--em-ink);
+    border-bottom: 1px solid var(--em-rule);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; padding: 0 clamp(1rem, 3vw, 2rem);
+    z-index: 1000;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  }
+  .em-nav a {
+    color: var(--em-ink); text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color 160ms ease, color 160ms ease;
+  }
+  .em-nav a:hover { border-bottom-color: var(--em-ink); }
+  .em-nav a:focus-visible { outline: 2px solid var(--em-accent); outline-offset: 3px; border-radius: 2px; }
+  .em-nav .em-home { font-weight: 600; white-space: nowrap; }
+  .em-nav .em-crumb { display: flex; align-items: center; gap: 0.6rem; color: var(--em-muted); flex: 1; justify-content: center; }
+  .em-nav .em-crumb > span[aria-hidden] { color: var(--em-rule); }
+  .em-nav .em-crumb a { color: var(--em-muted); }
+  .em-nav .em-crumb a:hover { color: var(--em-ink); }
+  .em-nav .em-crumb .em-current { color: var(--em-ink); }
+  .em-nav .em-siblings { display: flex; gap: 1.1rem; align-items: center; }
+  .em-nav .em-siblings a { color: var(--em-muted); }
+  .em-nav .em-siblings a:hover { color: var(--em-ink); }
+  .em-nav .em-here { color: var(--em-accent); border-bottom: 1px solid var(--em-accent); padding-bottom: 1px; }
+  #map { top: var(--em-nav-h); }
+  #legend { top: var(--em-nav-h); height: calc(100vh - var(--em-nav-h)); }
+  @media (max-width: 720px) {
+    :root { --em-nav-h: 48px; }
+    .em-nav { font-size: 10px; gap: 0.5rem; }
+    .em-nav .em-crumb { display: none; }
+    .em-nav .em-siblings { gap: 0.85rem; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .em-nav a { transition: none; }
+  }
 </style>
 </head>
 <body>
+<nav class="em-nav" aria-label="Site navigation">
+  <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+  <div class="em-crumb">
+    <a href="/">Analysis</a>
+    <span aria-hidden="true">/</span>
+    <a href="/hipaa/">HIPAA</a>
+    <span aria-hidden="true">/</span>
+    <span class="em-current">Overlay</span>
+  </div>
+  <div class="em-siblings" role="group" aria-label="Maps in this project">
+    <a href="threat-map.html">Threat</a>
+    <a href="exposure-map.html">Exposure</a>
+    <span class="em-here" aria-current="page">Overlay</span>
+  </div>
+</nav>
 <div id="map"></div>
 <div id="legend">
   <h1>Threat vs. Exposure</h1>
