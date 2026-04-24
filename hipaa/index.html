@@ -1,176 +1,169 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HIPAA Breach + Home Health Agency Analysis | @salamituns</title>
-<meta name="description" content="Interactive maps: 7,567 HIPAA breaches mapped against 12,392 home health agencies. Open-source data, code, and methodology.">
-<meta property="og:title" content="HIPAA Breach + Home Health Agency Analysis">
-<meta property="og:description" content="7,567 breaches. 12,392 agencies. Three interactive maps. Open-source.">
-<meta property="og:type" content="website">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0d1117; color: #e6edf3;
-    min-height: 100vh;
-  }
-  a { color: #58a6ff; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .container { max-width: 900px; margin: 0 auto; padding: 40px; }
-
-  .breadcrumb { font-size: 13px; color: #8b949e; margin-bottom: 32px; }
-  .breadcrumb a { color: #8b949e; }
-
-  h1 { font-size: 28px; font-weight: 700; margin-bottom: 16px; }
-  .description { font-size: 15px; color: #8b949e; line-height: 1.7; margin-bottom: 32px; max-width: 700px; }
-
-  .stats-row {
-    display: flex; gap: 24px; margin-bottom: 40px; flex-wrap: wrap;
-  }
-  .stat {
-    background: #161b22; border: 1px solid #30363d; border-radius: 8px;
-    padding: 20px 24px; min-width: 140px; text-align: center;
-  }
-  .stat .value { font-size: 28px; font-weight: 700; }
-  .stat .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 4px; }
-
-  .section-label {
-    font-size: 12px; font-weight: 600; color: #484f58;
-    text-transform: uppercase; letter-spacing: 1.2px;
-    margin-bottom: 16px; padding-top: 20px;
-    border-top: 1px solid #21262d;
-  }
-
-  .map-card {
-    display: block; padding: 24px;
-    background: #161b22; border: 1px solid #30363d; border-radius: 10px;
-    margin-bottom: 12px; transition: border-color 0.2s, transform 0.2s;
-    text-decoration: none !important;
-  }
-  .map-card:hover { border-color: #58a6ff; transform: translateY(-1px); }
-  .map-card h3 { font-size: 16px; font-weight: 600; color: #e6edf3; margin-bottom: 6px; }
-  .map-card p { font-size: 13px; color: #8b949e; line-height: 1.5; }
-  .map-card .map-meta {
-    display: flex; gap: 12px; margin-top: 10px; flex-wrap: wrap;
-  }
-  .map-meta span {
-    font-size: 11px; color: #8b949e; background: #0d1117;
-    border: 1px solid #21262d; border-radius: 10px; padding: 2px 8px;
-  }
-
-  .data-section { margin-top: 40px; }
-  .data-section p { font-size: 14px; color: #8b949e; line-height: 1.6; margin-bottom: 16px; }
-  .source-list { list-style: none; }
-  .source-list li {
-    padding: 10px 0; border-bottom: 1px solid #21262d;
-    font-size: 14px; color: #c9d1d9;
-  }
-  .source-list li span { color: #8b949e; font-size: 13px; }
-
-  .footer {
-    margin-top: 60px; padding-top: 24px; border-top: 1px solid #21262d;
-    font-size: 13px; color: #484f58;
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  }
-
-  @media (max-width: 600px) {
-    .container { padding: 20px; }
-    h1 { font-size: 22px; }
-    .stats-row { gap: 12px; }
-    .stat { min-width: 100px; padding: 14px 16px; }
-    .stat .value { font-size: 22px; }
-  }
-</style>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>HIPAA Breach &amp; Home Health Agency Exposure &mdash; Olatunde Salami</title>
+<meta name="description" content="7,486 HIPAA breaches mapped against 12,306 Medicare-certified home health agencies. Three interactive maps. Open-source data and methodology.">
+<meta property="og:title" content="HIPAA Breach &amp; Home Health Agency Exposure">
+<meta property="og:description" content="Where the industry grows, the breaches follow. Three interactive maps from federal data.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/hipaa/">
+<link rel="canonical" href="https://salamituns.github.io/hipaa/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 
-<div class="container">
+<header class="mast page">
+  <a class="who" href="/" translate="no" aria-label="Back to portfolio">Olatunde&nbsp;Salami</a>
+  <span class="what">Project 01 &mdash; Healthcare</span>
+</header>
 
-  <div class="breadcrumb"><a href="/">@salamituns</a> / hipaa</div>
+<main>
 
-  <h1>HIPAA Breach + Home Health Agency Analysis</h1>
-  <p class="description">
-    Three interactive maps exploring the spatial relationship between HIPAA breach
-    activity and home health agency density across the United States. All data from
-    federal sources (HHS Office for Civil Rights, CMS Provider Data Catalog). All
-    code and methodology are open-source.
-  </p>
-
-  <div class="stats-row">
-    <div class="stat"><div class="value" style="color:#ff4444">7,486</div><div class="label">Breaches</div></div>
-    <div class="stat"><div class="value" style="color:#ff8800">843M</div><div class="label">People Affected</div></div>
-    <div class="stat"><div class="value" style="color:#44aaff">12,306</div><div class="label">Agencies</div></div>
-    <div class="stat"><div class="value" style="color:#ff6644">73%</div><div class="label">For-Profit</div></div>
+  <div class="page">
+    <section class="hero wide" aria-labelledby="hero-title">
+      <span class="caps eyebrow">Analysis &mdash; 2026 &thinsp;/&thinsp; Healthcare</span>
+      <h1 id="hero-title" class="serif">
+        HIPAA breach <em>&amp;</em> home health agency exposure.
+      </h1>
+      <p class="lede">
+        Three interactive maps exploring the spatial relationship between breach activity and home health agency density across the United States. All data drawn from federal sources; all code and methodology are open.
+      </p>
+    </section>
   </div>
 
-  <div class="section-label">Interactive Maps</div>
-
-  <a href="threat-map.html" class="map-card">
-    <h3>Threat Map: HIPAA Breaches 2015 to 2026</h3>
-    <p>Every breach affecting 500+ individuals. Density hexagons, individual points by breach type, and heat map. Three view modes.</p>
-    <div class="map-meta">
-      <span>7,486 breaches</span>
-      <span>Density / Scatter / Heat</span>
-      <span>deck.gl</span>
-    </div>
-  </a>
-
-  <a href="exposure-map.html" class="map-card">
-    <h3>Exposure Map: Home Health Agencies by Ownership</h3>
-    <p>Every Medicare-certified agency, colored by ownership type. For-profit dominance visible at a glance. Zoom into any metro area.</p>
-    <div class="map-meta">
-      <span>12,306 agencies</span>
-      <span>Ownership / Density / Heat</span>
-      <span>deck.gl</span>
-    </div>
-  </a>
-
-  <a href="overlay-map.html" class="map-card">
-    <h3>Overlay: Threat vs. Exposure</h3>
-    <p>Breach heat map layered on agency density. Toggle layers on and off to see the correlation. Where the industry grows, the breaches follow.</p>
-    <div class="map-meta">
-      <span>Both datasets</span>
-      <span>Layer toggle</span>
-      <span>deck.gl</span>
-    </div>
-  </a>
-
-  <div class="data-section">
-    <div class="section-label">Data Sources</div>
-    <ul class="source-list">
-      <li><a href="https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf">HHS Office for Civil Rights Breach Portal</a> <span>- HIPAA breaches affecting 500+ individuals, 2015 to 2026</span></li>
-      <li><a href="https://data.cms.gov/provider-data/">CMS Provider Data Catalog</a> <span>- Medicare-certified home health agencies, April 2026</span></li>
-    </ul>
+  <div class="page">
+    <section aria-labelledby="figures-heading">
+      <div class="section-head">
+        <h2 class="caps" id="figures-heading">The Figures</h2>
+        <span class="caps" aria-hidden="true">2015 &mdash; 2026</span>
+      </div>
+      <div class="stats-grid" role="list">
+        <div class="stat" role="listitem">
+          <div class="value">7,486</div>
+          <span class="label caps">Breaches</span>
+        </div>
+        <div class="stat accent" role="listitem">
+          <div class="value">843M</div>
+          <span class="label caps">People&nbsp;affected</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">12,306</div>
+          <span class="label caps">Agencies</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">73%</div>
+          <span class="label caps">For-profit</span>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <div class="data-section">
-    <div class="section-label">Methodology</div>
-    <p>
-      Breach data from the HHS OCR portal (archived + under-investigation reports) was cleaned,
-      deduplicated, and geocoded to state centroids with random jitter for visualization.
-      Agency data from CMS was geocoded from zip codes using the zipcodes package (bundled USPS data).
-      Ownership was classified into For-Profit, Non-Profit, Government, Combination, and Other
-      categories from the CMS Ownership field.
-    </p>
-    <p>
-      Maps built with <a href="https://deck.gl">deck.gl</a> (GPU-accelerated WebGL layers)
-      on <a href="https://carto.com/basemaps/">CARTO Dark Matter</a> basemap tiles.
-      Data processing in Python (pandas, zipcodes). Static charts in matplotlib.
-    </p>
+  <div class="page">
+    <section aria-labelledby="maps-heading">
+      <div class="section-head">
+        <h2 class="caps" id="maps-heading">The Maps</h2>
+        <span class="caps" aria-hidden="true">03 interactive</span>
+      </div>
+
+      <a class="entry" href="threat-map.html">
+        <span class="num" aria-hidden="true">01</span>
+        <div>
+          <h3 class="serif">Threat</h3>
+          <p class="dek">Every HIPAA breach affecting 500+&nbsp;people, 2015&ndash;2026. Toggle among density hexagons, typed scatter points, and heat.</p>
+          <div class="meta">
+            <span>7,486 breaches</span><span>3 view modes</span><span>deck.gl</span>
+          </div>
+        </div>
+        <span class="status" aria-label="Open map">Open</span>
+      </a>
+
+      <a class="entry" href="exposure-map.html">
+        <span class="num" aria-hidden="true">02</span>
+        <div>
+          <h3 class="serif">Exposure</h3>
+          <p class="dek">Every Medicare-certified home health agency, colored by ownership type. For-profit dominance visible at a glance; zoom into any metro area.</p>
+          <div class="meta">
+            <span>12,306 agencies</span><span>Ownership, density, heat</span><span>deck.gl</span>
+          </div>
+        </div>
+        <span class="status" aria-label="Open map">Open</span>
+      </a>
+
+      <a class="entry" href="overlay-map.html">
+        <span class="num" aria-hidden="true">03</span>
+        <div>
+          <h3 class="serif">Overlay</h3>
+          <p class="dek">Breach heat layered on agency density. Toggle layers to see the correlation &mdash; where the industry grows, the breaches follow.</p>
+          <div class="meta">
+            <span>Both datasets</span><span>Layer toggle</span><span>deck.gl</span>
+          </div>
+        </div>
+        <span class="status" aria-label="Open map">Open</span>
+      </a>
+    </section>
   </div>
 
-  <div class="footer">
-    <span>Olatunde Salami | <a href="/">@salamituns</a></span>
-    <span>
-      <a href="https://linkedin.com/in/salamituns">LinkedIn</a> &middot;
-      <a href="https://twitter.com/salamituns">X</a> &middot;
-      <a href="https://github.com/salamituns">GitHub</a>
-    </span>
+  <div class="page">
+    <figure class="pullquote" aria-label="Pull quote">
+      <blockquote class="serif">Where the industry grows, the breaches follow.</blockquote>
+    </figure>
   </div>
 
-</div>
+  <div class="page">
+    <section aria-labelledby="data-heading">
+      <div class="section-head">
+        <h2 class="caps" id="data-heading">Data</h2>
+        <span class="caps" aria-hidden="true">Public &middot; Federal</span>
+      </div>
+      <dl class="sources">
+        <div class="sources-row">
+          <dt><a href="https://ocrportal.hhs.gov/ocr/breach/breach_report.jsf">HHS Office for Civil Rights Breach Portal</a></dt>
+          <dd>HIPAA breaches affecting 500+&nbsp;individuals, 2015&ndash;2026 &mdash; archived and under-investigation reports.</dd>
+        </div>
+        <div class="sources-row">
+          <dt><a href="https://data.cms.gov/provider-data/">CMS Provider Data Catalog</a></dt>
+          <dd>Medicare-certified home health agencies, April&nbsp;2026, with ownership classification.</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="method-heading">
+      <div class="section-head">
+        <h2 class="caps" id="method-heading">Method</h2>
+      </div>
+      <div class="prose">
+        <p>
+          Breach records from the HHS&nbsp;OCR portal were cleaned, deduplicated, and geocoded to state centroids with a small random jitter for visualization. Agency records from CMS were geocoded from zip codes using the <code>zipcodes</code> package with bundled USPS data. Ownership was classified into For-Profit, Non-Profit, Government, Combination, and Other from the CMS ownership field.
+        </p>
+        <p>
+          The maps are built with <a href="https://deck.gl">deck.gl</a> &mdash; GPU-accelerated WebGL layers &mdash; on a <a href="https://carto.com/basemaps/">CARTO Dark&nbsp;Matter</a> basemap. Data processing is in Python (<code>pandas</code>, <code>zipcodes</code>); static charts are in <code>matplotlib</code>. The full pipeline, intermediate data, and rendering code are on <a href="https://github.com/salamituns/salamituns.github.io">GitHub</a>.
+        </p>
+        <p>
+          Nothing here is a proxy for causation. What the maps show is co-location and co-density &mdash; the spatial argument that breach activity tracks industry growth, visible most clearly in the overlay.
+        </p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="page">
+  <span>&copy; 2026 Olatunde&nbsp;Salami</span>
+  <nav aria-label="Social">
+    <a href="https://linkedin.com/in/salamituns" rel="me">LinkedIn</a>
+    <a href="https://twitter.com/salamituns" rel="me">X</a>
+    <a href="https://github.com/salamituns" rel="me">GitHub</a>
+  </nav>
+</footer>
 
 </body>
 </html>

@@ -1,135 +1,98 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>@salamituns | Open-Source Analysis</title>
-<meta name="description" content="Open-source data analysis across regulatory systems. Take a question. Get the data. Build the tool. Show the work.">
-<meta property="og:title" content="@salamituns | Open-Source Analysis">
-<meta property="og:description" content="Open-source data analysis across regulatory systems.">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Olatunde Salami &mdash; Analysis</title>
+<meta name="description" content="Open-source analysis across regulatory systems. Take a question. Get the data. Build the tool. Show the work.">
+<meta property="og:title" content="Olatunde Salami &mdash; Analysis">
+<meta property="og:description" content="Open-source analysis across regulatory systems. The domain changes; the craft does not.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://salamituns.github.io">
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #0d1117; color: #e6edf3;
-    min-height: 100vh; display: flex; flex-direction: column;
-  }
-  a { color: #58a6ff; text-decoration: none; }
-  a:hover { text-decoration: underline; }
-
-  .header {
-    padding: 60px 40px 40px;
-    max-width: 900px; margin: 0 auto; width: 100%;
-  }
-  .header h1 { font-size: 32px; font-weight: 700; margin-bottom: 12px; }
-  .header .tagline {
-    font-size: 16px; color: #8b949e; line-height: 1.6;
-    max-width: 640px;
-  }
-
-  .projects {
-    flex: 1; max-width: 900px; margin: 0 auto; width: 100%;
-    padding: 0 40px 60px;
-  }
-  .section-label {
-    font-size: 12px; font-weight: 600; color: #484f58;
-    text-transform: uppercase; letter-spacing: 1.2px;
-    margin-bottom: 20px; padding-top: 20px;
-    border-top: 1px solid #21262d;
-  }
-
-  .project-card {
-    display: block; padding: 24px;
-    background: #161b22; border: 1px solid #30363d; border-radius: 10px;
-    margin-bottom: 16px; transition: border-color 0.2s, transform 0.2s;
-    text-decoration: none !important;
-  }
-  .project-card:hover {
-    border-color: #58a6ff; transform: translateY(-2px);
-  }
-  .project-card h2 { font-size: 18px; font-weight: 600; color: #e6edf3; margin-bottom: 8px; }
-  .project-card p { font-size: 14px; color: #8b949e; line-height: 1.5; margin-bottom: 12px; }
-  .project-meta { display: flex; gap: 16px; flex-wrap: wrap; }
-  .meta-tag {
-    font-size: 12px; color: #8b949e; background: #0d1117;
-    border: 1px solid #21262d; border-radius: 12px;
-    padding: 3px 10px;
-  }
-  .meta-tag.live { color: #3fb950; border-color: #238636; }
-
-  .footer {
-    max-width: 900px; margin: 0 auto; width: 100%;
-    padding: 24px 40px; border-top: 1px solid #21262d;
-    font-size: 13px; color: #484f58;
-    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
-  }
-  .footer a { color: #8b949e; }
-
-  @media (max-width: 600px) {
-    .header, .projects, .footer { padding-left: 20px; padding-right: 20px; }
-    .header h1 { font-size: 24px; }
-  }
-</style>
+<meta property="og:url" content="https://salamituns.github.io/">
+<link rel="canonical" href="https://salamituns.github.io/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
 </head>
 <body>
 
-<div class="header">
-  <h1>@salamituns</h1>
-  <p class="tagline">
-    Take a question. Get the data. Build the tool. Show the work.
-    Open-source analysis across regulatory systems, from EPA emissions to HIPAA breaches.
-    The domain changes. The craft doesn't.
-  </p>
-</div>
+<header class="mast page">
+  <span class="who" translate="no">Olatunde&nbsp;Salami</span>
+  <span class="what">Analysis &mdash; Est. 2026</span>
+</header>
 
-<div class="projects">
-  <div class="section-label">Projects</div>
+<main>
 
-  <a href="/hipaa/" class="project-card">
-    <h2>HIPAA Breach + Home Health Agency Analysis</h2>
-    <p>
-      7,567 HIPAA breaches mapped against 12,392 Medicare-certified home health agencies.
-      Interactive maps showing threat density, agency ownership patterns, and the
-      spatial correlation between breach exposure and industry growth.
-    </p>
-    <div class="project-meta">
-      <span class="meta-tag">Healthcare</span>
-      <span class="meta-tag">HIPAA</span>
-      <span class="meta-tag">Geospatial</span>
-      <span class="meta-tag">deck.gl</span>
-      <span class="meta-tag live">Live</span>
-    </div>
-  </a>
+  <div class="page">
+    <section class="hero" aria-labelledby="hero-title">
+      <h1 id="hero-title" class="serif">
+        Take a question. <em>Show the work.</em>
+      </h1>
+      <p class="lede">
+        Open-source analysis across regulatory systems &mdash; from HIPAA breaches to EPA emissions to the subsurface. The domain changes; the craft does not.
+      </p>
+    </section>
+  </div>
 
-  <!-- Future projects go here -->
-  <!--
-  <a href="/ghgrp/" class="project-card">
-    <h2>EPA Greenhouse Gas Reporting Program Analysis</h2>
-    <p>
-      14 years of GHGRP data. Facility concentration, ownership consolidation,
-      geographic emission patterns across US industrial sectors.
-    </p>
-    <div class="project-meta">
-      <span class="meta-tag">Energy</span>
-      <span class="meta-tag">EPA</span>
-      <span class="meta-tag">Geospatial</span>
-      <span class="meta-tag">Coming Soon</span>
-    </div>
-  </a>
-  -->
+  <div class="page">
+    <section aria-labelledby="projects-heading">
+      <div class="section-head">
+        <h2 class="caps" id="projects-heading">Projects &mdash; 2026</h2>
+        <span class="caps" aria-hidden="true">01 &thinsp;/&thinsp; 01</span>
+      </div>
 
-</div>
+      <a class="entry" href="/hipaa/">
+        <span class="num" aria-hidden="true">01</span>
+        <div>
+          <h3 class="serif">HIPAA Breach &amp; Home Health Agency Exposure</h3>
+          <p class="dek">
+            7,486&nbsp;breaches mapped against 12,306&nbsp;Medicare-certified agencies. Three interactive maps show where the industry grows and where the exposure follows.
+          </p>
+          <div class="meta">
+            <span>Healthcare</span><span>Geospatial</span><span>deck.gl</span><span>2026</span>
+          </div>
+        </div>
+        <span class="status" aria-label="Live">Live</span>
+      </a>
 
-<div class="footer">
-  <span>Olatunde Salami</span>
-  <span>
-    <a href="https://linkedin.com/in/salamituns">LinkedIn</a> &middot;
-    <a href="https://twitter.com/salamituns">X</a> &middot;
-    <a href="https://github.com/salamituns">GitHub</a>
-  </span>
-</div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="about-heading">
+      <div class="section-head">
+        <h2 class="caps" id="about-heading">About</h2>
+      </div>
+      <div class="about">
+        <span class="caps" aria-hidden="true">Who</span>
+        <div>
+          <p>
+            <span class="serif" style="font-size:1.25rem;font-weight:450;">I&rsquo;m Tee</span> &mdash; geoscientist turned software engineer, building at the intersection of data, AI, and compliance.
+          </p>
+          <p>
+            I design and build operational automation systems for the places where getting things wrong is expensive: industrial emissions verification, HIPAA compliance, oil&nbsp;&amp;&nbsp;gas exploration, energy production optimization, and asset-level reporting. The work is turning messy, real-world workflows into reliable software products and pipelines. My throughline is taking real-world complexity, building frameworks to understand it, and then building things that make it legible to others.
+          </p>
+          <p>
+            This site collects the analysis. Each project uses open data, published methodology, and reproducible code. If the method stops being the constant, the site stops being this site.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="page">
+  <span>&copy; 2026 Olatunde&nbsp;Salami</span>
+  <nav aria-label="Social">
+    <a href="https://linkedin.com/in/salamituns" rel="me">LinkedIn</a>
+    <a href="https://twitter.com/salamituns" rel="me">X</a>
+    <a href="https://github.com/salamituns" rel="me">GitHub</a>
+  </nav>
+</footer>
 
 </body>
 </html>
