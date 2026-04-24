@@ -120,6 +120,32 @@ body.lightbox-open { overflow: hidden; }
   .lightbox__next { right: 50%; margin-right: -3.25rem; }
   .lightbox__meta { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
 }
+
+/* ---- Byline (scoped to this page) ---- */
+.byline {
+  margin-top: 1.75rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.byline a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+.byline a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
+.byline .sep {
+  margin: 0 0.65rem;
+  color: var(--rule);
+}
 </style>
 </head>
 <body>
@@ -133,12 +159,17 @@ body.lightbox-open { overflow: hidden; }
 
   <div class="page">
     <section class="hero wide" aria-labelledby="hero-title">
-      <span class="caps eyebrow">Analysis &mdash; 2026 &thinsp;/&thinsp; Emissions</span>
+      <span class="caps eyebrow">Analysis &thinsp;/&thinsp; Emissions</span>
       <h1 id="hero-title" class="serif">
         Who owns America&rsquo;s <em>industrial emissions.</em>
       </h1>
       <p class="lede">
         Fourteen years of the EPA Greenhouse Gas Reporting Program, reconciled at the parent-company level. 8,106&nbsp;facilities, 3,327&nbsp;parents, and a consolidation pattern that follows the Gulf&nbsp;Coast pipeline grid.
+      </p>
+      <p class="byline">
+        By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        Published April&nbsp;2026
       </p>
     </section>
   </div>
@@ -299,21 +330,21 @@ body.lightbox-open { overflow: hidden; }
           </figcaption>
         </a>
 
-        <a class="figure-entry" href="figures/ghgrp_exposure_map_2023.png">
-          <div class="thumb"><img src="figures/ghgrp_exposure_map_2023.png" alt="Population exposure map showing 7.7 million residents within 10 kilometers of a Kinder Morgan or Energy Transfer facility" loading="lazy"></div>
-          <figcaption>
-            <span class="figure-num">Figure 11 &mdash; Exposure, the subset</span>
-            <h3 class="figure-title">Two parents alone reach 7.7&nbsp;million neighbors.</h3>
-            <p class="figure-dek">Zoom on Kinder&nbsp;Morgan and Energy&nbsp;Transfer in 2023. Census-tract populations area-weighted into 10&nbsp;km buffers; 702,000 within 3&nbsp;km. Combined footprint: ~100,000&nbsp;km&sup2; &mdash; roughly the area of Kentucky. Two companies, the population of Virginia.</p>
-          </figcaption>
-        </a>
-
         <a class="figure-entry contain wide" href="figures/ghgrp_exposure_timeseries.png">
           <div class="thumb"><img src="figures/ghgrp_exposure_timeseries.png" alt="Annotated line chart of Americans within 10 kilometers of a GHGRP reporter from 2010 to 2023, rising from 200 million to 221 million with milestone markers for Subpart W, the Kinder Morgan roll-up, Energy Transfer consolidation, and the IRA methane fee" loading="lazy"></div>
           <figcaption>
-            <span class="figure-num">Figure 12 &mdash; Exposure, the whole panel</span>
+            <span class="figure-num">Figure 11 &mdash; Exposure, the whole panel</span>
             <h3 class="figure-title">200&nbsp;million to 221&nbsp;million, across fourteen years.</h3>
             <p class="figure-dek">Every reporting facility in every year, 2010&ndash;2023, with milestones pinned on the curve: Subpart&nbsp;W&rsquo;s 2011 activation (the 9-million-person jump), Kinder&nbsp;Morgan&rsquo;s 2014 roll-up of El&nbsp;Paso, Energy&nbsp;Transfer&rsquo;s 2018 consolidation, and the 2022 Inflation Reduction Act. The population layer is frozen at the 2019&ndash;2023 ACS so the curve is a facility-entry signal, not a demographic one.</p>
+          </figcaption>
+        </a>
+
+        <a class="figure-entry contain wide" href="figures/ghgrp_exposure_map_2023.png">
+          <div class="thumb"><img src="figures/ghgrp_exposure_map_2023.png" alt="Population exposure map showing 7.7 million residents within 10 kilometers of a Kinder Morgan or Energy Transfer facility" loading="lazy"></div>
+          <figcaption>
+            <span class="figure-num">Figure 12 &mdash; Exposure, the subset</span>
+            <h3 class="figure-title">Two parents alone reach 7.7&nbsp;million neighbors.</h3>
+            <p class="figure-dek">Zoom on Kinder&nbsp;Morgan and Energy&nbsp;Transfer in 2023. Census-tract populations area-weighted into 10&nbsp;km buffers; 702,000 within 3&nbsp;km. Combined footprint: ~100,000&nbsp;km&sup2; &mdash; roughly the area of Kentucky. Two companies, the population of Virginia.</p>
           </figcaption>
         </a>
 
@@ -408,7 +439,7 @@ body.lightbox-open { overflow: hidden; }
           Concentration metrics are the standard antitrust instruments: top-N share and the Herfindahl-Hirschman Index (<code>HHI = &Sigma;s&sup2;</code>&thinsp;&times;&thinsp;10,000). HHI is reported per sector, not nationally &mdash; refineries don&rsquo;t substitute for power plants.
         </p>
         <p>
-          Population exposure uses <a href="https://epsg.io/5070">EPSG:5070</a> (USA Contiguous Albers Equal Area) for accurate distance calculations. Ten-kilometre buffers are drawn around each facility point, unioned across facilities within a year, intersected with Census tract polygons (ACS&nbsp;5-year, 2019&ndash;2023, Table&nbsp;B01003), and area-weighted into the buffer so every tract resident is counted once regardless of overlap. Figure&nbsp;11 is scoped to Kinder&nbsp;Morgan and Energy&nbsp;Transfer; Figure&nbsp;12 is the full 8,106-facility panel across all fourteen years; Figure&nbsp;02 takes the 2023 slice of that panel and re-expresses 65.8&percnt; as a tactile thousand-square grid. The population layer is <em>frozen</em> at the 2019&ndash;2023 ACS across every year. Tract-level population change is under 20&percnt; over the window while facility count grew 55&percnt;, so freezing population isolates what changed: facility entry, not demography.
+          Population exposure uses <a href="https://epsg.io/5070">EPSG:5070</a> (USA Contiguous Albers Equal Area) for accurate distance calculations. Ten-kilometre buffers are drawn around each facility point, unioned across facilities within a year, intersected with Census tract polygons (ACS&nbsp;5-year, 2019&ndash;2023, Table&nbsp;B01003), and area-weighted into the buffer so every tract resident is counted once regardless of overlap. Figure&nbsp;11 is the full 8,106-facility panel across all fourteen years; Figure&nbsp;12 is scoped to Kinder&nbsp;Morgan and Energy&nbsp;Transfer; Figure&nbsp;02 takes the 2023 slice of that panel and re-expresses 65.8&percnt; as a tactile thousand-square grid. The population layer is <em>frozen</em> at the 2019&ndash;2023 ACS across every year. Tract-level population change is under 20&percnt; over the window while facility count grew 55&percnt;, so freezing population isolates what changed: facility entry, not demography.
         </p>
         <p>
           Processing in Python &mdash; <code>pandas</code>, <code>geopandas</code>, <code>shapely</code>. Figures are <code>matplotlib</code> at 300&nbsp;DPI. Maps use CARTO basemaps. Full pipeline, intermediate data, and figure code are on <a href="https://github.com/salamituns/salamituns.github.io">GitHub</a>.
