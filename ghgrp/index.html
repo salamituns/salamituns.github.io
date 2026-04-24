@@ -146,6 +146,22 @@ body.lightbox-open { overflow: hidden; }
   margin: 0 0.65rem;
   color: var(--rule);
 }
+
+/* ---- Repo pointer under the CSV list ---- */
+.csv-repo {
+  margin: 0.9rem 0 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.csv-repo a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+.csv-repo a:hover { text-decoration-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -170,6 +186,8 @@ body.lightbox-open { overflow: hidden; }
         By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
         <span class="sep" aria-hidden="true">&middot;</span>
         Published April&nbsp;2026
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <a href="#data-heading">Data &amp; code</a>
       </p>
     </section>
   </div>
@@ -395,10 +413,22 @@ body.lightbox-open { overflow: hidden; }
   <div class="page">
     <section aria-labelledby="data-heading">
       <div class="section-head">
-        <h2 class="caps" id="data-heading">Data</h2>
-        <span class="caps" aria-hidden="true">Public &middot; Federal</span>
+        <h2 class="caps" id="data-heading">Data &amp; sources</h2>
+        <span class="caps" aria-hidden="true">Download &middot; Attribute &middot; Reproduce</span>
       </div>
       <dl class="sources">
+        <div class="sources-row">
+          <dt>Download the CSVs&nbsp;<span class="caps" aria-hidden="true" style="margin-left:0.5rem;color:var(--muted);font-size:0.75rem;">This publication</span></dt>
+          <dd>
+            The reconciled files used to produce every figure on this page. Same column definitions as the EPA source; joins and geocoding are pre-applied.
+            <ul class="csv-links">
+              <li><a href="data/facilities_panel.csv" download>facilities_panel.csv</a> <span class="csv-meta">&middot; 89,690 facility-years, 2010&ndash;2023 (2.7&nbsp;MB)</span></li>
+              <li><a href="data/ghgrp_2023_facilities.csv" download>ghgrp_2023_facilities.csv</a> <span class="csv-meta">&middot; 8,107 facilities with parent names, NAICS, and coordinates (1.5&nbsp;MB)</span></li>
+              <li><a href="data/exposure_timeseries_2010_2023.csv" download>exposure_timeseries_2010_2023.csv</a> <span class="csv-meta">&middot; 14-year 3&nbsp;km / 10&nbsp;km population exposure panel (1.5&nbsp;KB)</span></li>
+            </ul>
+            <p class="csv-repo">Full pipeline, figure scripts, and intermediate files: <a href="https://github.com/salamituns/salamituns.github.io/tree/main/ghgrp">github.com/salamituns/salamituns.github.io/ghgrp</a>.</p>
+          </dd>
+        </div>
         <div class="sources-row">
           <dt><a href="https://www.epa.gov/ghgreporting/ghgrp-parent-company-data">EPA GHGRP Parent Company Dataset</a></dt>
           <dd>Fourteen reporting years, 2010&ndash;2023. Facility-to-parent reconciliation with name-variant harmonisation and ownership-share weighting for joint ventures.</dd>
@@ -410,17 +440,6 @@ body.lightbox-open { overflow: hidden; }
         <div class="sources-row">
           <dt><a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">US Census Tract &amp; County Boundaries</a></dt>
           <dd>2020&nbsp;TIGER/Line tract and county polygons with ACS&nbsp;5-year population estimates, used for the 10&nbsp;km exposure buffer.</dd>
-        </div>
-        <div class="sources-row">
-          <dt>Processed data&nbsp;<span class="caps" aria-hidden="true" style="margin-left:0.5rem;color:var(--muted);font-size:0.75rem;">This publication</span></dt>
-          <dd>
-            The reconciled files used to produce every figure on this page.
-            <ul class="csv-links">
-              <li><a href="data/facilities_panel.csv" download>facilities_panel.csv</a> <span class="csv-meta">&middot; 89,690 facility-years, 2010&ndash;2023 (2.7&nbsp;MB)</span></li>
-              <li><a href="data/ghgrp_2023_facilities.csv" download>ghgrp_2023_facilities.csv</a> <span class="csv-meta">&middot; 8,107 facilities with parent names, NAICS, and coordinates (1.5&nbsp;MB)</span></li>
-              <li><a href="data/exposure_timeseries_2010_2023.csv" download>exposure_timeseries_2010_2023.csv</a> <span class="csv-meta">&middot; 14-year 3&nbsp;km / 10&nbsp;km population exposure panel (1.5&nbsp;KB)</span></li>
-            </ul>
-          </dd>
         </div>
       </dl>
     </section>
@@ -442,7 +461,7 @@ body.lightbox-open { overflow: hidden; }
           Population exposure uses <a href="https://epsg.io/5070">EPSG:5070</a> (USA Contiguous Albers Equal Area) for accurate distance calculations. Ten-kilometre buffers are drawn around each facility point, unioned across facilities within a year, intersected with Census tract polygons (ACS&nbsp;5-year, 2019&ndash;2023, Table&nbsp;B01003), and area-weighted into the buffer so every tract resident is counted once regardless of overlap. Figure&nbsp;11 is the full 8,106-facility panel across all fourteen years; Figure&nbsp;12 is scoped to Kinder&nbsp;Morgan and Energy&nbsp;Transfer; Figure&nbsp;02 takes the 2023 slice of that panel and re-expresses 65.8&percnt; as a tactile thousand-square grid. The population layer is <em>frozen</em> at the 2019&ndash;2023 ACS across every year. Tract-level population change is under 20&percnt; over the window while facility count grew 55&percnt;, so freezing population isolates what changed: facility entry, not demography.
         </p>
         <p>
-          Processing in Python &mdash; <code>pandas</code>, <code>geopandas</code>, <code>shapely</code>. Figures are <code>matplotlib</code> at 300&nbsp;DPI. Maps use CARTO basemaps. Full pipeline, intermediate data, and figure code are on <a href="https://github.com/salamituns/salamituns.github.io">GitHub</a>.
+          Processing in Python &mdash; <code>pandas</code>, <code>geopandas</code>, <code>shapely</code>. Figures are <code>matplotlib</code> at 300&nbsp;DPI. Maps use CARTO basemaps.
         </p>
       </div>
     </section>
