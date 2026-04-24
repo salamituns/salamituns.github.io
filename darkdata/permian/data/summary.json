@@ -1,0 +1,184 @@
+{
+  "scope": "Permian Basin \u2014 TX (28 counties) + NM (4 counties)",
+  "total_wells": 393073,
+  "lit": 87027,
+  "dark": 306046,
+  "pct_lit": 22.14,
+  "pct_dark": 77.86,
+  "by_state": {
+    "TX": {
+      "wells": 294225,
+      "lit": 61333,
+      "dark": 232892,
+      "orphans_in_scope": 2800,
+      "pct_lit": 20.85
+    },
+    "NM": {
+      "wells": 98848,
+      "lit": 25694,
+      "dark": 73154,
+      "pct_lit": 25.99
+    }
+  },
+  "by_vintage": {
+    "0": 28096,
+    "1": 4807,
+    "2": 6736,
+    "3": 8613,
+    "4": 18959,
+    "5": 325862
+  },
+  "by_vintage_nm_only": {
+    "0": 28096,
+    "1": 4807,
+    "2": 6736,
+    "3": 8613,
+    "4": 18959,
+    "5": 31637
+  },
+  "nm_top_operators": [
+    {
+      "name": "PRE-ONGARD WELL OPERATOR",
+      "wells": 15601,
+      "lit": 1,
+      "pct_lit": 0.0
+    },
+    {
+      "name": "EOG RESOURCES INC",
+      "wells": 5861,
+      "lit": 2776,
+      "pct_lit": 47.4
+    },
+    {
+      "name": "DEVON ENERGY PRODUCTION COMPANY, LP",
+      "wells": 4358,
+      "lit": 1908,
+      "pct_lit": 43.8
+    },
+    {
+      "name": "MEWBOURNE OIL CO",
+      "wells": 3468,
+      "lit": 1655,
+      "pct_lit": 47.7
+    },
+    {
+      "name": "COG OPERATING LLC",
+      "wells": 2994,
+      "lit": 1209,
+      "pct_lit": 40.4
+    },
+    {
+      "name": "OXY USA INC",
+      "wells": 2860,
+      "lit": 1119,
+      "pct_lit": 39.1
+    },
+    {
+      "name": "EOG Y RESOURCES, INC.",
+      "wells": 2439,
+      "lit": 205,
+      "pct_lit": 8.4
+    },
+    {
+      "name": "MATADOR PRODUCTION COMPANY",
+      "wells": 2248,
+      "lit": 1047,
+      "pct_lit": 46.6
+    },
+    {
+      "name": "HILCORP ENERGY COMPANY",
+      "wells": 2216,
+      "lit": 1136,
+      "pct_lit": 51.3
+    },
+    {
+      "name": "Coterra Energy Operating Co.",
+      "wells": 2067,
+      "lit": 947,
+      "pct_lit": 45.8
+    }
+  ],
+  "extremes": {
+    "highest_lit": [
+      {
+        "county": "Glasscock",
+        "state": "TX",
+        "pct_lit": 37.65,
+        "total": 9662,
+        "lit": 3638
+      },
+      {
+        "county": "Martin",
+        "state": "TX",
+        "pct_lit": 33.86,
+        "total": 16969,
+        "lit": 5745
+      },
+      {
+        "county": "Eddy",
+        "state": "NM",
+        "pct_lit": 32.22,
+        "total": 41227,
+        "lit": 13285
+      },
+      {
+        "county": "Upton",
+        "state": "TX",
+        "pct_lit": 31.59,
+        "total": 16516,
+        "lit": 5218
+      },
+      {
+        "county": "Midland",
+        "state": "TX",
+        "pct_lit": 30.39,
+        "total": 19549,
+        "lit": 5941
+      }
+    ],
+    "lowest_lit": [
+      {
+        "county": "Roosevelt",
+        "state": "NM",
+        "pct_lit": 4.55,
+        "total": 1782,
+        "lit": 81
+      },
+      {
+        "county": "Hockley",
+        "state": "TX",
+        "pct_lit": 6.29,
+        "total": 10105,
+        "lit": 636
+      },
+      {
+        "county": "Chaves",
+        "state": "NM",
+        "pct_lit": 8.51,
+        "total": 7557,
+        "lit": 643
+      },
+      {
+        "county": "Winkler",
+        "state": "TX",
+        "pct_lit": 8.93,
+        "total": 9446,
+        "lit": 844
+      },
+      {
+        "county": "Sterling",
+        "state": "TX",
+        "pct_lit": 10.29,
+        "total": 3568,
+        "lit": 367
+      }
+    ]
+  },
+  "method_notes": [
+    "TX lit = API present in RRC Well Logs layer (scanned-TIFF inventory).",
+    "TX vintage = unknown (v=5) for all TX wells \u2014 live REST doesn't expose spud dates.",
+    "NM lit = year_spudded >= 2002 (OCD digital-filing-era floor). Unknown/junk years counted as dark.",
+    "NM `files` URL is boilerplate on every well and is NOT a lit proxy.",
+    "Lit-universe definitions are asymmetric \u2014 TX = scanned TIFF, NM = digital-era spud. Documented on methodology strip."
+  ]
+}

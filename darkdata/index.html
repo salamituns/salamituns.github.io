@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Where US Oil Data Lives: Dark Data, basin by basin</title>
+<meta name="description" content="A basin-by-basin walk through what the US subsurface industry can actually see of its own history. Kansas: 419,777 wells, 94.3% dark. Permian: 393,073 wells, 77.9% dark. More basins ahead.">
+<meta property="og:title" content="Where US Oil Data Lives: Dark Data, basin by basin">
+<meta property="og:description" content="Basin-by-basin maps of the gap between wells drilled and wells digitized. Kansas and Permian live. Williston, Appalachian, Bakken next.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<meta property="og:image:alt" content="Kansas state map with all 419,777 drilled wells shown as dots; 94 percent are ghost-grey dark wells, 6 percent are coloured by spud decade.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where US Oil Data Lives">
+<meta name="twitter:description" content="Basin-by-basin maps of dark data. Kansas and Permian live. 78% of the Permian subsurface record is still dark.">
+<meta name="twitter:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+/* ---- Collection hero (scoped) ---- */
+.collection-hero {
+  padding: clamp(3rem, 7vw, 6rem) 0 clamp(2.5rem, 5vw, 4rem);
+  border-bottom: 1px solid var(--rule);
+}
+.collection-hero .eyebrow {
+  display: block;
+  margin-bottom: 1.5rem;
+}
+.collection-hero h1 {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-weight: 400;
+  font-variation-settings: "opsz" 144, "SOFT" 40;
+  font-size: clamp(2.5rem, 6vw, 5rem);
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+  margin: 0 0 1.75rem;
+  text-wrap: balance;
+  max-width: 20ch;
+}
+.collection-hero h1 em {
+  font-style: italic;
+  font-variation-settings: "opsz" 144, "SOFT" 80;
+  color: var(--accent);
+}
+.collection-hero .lede {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-variation-settings: "opsz" 24, "SOFT" 20;
+  font-weight: 350;
+  font-size: clamp(1.125rem, 1.6vw, 1.35rem);
+  line-height: 1.5;
+  color: var(--ink);
+  max-width: 58ch;
+  text-wrap: pretty;
+  margin: 0 0 0.85rem;
+}
+.collection-hero .lede + .lede {
+  color: var(--muted);
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+}
+
+/* ---- Totals strip (scoped) ---- */
+.totals {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid var(--rule);
+  border-left: 1px solid var(--rule);
+}
+@media (min-width: 720px) {
+  .totals { grid-template-columns: repeat(4, 1fr); }
+}
+.totals .stat {
+  padding: clamp(1.25rem, 2.5vw, 1.85rem);
+  border-right: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+.totals .stat .value {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 96, "SOFT" 30;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums lining-nums;
+  margin-bottom: 0.55rem;
+  color: var(--ink);
+}
+.totals .stat.accent .value { color: var(--accent); }
+.totals .stat .label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- Basin rows: reuse .entry look + inline chip ---- */
+.basin {
+  display: grid;
+  grid-template-columns: 3rem 1fr auto;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: start;
+  padding: 1.85rem 0;
+  border-top: 1px solid var(--rule);
+  text-decoration: none;
+  border-bottom: 0;
+  color: inherit;
+  transition: background-color 180ms ease;
+}
+.basin:first-of-type { border-top: 0; }
+.basin:hover { background-color: rgba(14, 14, 14, 0.025); }
+.basin.live:hover h3 { color: var(--accent); }
+.basin.planned,
+.basin.progress {
+  cursor: default;
+  pointer-events: none;
+}
+.basin.planned:hover,
+.basin.progress:hover {
+  background-color: transparent;
+}
+.basin:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+.basin .num {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 9;
+  font-weight: 400;
+  font-size: 14px;
+  color: var(--muted);
+  padding-top: 0.4rem;
+  letter-spacing: 0.05em;
+}
+.basin h3 {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 72, "SOFT" 30;
+  font-weight: 450;
+  font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.55rem;
+  text-wrap: balance;
+  transition: color 160ms ease;
+}
+.basin p.dek {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 18;
+  font-weight: 350;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0 0 0.85rem;
+  max-width: 56ch;
+  line-height: 1.45;
+}
+.basin .meta {
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.basin .meta span + span::before {
+  content: " · ";
+  margin: 0 0.25rem;
+  color: var(--rule);
+}
+.basin .status {
+  padding-top: 0.55rem;
+  white-space: nowrap;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.basin .status::before {
+  content: "● ";
+  font-size: 0.75em;
+  vertical-align: 0.12em;
+}
+.basin.live .status { color: var(--accent); }
+.basin.progress .status { color: var(--ink); }
+.basin.planned .status { color: var(--muted); }
+.basin.planned .status::before,
+.basin.progress .status::before { color: var(--rule); }
+
+/* ---- Method strip (scoped) ---- */
+.method-strip {
+  display: grid;
+  gap: clamp(1.25rem, 3vw, 2rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 720px) {
+  .method-strip { grid-template-columns: repeat(3, 1fr); }
+}
+.method-strip .card {
+  padding: 1.25rem 0 0;
+  border-top: 1px solid var(--rule);
+}
+.method-strip h3 {
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 0.75rem;
+}
+.method-strip p {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 18;
+  font-weight: 350;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--ink);
+  margin: 0;
+  max-width: 42ch;
+}
+
+/* ---- Mast crumb ---- */
+.mast .what .crumb-sep {
+  margin: 0 0.5rem;
+  color: var(--rule);
+}
+</style>
+</head>
+<body>
+
+<header class="mast page">
+  <a class="who" href="/" translate="no" aria-label="Back to portfolio">Olatunde&nbsp;Salami</a>
+  <span class="what">Dark&nbsp;Data &middot; Collection</span>
+</header>
+
+<main>
+
+  <div class="page">
+    <section class="collection-hero" aria-labelledby="hero-title">
+      <span class="caps eyebrow">Analysis &thinsp;/&thinsp; Subsurface &thinsp;/&thinsp; Series</span>
+      <h1 id="hero-title" class="serif">
+        Where US oil data <em>actually&nbsp;lives.</em>
+      </h1>
+      <p class="lede">
+        Industry says 99.5&percnt; of subsurface data is dark. That number is true and useless, too abstract to act on. This is a basin-by-basin walk through what the US oil and gas industry can actually see of its own history: every drilled well in a state, classified by whether a machine-readable log survived.
+      </p>
+      <p class="lede">
+        One basin at a time. Same method, same palette, same cuts, so the shape of the gap can be compared across geology and century.
+      </p>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="totals-heading">
+      <div class="section-head">
+        <h2 class="caps" id="totals-heading">Running Totals</h2>
+        <span class="caps" aria-hidden="true">02 of 06 basins live</span>
+      </div>
+      <div class="totals" role="list">
+        <div class="stat" role="listitem">
+          <div class="value">2</div>
+          <span class="label">Basins&nbsp;live</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">812,850</div>
+          <span class="label">Wells&nbsp;mapped</span>
+        </div>
+        <div class="stat accent" role="listitem">
+          <div class="value">86.4%</div>
+          <span class="label">Dark&nbsp;so&nbsp;far</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">4</div>
+          <span class="label">Basins&nbsp;queued</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="basins-heading">
+      <div class="section-head">
+        <h2 class="caps" id="basins-heading">The Basins</h2>
+        <span class="caps" aria-hidden="true">06 &thinsp;/&thinsp; 06</span>
+      </div>
+
+      <a class="basin live" href="/darkdata/kansas/">
+        <span class="num" aria-hidden="true">01</span>
+        <div>
+          <h3 class="serif">Kansas, Mid-Continent shelf</h3>
+          <p class="dek">
+            419,777 drilled wells. 23,897 with a public LAS. The other 94.3&percnt; are dark. A century-wide east&ndash;west gradient from the 1920s shallow plays to the 2010s horizontal boom, with 46&percnt; of the dark universe sitting under operators that no longer exist.
+          </p>
+          <div class="meta">
+            <span>KGS master list</span><span>1920s&ndash;today</span><span>Choropleth &middot; Cherokee close-up</span><span>April&nbsp;2026</span>
+          </div>
+        </div>
+        <span class="status">Live</span>
+      </a>
+
+      <a class="basin live" href="/darkdata/permian/story.html">
+        <span class="num" aria-hidden="true">02</span>
+        <div>
+          <h3 class="serif">Permian, West Texas &amp; SE New Mexico</h3>
+          <p class="dek">
+            393,073 drilled wells across TX&nbsp;RRC and NM&nbsp;OCD. 22.1&percnt; are reachable to a public analyst; the other 77.9&percnt; are dark. The lit wells concentrate in the Midland Basin core and Eddy County, the exact footprint of the horizontal Wolfcamp&ndash;Bone&nbsp;Spring campaign. 15,601 NM wells belong to <em>PRE-ONGARD</em>, a placeholder for operators that never migrated to the digital era. Dark data is what an industry stops caring about.
+          </p>
+          <div class="meta">
+            <span>TX&nbsp;RRC + NM&nbsp;OCD</span><span>1920s&ndash;today</span><span>Midland &middot; Delaware &middot; Shelf</span><span>April&nbsp;2026</span>
+          </div>
+        </div>
+        <span class="status">Live</span>
+      </a>
+
+      <a class="basin planned" aria-disabled="true">
+        <span class="num" aria-hidden="true">03</span>
+        <div>
+          <h3 class="serif">Williston, Bakken &amp; Three Forks</h3>
+          <p class="dek">
+            North Dakota &amp; Montana. The cleanest digital record of any US play: the Bakken boom started in 2008, after LAS was already the default. The interesting question is what happened to the pre-1980 shallow campaigns on the same footprint.
+          </p>
+          <div class="meta">
+            <span>ND&nbsp;DMR + MT&nbsp;BOGC</span><span>1950s&ndash;today</span><span>Bakken &middot; Three&nbsp;Forks</span><span>Planned</span>
+          </div>
+        </div>
+        <span class="status">Planned</span>
+      </a>
+
+      <a class="basin planned" aria-disabled="true">
+        <span class="num" aria-hidden="true">04</span>
+        <div>
+          <h3 class="serif">Eagle Ford, South Texas</h3>
+          <p class="dek">
+            A young play on an old footprint. The Austin Chalk was drilled hard in the 1970s&ndash;90s, almost entirely dark. The Eagle Ford stacked on top of it from 2009 is mostly lit. Same rock column, two archives.
+          </p>
+          <div class="meta">
+            <span>TX&nbsp;RRC</span><span>1930s&ndash;today</span><span>Austin&nbsp;Chalk &middot; Eagle&nbsp;Ford</span><span>Planned</span>
+          </div>
+        </div>
+        <span class="status">Planned</span>
+      </a>
+
+      <a class="basin planned" aria-disabled="true">
+        <span class="num" aria-hidden="true">05</span>
+        <div>
+          <h3 class="serif">Anadarko, SCOOP/STACK</h3>
+          <p class="dek">
+            Oklahoma. Deep, old, heavily consolidated. The dark share here is shaped less by age than by the 1990s&ndash;2000s M&amp;A layer. The operator chain is the archive, and the chain broke repeatedly.
+          </p>
+          <div class="meta">
+            <span>OCC&nbsp;well&nbsp;records</span><span>1910s&ndash;today</span><span>SCOOP &middot; STACK &middot; Hugoton</span><span>Planned</span>
+          </div>
+        </div>
+        <span class="status">Planned</span>
+      </a>
+
+      <a class="basin planned" aria-disabled="true">
+        <span class="num" aria-hidden="true">06</span>
+        <div>
+          <h3 class="serif">Appalachia, Marcellus &amp; Utica</h3>
+          <p class="dek">
+            Pennsylvania, West Virginia, Ohio. The oldest producing region in the country: the 1859 Drake well sits inside this footprint. Pre-regulatory wells are uncountable, let alone logged; the Marcellus layer on top is the most densely digitized record in the series.
+          </p>
+          <div class="meta">
+            <span>PA&nbsp;DEP + WV&nbsp;DEP + OH&nbsp;DNR</span><span>1859&ndash;today</span><span>Marcellus &middot; Utica</span><span>Planned</span>
+          </div>
+        </div>
+        <span class="status">Planned</span>
+      </a>
+
+    </section>
+  </div>
+
+  <div class="page">
+    <figure class="pullquote" aria-label="Pull quote">
+      <blockquote class="serif">Dark data is a stratigraphy of time. Every basin has a different century missing.</blockquote>
+    </figure>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="method-heading">
+      <div class="section-head">
+        <h2 class="caps" id="method-heading">Method: the same four cuts in every basin</h2>
+      </div>
+      <div class="method-strip">
+        <div class="card">
+          <h3>01 &middot; The state list</h3>
+          <p>Pull the regulator&rsquo;s master inventory of drilled oil &amp; gas wells. Every state has one; the field coverage varies.</p>
+        </div>
+        <div class="card">
+          <h3>02 &middot; The log archive</h3>
+          <p>Cross-reference the public LAS/digital-log index. The gap between list and archive is the dark universe for that basin.</p>
+        </div>
+        <div class="card">
+          <h3>03 &middot; The time cut</h3>
+          <p>Classify every well by spud decade. The coverage curve almost always reveals the year LAS became the default.</p>
+        </div>
+        <div class="card">
+          <h3>04 &middot; The operator cut</h3>
+          <p>Join to the current operator-of-record. The orphan share (wells whose last operator no longer exists) is where recovery is hardest.</p>
+        </div>
+        <div class="card">
+          <h3>05 &middot; The play close-up</h3>
+          <p>One zoom per basin, into the biggest concentrated play. Same palette, same cuts. Lets readers compare Cherokee vs Wolfcamp vs Bakken on the same frame.</p>
+        </div>
+        <div class="card">
+          <h3>06 &middot; Open source</h3>
+          <p>Every basin ships with the raw CSV, the notebook, and the map source. If the method stops being the constant, this stops being this project.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="about-heading">
+      <div class="section-head">
+        <h2 class="caps" id="about-heading">Why This Series</h2>
+      </div>
+      <div class="about" style="display:grid; grid-template-columns:12ch 1fr; gap:clamp(1.5rem,4vw,3rem); align-items:start;">
+        <span class="caps" aria-hidden="true">Thesis</span>
+        <div>
+          <p style="font-family:'Fraunces',serif; font-variation-settings:'opsz' 24,'SOFT' 20; font-weight:350; font-size:clamp(1.05rem,1.5vw,1.25rem); line-height:1.5; max-width:52ch; margin:0 0 1rem;">
+            Every conversation about AI in the subsurface assumes the training data exists. The maps in this collection ask a slower question first: where does the data actually live, and what shape does the gap take?
+          </p>
+          <p style="font-family:'Fraunces',serif; font-variation-settings:'opsz' 18; font-weight:350; font-style:italic; font-size:1rem; line-height:1.5; color:var(--muted); max-width:52ch; margin:0;">
+            If the answer for your basin is &ldquo;mostly dark, mostly orphaned, mostly pre-1990,&rdquo; that&rsquo;s a different product than the one the demos are selling. The series is an honest inventory, basin by basin.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="page" style="margin-top:auto; padding:2rem 0; border-top:1px solid var(--rule); display:flex; justify-content:space-between; align-items:baseline; gap:1rem; font-size:12px; color:var(--muted); letter-spacing:0.04em;">
+  <span>&copy; 2026 Olatunde&nbsp;Salami &middot; Analysis &middot; Method &middot; Open source</span>
+  <nav aria-label="Social" style="display:flex; gap:1.25rem;">
+    <a href="https://linkedin.com/in/salamituns" rel="me" style="border-bottom-color:transparent;">LinkedIn</a>
+    <a href="https://twitter.com/salamituns" rel="me" style="border-bottom-color:transparent;">X</a>
+    <a href="https://github.com/salamituns" rel="me" style="border-bottom-color:transparent;">GitHub</a>
+  </nav>
+</footer>
+
+</body>
+</html>

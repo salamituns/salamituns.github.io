@@ -1,0 +1,11 @@
+{
+  "total_drilled": 419777,
+  "lit": 23897,
+  "dark": 395880,
+  "pct_lit": 5.69,
+  "orphan_total": 184369,
+  "orphan_dark": 182153,
+  "counties_below_5pct": 39,
+  "counties_total_50plus": 98,
+  "orphan_share_of_dark": 46.0
+}

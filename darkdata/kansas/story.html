@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Walking the 94% Dark: Kansas | @salamituns</title>
+<meta name="description" content="A scrollable map of every drilled well in Kansas. 419,777 wells. 23,897 with a public log file. Watch the other 94% appear in six steps.">
+<meta property="og:title" content="Walking the 94% Dark: Kansas">
+<meta property="og:description" content="419,777 Kansas wells, six scroll steps. The first interactive in a basin-by-basin walk through US subsurface dark data.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/kansas/story.html">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/kansas/story.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+<style>
+  :root {
+    --paper: #F6F3EB;
+    --ink: #0E0E0E;
+    --muted: #7A7368;
+    --rule: rgba(14,14,14,0.14);
+    --accent: #A23B2A;
+    --amber: #C57B35;
+    --violet: #6B4E8A;
+    --ghost: #B5AEA0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    overflow-x: clip;
+  }
+
+  .em-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.9rem 1.4rem;
+    background: rgba(246,243,235,0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .em-nav a, .em-nav span { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  .em-nav a { color: var(--ink); text-decoration: none; }
+  .em-nav a:hover { color: var(--accent); }
+  .em-left { display: flex; gap: 1.5rem; align-items: baseline; }
+  .em-back { color: var(--muted); }
+  .em-back-arrow { margin-right: 0.35rem; }
+  .em-here { color: var(--accent); }
+
+  #stage {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-template-areas: "narrative map";
+  }
+  #map-wrap {
+    grid-area: map;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    background: var(--paper);
+  }
+  #map { position: absolute; inset: 0; }
+
+  .legend-chip {
+    position: absolute; right: 1.25rem; bottom: 1.25rem; z-index: 3;
+    background: rgba(246,243,235,0.94);
+    border: 1px solid var(--rule);
+    padding: 0.75rem 0.95rem;
+    font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.04em;
+    min-width: 180px;
+    opacity: 0; transition: opacity 450ms ease;
+  }
+  .legend-chip.on { opacity: 1; }
+  .legend-chip .row { display: flex; align-items: center; gap: 0.55rem; margin: 0.25rem 0; }
+  .legend-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-chip .label { color: var(--ink); letter-spacing: 0.02em; }
+
+  .progress {
+    position: fixed; top: 4.5rem; right: 1.4rem; z-index: 20;
+    font-family: "Inter", sans-serif; font-size: 0.72rem;
+    color: var(--ink); letter-spacing: 0.14em; text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    background: rgba(246,243,235,0.92); padding: 0.4rem 0.7rem;
+    border: 1px solid var(--rule);
+  }
+  .progress .pos { color: var(--accent); font-weight: 500; }
+
+  #narrative {
+    grid-area: narrative;
+    position: relative;
+    width: 100%;
+    padding-top: 4.5rem;
+    z-index: 2;
+  }
+  .step {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 2rem 0 2.5rem;
+  }
+  .step-card {
+    background: rgba(246,243,235,0.96);
+    border-left: 2px solid var(--accent);
+    padding: 1.8rem 1.6rem;
+    max-width: 34rem;
+  }
+  .step .eyebrow {
+    display: block; font-size: 0.7rem; color: var(--muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 500; margin-bottom: 0.9rem;
+  }
+  .step h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    font-weight: 400;
+    font-size: clamp(1.75rem, 3.2vw, 2.35rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.9rem;
+  }
+  .step h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+  }
+  .step p {
+    font-size: 0.97rem;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 0.75rem;
+  }
+  .step p.muted { color: var(--muted); font-size: 0.86rem; }
+  .step .big {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72;
+    font-weight: 400;
+    font-size: 3.2rem;
+    color: var(--accent);
+    line-height: 1;
+    margin: 0.5rem 0 0.5rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .step.cover .step-card { border-left-color: var(--ink); }
+  .step.cover h1 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+  .step.cover h1 em { font-style: italic; color: var(--accent); }
+  .step.cover .lede { font-size: 1.05rem; line-height: 1.55; color: var(--ink); }
+  .step.cover .byline {
+    margin-top: 1.5rem; font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  }
+  .step.cover .byline a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  .step.cover .byline .sep { margin: 0 0.55rem; color: var(--rule); }
+
+  .bars {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 9rem 1fr 3rem;
+    gap: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+    align-items: center;
+  }
+  .bars .op { color: var(--ink); letter-spacing: 0.01em; }
+  .bars .track { height: 8px; background: var(--paper); border: 1px solid var(--rule); position: relative; }
+  .bars .track .fill { position: absolute; inset: 0 auto 0 0; background: var(--accent); }
+  .bars .track.ghost .fill { background: var(--ghost); }
+  .bars .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .outro {
+    position: relative; z-index: 4;
+    background: var(--paper);
+    padding: 6rem 2.5rem 5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .outro-inner { max-width: 56rem; margin: 0 auto; }
+  .outro h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+  .outro h2 em { font-style: italic; color: var(--accent); }
+  .outro p { font-size: 0.97rem; line-height: 1.6; color: var(--ink); margin: 0 0 1rem; max-width: 44rem; }
+  .outro .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .outro .cta {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    border: 1px solid var(--ink); color: var(--ink);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .outro .cta:hover { background: var(--ink); color: var(--paper); }
+  .outro .cta.accent { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .outro .cta.accent:hover { background: var(--ink); border-color: var(--ink); }
+  .outro .footnote { font-size: 0.76rem; color: var(--muted); margin-top: 2rem; line-height: 1.55; }
+  .outro .footnote a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+
+  .loader {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--paper);
+    color: var(--muted); font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: opacity 400ms ease;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  .loader .pulse {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); margin-bottom: 0.8rem;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loader.error .pulse { animation: none; background: var(--accent); }
+  .loader.error .loader-text { color: var(--accent); line-height: 1.5; max-width: 20rem; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loader.done { opacity: 0; pointer-events: none; }
+
+  @media (max-width: 900px) {
+    #stage { grid-template-columns: 1fr; grid-template-areas: "map" "narrative"; }
+    #map-wrap { height: 55vh; }
+    #narrative { padding-top: 0; }
+    .step { min-height: auto; padding: 2.5rem 1.25rem; }
+    .step-card { padding: 1.2rem 1.2rem; max-width: none; }
+    .progress { top: 3.8rem; right: 0.9rem; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <div class="em-left">
+    <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+    <a href="/darkdata/" class="em-back"><span class="em-back-arrow" aria-hidden="true">&larr;</span>Dark&nbsp;Data</a>
+  </div>
+  <span class="em-here" aria-current="page">Kansas &middot; Walk</span>
+</nav>
+
+<div class="progress" aria-live="polite">
+  Step <span class="pos" id="progress-pos">01</span> / 06
+</div>
+
+<div id="stage">
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="legend-chip" id="legend">
+      <div class="row"><div class="dot" style="background:#B5AEA0"></div><div class="label">No public LAS</div></div>
+      <div class="row"><div class="dot" style="background:#C57B35"></div><div class="label">Lit &middot; pre-2000</div></div>
+      <div class="row"><div class="dot" style="background:#A23B2A"></div><div class="label">Lit &middot; 2000s</div></div>
+      <div class="row"><div class="dot" style="background:#6B4E8A"></div><div class="label">Lit &middot; 2010+</div></div>
+    </div>
+    <div class="loader" id="loader">
+      <div class="pulse"></div>
+      <div class="loader-text" id="loader-text">Loading 420,000 wells</div>
+    </div>
+  </div>
+
+  <div id="narrative">
+
+    <section class="step cover" data-step="0">
+      <div class="step-card">
+        <span class="eyebrow">Project 03 &middot; Subsurface &middot; Walk 01</span>
+        <h1>Walking the <em>94% dark.</em></h1>
+        <p class="lede">
+          Every drilled oil and gas well in Kansas on one scrollable map. 419,777 points. Six steps to find the gap.
+        </p>
+        <p class="byline">
+          By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+          <span class="sep" aria-hidden="true">&middot;</span>
+          April&nbsp;2026
+          <span class="sep" aria-hidden="true">&middot;</span>
+          <a href="/darkdata/kansas/">Long&#8209;form</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="step" data-step="1">
+      <div class="step-card">
+        <span class="eyebrow">01 &middot; The denominator</span>
+        <h2>419,777 drilled wells.</h2>
+        <p>That is the full Kansas oil-and-gas record, stripped of permits that never became holes in the ground. Every ghost dot on the map is one of them.</p>
+        <p class="muted">Paper status (Approved Intent, Expired Intent, Cancelled API) is excluded. The count is the surface footprint of a century of subsurface effort.</p>
+      </div>
+    </section>
+
+    <section class="step" data-step="2">
+      <div class="step-card">
+        <span class="eyebrow">02 &middot; The gap</span>
+        <div class="big">94.3%</div>
+        <h2>Of that record, lit.</h2>
+        <p>23,897 wells have a publicly-accessible LAS, the machine-readable log format that analysts actually load. The other 395,880 are dark. You can see the lit ones now: clay for the 2000s, violet for 2010&plus;, amber for anything older.</p>
+      </div>
+    </section>
+
+    <section class="step" data-step="3">
+      <div class="step-card">
+        <span class="eyebrow">03 &middot; The time problem</span>
+        <h2>Dark is <em>when,</em> not where.</h2>
+        <p>Every decade from the 1920s through the 1990s sits at 1&ndash;3% LAS coverage. The 2000s: 14%. The 2010s: 37%. Digital filing became the default once the horizontal-drilling generation arrived, and most of Kansas was drilled long before.</p>
+        <p class="muted">Watch the lit dots concentrate in the western and southeastern edges. That is where the 21st century happened.</p>
+      </div>
+    </section>
+
+    <section class="step" data-step="4">
+      <div class="step-card">
+        <span class="eyebrow">04 &middot; East vs. west</span>
+        <h2>A stratigraphy of operator behaviour.</h2>
+        <p>County-level LAS coverage now shades the state. Johnson County, drilled in the 1920s and 1930s: 0.2% of 4,171 wells digitized. Wichita County, drilled post-2000: 43% of 447. Same state, two centuries of filing norms.</p>
+        <p class="muted">39 of 98 counties with 50&plus; wells sit below 5% coverage. The east is the old oil patch; the west is where the log survives.</p>
+      </div>
+    </section>
+
+    <section class="step" data-step="5">
+      <div class="step-card">
+        <span class="eyebrow">05 &middot; Cherokee close-up</span>
+        <h2>One operator, <em>37%</em> of a region.</h2>
+        <p>Zoom to the red cluster in the southeast: eleven counties, 81,293 drilled wells, 4,316 lit. River&nbsp;Rock Operating (successor to the Quest&nbsp;Cherokee CBM estate) holds 1,582 of those 4,316. When one operator owns most of the log archive, the region&rsquo;s &ldquo;public&rdquo; archive is effectively that operator&rsquo;s archive.</p>
+      </div>
+    </section>
+
+    <section class="step" data-step="6">
+      <div class="step-card">
+        <span class="eyebrow">06 &middot; Who owns the dark</span>
+        <div class="big">46%</div>
+        <h2>Has no current operator.</h2>
+        <p>182,153 of the 395,880 dark Kansas wells are orphan: the <em>Current Operator</em> field is blank. Last operator gone, no successor, no archive. The single largest holder of dark wells in the state is nobody.</p>
+        <div class="bars" aria-label="Top dark-well holders">
+          <span class="op">Orphan &middot; no operator</span>
+          <div class="track"><div class="fill" style="width:100%"></div></div>
+          <span class="num">46.0%</span>
+          <span class="op">Scout Energy Mgmt</span>
+          <div class="track"><div class="fill" style="width:13.9%"></div></div>
+          <span class="num">6,383</span>
+          <span class="op">RJ Energy</span>
+          <div class="track"><div class="fill" style="width:11.3%"></div></div>
+          <span class="num">5,188</span>
+          <span class="op">Colt Energy</span>
+          <div class="track"><div class="fill" style="width:6.9%"></div></div>
+          <span class="num">3,148</span>
+          <span class="op">Merit Energy</span>
+          <div class="track"><div class="fill" style="width:6.2%"></div></div>
+          <span class="num">2,843</span>
+          <span class="op">American Warrior</span>
+          <div class="track"><div class="fill" style="width:4.6%"></div></div>
+          <span class="num">2,121</span>
+        </div>
+        <p class="muted">The remaining named dark wells sit on a long tail. The top 10 named operators hold only 14% of the named dark universe.</p>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<section class="outro">
+  <div class="outro-inner">
+    <h2>Kansas is the <em>easy</em> state.</h2>
+    <p>The Kansas Geological Survey publishes its master list and its LAS archive openly. Most regulators don&rsquo;t. Next in this series: the Permian Basin, Texas Railroad Commission plus the New Mexico OCD. Neither publishes a LAS archive at this level of openness. The dark-data picture there is almost certainly worse.</p>
+    <div class="cta-row">
+      <a class="cta accent" href="/darkdata/kansas/">Read the long form</a>
+      <a class="cta" href="https://github.com/salamituns/darkdata-repo">Data &amp; code</a>
+      <a class="cta" href="https://linkedin.com/in/salamituns">Follow for Permian</a>
+    </div>
+    <p class="footnote">
+      Sources: <a href="https://hub.arcgis.com/datasets/KansasGIS::oil-and-gas-wells/">Kansas Geological Survey master well list</a> &middot; <a href="https://www.kgs.ku.edu/Magellan/">KGS WebDocs LAS archive</a> &middot; US Census 2010 TIGER county boundaries. Coordinates as published (NAD27). Built with <a href="https://deck.gl/">deck.gl</a> and <a href="https://github.com/russellsamora/scrollama">scrollama</a>. Analysis: <a href="https://twitter.com/salamituns">@salamituns</a>.
+    </p>
+  </div>
+</section>
+
+<script>
+const VIEWS = [
+  { longitude: -98.3, latitude: 38.5, zoom: 5.8, pitch: 0, bearing: 0 },
+  { longitude: -98.3, latitude: 38.5, zoom: 6.1, pitch: 0, bearing: 0 },
+  { longitude: -98.3, latitude: 38.5, zoom: 6.1, pitch: 0, bearing: 0 },
+  { longitude: -98.3, latitude: 38.5, zoom: 6.1, pitch: 0, bearing: 0 },
+  { longitude: -98.3, latitude: 38.5, zoom: 6.1, pitch: 0, bearing: 0 },
+  { longitude: -95.3, latitude: 37.5, zoom: 7.6, pitch: 0, bearing: 0 },
+  { longitude: -97.0, latitude: 38.2, zoom: 6.1, pitch: 0, bearing: 0 }
+];
+
+const LIT_COLORS = {
+  0: [197, 123, 53, 215],
+  1: [197, 123, 53, 215],
+  2: [197, 123, 53, 215],
+  3: [162, 59, 42, 230],
+  4: [107, 78, 138, 230],
+  5: [197, 123, 53, 180]
+};
+const GHOST_COLOR = [181, 174, 160, 140];
+
+const LAYER_STATE = {
+  0: { darkOpacity: 0.6, litOpacity: 0.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.0 },
+  1: { darkOpacity: 1.0, litOpacity: 0.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.0 },
+  2: { darkOpacity: 0.8, litOpacity: 1.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.0 },
+  3: { darkOpacity: 0.7, litOpacity: 1.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.0 },
+  4: { darkOpacity: 0.35, litOpacity: 0.9, choroplethOpacity: 0.9, cherokeeOpacity: 0.0 },
+  5: { darkOpacity: 0.5, litOpacity: 1.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.6 },
+  6: { darkOpacity: 0.6, litOpacity: 1.0, choroplethOpacity: 0.0, cherokeeOpacity: 0.0 }
+};
+
+const CHEROKEE_COUNTIES = new Set([
+  'CHEROKEE','CRAWFORD','LABETTE','MONTGOMERY','NEOSHO',
+  'WILSON','ALLEN','BOURBON','WOODSON','CHAUTAUQUA','ELK'
+]);
+
+let darkWells = [];
+let litWells  = [];
+let counties  = null;
+let deckgl    = null;
+let currentStep = -1;
+
+function buildDarkLayer(opacity) {
+  if (opacity <= 0.01) return null;
+  return new deck.ScatterplotLayer({
+    id: 'dark-wells',
+    data: darkWells,
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: [GHOST_COLOR[0], GHOST_COLOR[1], GHOST_COLOR[2], Math.round(GHOST_COLOR[3] * opacity)],
+    getRadius: 250,
+    radiusMinPixels: 0.7,
+    radiusMaxPixels: 3,
+    stroked: false,
+    pickable: false
+  });
+}
+
+function buildLitLayer(opacity) {
+  if (opacity <= 0.01) return null;
+  return new deck.ScatterplotLayer({
+    id: 'lit-wells',
+    data: litWells,
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: d => {
+      const c = LIT_COLORS[d.v] || LIT_COLORS[5];
+      return [c[0], c[1], c[2], Math.round(c[3] * opacity)];
+    },
+    getRadius: 600,
+    radiusMinPixels: 1.8,
+    radiusMaxPixels: 6,
+    stroked: false,
+    pickable: false
+  });
+}
+
+function colorForPct(p) {
+  const t = Math.min(1, p / 45);
+  if (t < 0.33) {
+    const k = t / 0.33;
+    return [Math.round(162 + (201-162)*k), Math.round(59 + (146-59)*k), Math.round(42 + (118-42)*k)];
+  }
+  if (t < 0.66) {
+    const k = (t - 0.33) / 0.33;
+    return [Math.round(201 + (197-201)*k), Math.round(146 + (123-146)*k), Math.round(118 + (53-118)*k)];
+  }
+  const k = (t - 0.66) / 0.34;
+  return [Math.round(197 + (107-197)*k), Math.round(123 + (78-123)*k), Math.round(53 + (138-53)*k)];
+}
+
+function buildChoroplethLayer(opacity) {
+  if (opacity <= 0.01 || !counties) return null;
+  return new deck.GeoJsonLayer({
+    id: 'choropleth',
+    data: counties,
+    stroked: true,
+    filled: true,
+    getFillColor: f => {
+      const c = colorForPct(f.properties.pct_lit || 0);
+      return [c[0], c[1], c[2], Math.round(200 * opacity)];
+    },
+    getLineColor: [14, 14, 14, Math.round(120 * opacity)],
+    getLineWidth: 1,
+    lineWidthMinPixels: 0.5,
+    pickable: false
+  });
+}
+
+function buildOrientationLayer() {
+  if (!counties) return null;
+  return new deck.GeoJsonLayer({
+    id: 'orientation',
+    data: counties,
+    stroked: true,
+    filled: true,
+    getFillColor: [237, 230, 212, 160],
+    getLineColor: [14, 14, 14, 60],
+    getLineWidth: 1,
+    lineWidthMinPixels: 0.4,
+    pickable: false
+  });
+}
+
+function buildCherokeeLayer(opacity) {
+  if (opacity <= 0.01 || !counties) return null;
+  return new deck.GeoJsonLayer({
+    id: 'cherokee-outline',
+    data: {
+      type: 'FeatureCollection',
+      features: counties.features.filter(f => CHEROKEE_COUNTIES.has((f.properties.name || '').toUpperCase()))
+    },
+    stroked: true,
+    filled: true,
+    getFillColor: [162, 59, 42, Math.round(60 * opacity)],
+    getLineColor: [162, 59, 42, Math.round(220 * opacity)],
+    getLineWidth: 1600,
+    lineWidthMinPixels: 1.5,
+    pickable: false
+  });
+}
+
+function rebuildLayers(state) {
+  const layers = [
+    state.choroplethOpacity > 0.01 ? null : buildOrientationLayer(),
+    buildChoroplethLayer(state.choroplethOpacity),
+    buildCherokeeLayer(state.cherokeeOpacity),
+    buildDarkLayer(state.darkOpacity),
+    buildLitLayer(state.litOpacity)
+  ].filter(Boolean);
+  deckgl.setProps({ layers });
+}
+
+function applyStep(i) {
+  if (i === currentStep) return;
+  currentStep = i;
+  const view = VIEWS[i] || VIEWS[0];
+  deckgl.setProps({
+    initialViewState: { ...view, transitionDuration: 1200 }
+  });
+  rebuildLayers(LAYER_STATE[i] || LAYER_STATE[0]);
+
+  const legend = document.getElementById('legend');
+  if (i >= 2 && i <= 5) legend.classList.add('on'); else legend.classList.remove('on');
+
+  const pos = document.getElementById('progress-pos');
+  pos.textContent = (i < 10 ? '0' : '') + i;
+}
+
+function setLoaderError(msg) {
+  const loader = document.getElementById('loader');
+  const txt = document.getElementById('loader-text');
+  if (txt) txt.textContent = msg;
+  if (loader) loader.classList.add('error');
+}
+
+async function loadData() {
+  const [csvResp, geoResp] = await Promise.all([
+    fetch('data/wells.csv'),
+    fetch('data/ks_counties.json')
+  ]);
+  if (!csvResp.ok) throw new Error('wells.csv load failed: ' + csvResp.status);
+  if (!geoResp.ok) throw new Error('ks_counties.json load failed: ' + geoResp.status);
+
+  const csvText = await csvResp.text();
+  counties = await geoResp.json();
+
+  const lines = csvText.split('\n');
+  lines.shift();
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    if (!ln) continue;
+    const p = ln.split(',');
+    const row = { lat: +p[0], lon: +p[1], v: +p[3] };
+    if (p[2] === '1') darkWells.push(row); else litWells.push(row);
+  }
+
+  deckgl = new deck.DeckGL({
+    container: 'map',
+    initialViewState: VIEWS[0],
+    controller: { doubleClickZoom: false, scrollZoom: false, dragPan: false, dragRotate: false, keyboard: false },
+    parameters: { clearColor: [246/255, 243/255, 235/255, 1] },
+    layers: []
+  });
+
+  applyStep(0);
+  document.getElementById('loader').classList.add('done');
+
+  const scroller = scrollama();
+  scroller
+    .setup({ step: '.step', offset: 0.55, debug: false })
+    .onStepEnter(resp => {
+      const idx = +resp.element.getAttribute('data-step');
+      applyStep(idx);
+    });
+
+  window.addEventListener('resize', scroller.resize);
+}
+
+loadData().catch(err => {
+  console.error(err);
+  setLoaderError('Could not load the dataset. Open the browser console for details.');
+});
+</script>
+
+</body>
+</html>

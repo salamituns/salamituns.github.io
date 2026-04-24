@@ -1,0 +1,547 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Where Kansas Oil Data Lives: Olatunde Salami</title>
+<meta name="description" content="Kansas has 419,777 drilled oil and gas wells. 23,897 of them have a publicly-accessible digitized log file. The other 94.3% are dark. A map of the gap.">
+<meta property="og:title" content="Where Kansas Oil Data Lives">
+<meta property="og:description" content="Kansas has 419,777 drilled wells. 94.3% are dark. Dark data is a stratigraphy of time, not a scanning backlog.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/kansas/">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<meta property="og:image:alt" content="Kansas map with 420,000 drilled wells shown as dots; 94% shaded as ghost-grey dark wells, 6% coloured by spud decade against an east-west gradient.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where Kansas Oil Data Lives">
+<meta name="twitter:description" content="94.3% of Kansas's oil and gas history is dark. A map, a curve, and four ways to read the gap.">
+<meta name="twitter:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/kansas/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/site.css">
+<style>
+/* ---- Figure lightbox (scoped to this page) ---- */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgba(246, 243, 235, 0.96);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.lightbox[aria-hidden="false"] { display: flex; }
+.lightbox__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: min(92vw, 1600px);
+  max-height: 100%;
+}
+.lightbox__img {
+  display: block;
+  max-width: min(92vw, 1600px);
+  max-height: 82vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: #F6F3EB;
+  box-shadow: 0 14px 48px rgba(14, 14, 14, 0.14);
+}
+.lightbox__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+  color: #5E574C;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.825rem;
+}
+.lightbox__caption { letter-spacing: 0.02em; }
+.lightbox__counter {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0E0E0E;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.lightbox__btn {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: #0E0E0E;
+  background: #F6F3EB;
+  border: 1px solid rgba(14, 14, 14, 0.14);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.lightbox__btn:hover {
+  background: #A23B2A;
+  color: #F6F3EB;
+  border-color: #A23B2A;
+}
+.lightbox__btn:focus-visible {
+  outline: 2px solid #A23B2A;
+  outline-offset: 3px;
+}
+.lightbox__close { top: clamp(1rem, 2vw, 1.5rem); right: clamp(1rem, 2vw, 1.5rem); }
+.lightbox__prev  { left:  clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+.lightbox__next  { right: clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+body.lightbox-open { overflow: hidden; }
+@media (max-width: 640px) {
+  .lightbox__img { max-height: 68vh; }
+  .lightbox__prev, .lightbox__next {
+    top: auto;
+    bottom: clamp(0.75rem, 3vw, 1.25rem);
+    transform: none;
+  }
+  .lightbox__prev { left: 50%;  margin-left: -3.25rem; }
+  .lightbox__next { right: 50%; margin-right: -3.25rem; }
+  .lightbox__meta { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+}
+
+/* ---- Byline (scoped to this page) ---- */
+.byline {
+  margin-top: 1.75rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.78rem;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+.byline a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 3px;
+  transition: color 160ms ease, text-decoration-color 160ms ease;
+}
+.byline a:hover {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+}
+.byline .sep {
+  margin: 0 0.65rem;
+  color: var(--rule);
+}
+
+.csv-repo {
+  margin: 0.9rem 0 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.csv-repo a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-color: var(--rule);
+  text-underline-offset: 2px;
+  word-break: break-all;
+}
+.csv-repo a:hover { text-decoration-color: var(--accent); }
+
+/* ---- Walk-the-map CTA (scoped to this page) ---- */
+.walk-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--accent);
+  background: rgba(246, 243, 235, 0.6);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+.walk-cta:hover {
+  border-color: var(--accent);
+  background: rgba(246, 243, 235, 1);
+  transform: translateX(2px);
+}
+.walk-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.walk-cta .eyebrow {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  font-weight: 500;
+  color: var(--accent);
+}
+.walk-cta .headline {
+  font-family: "Fraunces", Georgia, serif;
+  font-size: clamp(1.35rem, 2.1vw, 1.75rem);
+  font-weight: 450;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.walk-cta .headline em {
+  font-style: italic;
+  color: var(--accent);
+}
+.walk-cta .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  margin-top: 0.35rem;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+.walk-cta .arrow {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.walk-cta:hover .arrow { color: var(--accent); }
+</style>
+</head>
+<body>
+
+<header class="mast page">
+  <a class="who" href="/" translate="no" aria-label="Back to portfolio">Olatunde&nbsp;Salami</a>
+  <span class="what"><a href="/darkdata/" class="collection-link">Dark&nbsp;Data</a> &middot; Kansas</span>
+</header>
+
+<main>
+
+  <div class="page">
+    <section class="hero wide" aria-labelledby="hero-title">
+      <span class="caps eyebrow">Analysis &thinsp;/&thinsp; Subsurface</span>
+      <h1 id="hero-title" class="serif">
+        Where Kansas <em>oil data lives.</em>
+      </h1>
+      <p class="lede">
+        Kansas has 419,777 drilled oil and gas wells on the state&rsquo;s master list. 23,897 of them (5.7&percnt;) have a publicly-accessible digitized log. The other 94.3&percnt; are dark. This is the first post in a basin-by-basin walk through what the US subsurface industry can actually see of its own history.
+      </p>
+      <p class="byline">
+        By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+        <span class="sep" aria-hidden="true">&middot;</span>
+        Published April&nbsp;2026
+        <span class="sep" aria-hidden="true">&middot;</span>
+        <a href="#data-heading">Data &amp; code</a>
+      </p>
+    </section>
+  </div>
+
+  <div class="page">
+    <section class="standfirst" aria-labelledby="standfirst-heading">
+      <h2 id="standfirst-heading" class="visually-hidden">Why this matters</h2>
+      <p>
+        Industry estimates put the share of subsurface data that is never analyzed beyond first acquisition at something like 99.5&percnt;. That number is true and useless, too abstract to act on. Put it on a real map of a real state and the shape sharpens: dark data is a stratigraphy of time, not a scanning backlog. Most of Kansas was drilled before anyone was required to file a machine-readable log. The paper moved through M&amp;A, warehouse fires, and retirements. What remains is a century-wide information gap sitting under the working rigs.
+      </p>
+    </section>
+  </div>
+
+  <div class="page">
+    <a class="walk-cta" href="story.html" aria-label="Open the interactive scroll map">
+      <span class="eyebrow">Interactive &thinsp;&middot;&thinsp; Six steps</span>
+      <span class="headline">Or <em>walk the map</em> yourself: 419,777 wells, one scroll.</span>
+      <span class="meta">
+        <span>Scrolls through the gap, the decade curve, the east&ndash;west divide, and the Cherokee close-up.</span>
+        <span class="arrow">Walk it &rarr;</span>
+      </span>
+    </a>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="stats-heading">
+      <div class="section-head">
+        <h2 class="caps" id="stats-heading">The Numbers</h2>
+        <span class="caps" aria-hidden="true">Kansas &middot; 1920s &middot; today</span>
+      </div>
+      <div class="stats-grid" role="list">
+        <div class="stat" role="listitem">
+          <div class="value">419,777</div>
+          <span class="label caps">Drilled&nbsp;wells</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">23,897</div>
+          <span class="label caps">With&nbsp;public&nbsp;LAS</span>
+        </div>
+        <div class="stat accent" role="listitem">
+          <div class="value">94.3%</div>
+          <span class="label caps">Dark</span>
+        </div>
+        <div class="stat" role="listitem">
+          <div class="value">46%</div>
+          <span class="label caps">Of&nbsp;dark&nbsp;wells&nbsp;are&nbsp;orphan</span>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="figures-heading">
+      <div class="section-head">
+        <h2 class="caps" id="figures-heading">The Figures</h2>
+        <span class="caps" aria-hidden="true">04 publication</span>
+      </div>
+
+      <div class="figure-grid">
+
+        <a class="figure-entry contain wide" href="figures/kansas_dark_data_map.png">
+          <div class="thumb"><img src="figures/kansas_dark_data_map.png" alt="Kansas state map with all 419,777 drilled wells shown as small dots. 94.3 percent are ghost-grey dark wells with no public LAS; 5.7 percent are coloured by spud decade, showing a clear east-west gradient from old dark patch to young lit horizontal drilling. A bar chart below shows LAS coverage by decade rising from 1 percent pre-2000 to 37 percent in the 2010s." loading="eager"></div>
+          <figcaption>
+            <span class="figure-num">Figure 01 &middot; The hero map</span>
+            <h3 class="figure-title">419,777 wells. 94.3&percnt; dark.</h3>
+            <p class="figure-dek">Every drilled well in Kansas on one frame, classified by whether the state&rsquo;s bulk LAS archive holds a digitized log. The ghost layer is the dark universe. The coloured dots are the 23,897 lit wells, split by spud decade: amber for pre-2000, clay for the 2000s, violet for 2010+. The companion bar chart underneath reads the same story in time: the 2010s is the first decade where digital was the default.</p>
+          </figcaption>
+        </a>
+
+        <a class="figure-entry contain wide" href="figures/kansas_cherokee_closeup.png">
+          <div class="thumb"><img src="figures/kansas_cherokee_closeup.png" alt="Southeast Kansas close-up map of eleven counties in the Cherokee Group coalbed-methane play. 81,293 drilled wells; 4,316 with public LAS. Colour coded by spud era. A callout reads: one operator, 37 percent of the regional log archive." loading="lazy"></div>
+          <figcaption>
+            <span class="figure-num">Figure 02 &middot; Cherokee close-up</span>
+            <h3 class="figure-title">One operator, 37&percnt; of the regional archive.</h3>
+            <p class="figure-dek">Zoom into the red cluster in the southeast. Eleven counties covering the Pennsylvanian-age coalbed-methane fairway where the 2000s boom concentrated. 81,293 drilled wells; 4,316 with a public LAS (5.3&percnt;). River&nbsp;Rock Operating (successor to the Quest&nbsp;Cherokee CBM estate) holds 1,582 of those 4,316. When one operator owns most of the region&rsquo;s logging effort, the &ldquo;public&rdquo; archive is effectively that operator&rsquo;s archive.</p>
+          </figcaption>
+        </a>
+
+        <a class="figure-entry contain wide" href="figures/kansas_operators_dark.png">
+          <div class="thumb"><img src="figures/kansas_operators_dark.png" alt="Horizontal bar chart of the top 15 named Kansas operators by drilled-well count, each bar split into dark and lit segments. A large 46 percent callout on the right panel marks the share of all dark wells that have no current operator." loading="lazy"></div>
+          <figcaption>
+            <span class="figure-num">Figure 03 &middot; Who owns the dark</span>
+            <h3 class="figure-title">The single largest holder of dark wells is nobody.</h3>
+            <p class="figure-dek">Top-15 named Kansas operators by drilled wells, each bar split into dark (no public LAS) and lit (with LAS). The callout is the spine: 46&percnt; of the dark universe has no current operator of record: 182,153 wells whose last operator no longer exists or never registered a successor. The rest of the dark sits on a long tail: 7,217 distinct named operators across the century; the top ten hold only 14&percnt; of the remaining dark.</p>
+          </figcaption>
+        </a>
+
+        <a class="figure-entry contain wide" href="figures/kansas_county_choropleth.png">
+          <div class="thumb"><img src="figures/kansas_county_choropleth.png" alt="Choropleth map of Kansas counties shaded by LAS coverage percentage. Eastern counties are dark clay red (near zero percent coverage); western counties grade through amber to violet. A side table lists the bottom 8 and top 5 counties by coverage." loading="lazy"></div>
+          <figcaption>
+            <span class="figure-num">Figure 04 &middot; County view</span>
+            <h3 class="figure-title">The east-west divide at county resolution.</h3>
+            <p class="figure-dek">The east-west gradient from the hero map, resolved per county. 39 of 98 counties with 50&plus; wells sit below 5&percnt; LAS coverage. Johnson County (drilled heavily in the 1920s and 1930s): 0.2&percnt; of 4,171 wells digitized. Wichita County (drilled after 2000): 43&percnt; of 447. Same state, two centuries of operator behaviour.</p>
+          </figcaption>
+        </a>
+
+      </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <figure class="pullquote" aria-label="Pull quote">
+      <blockquote class="serif">Dark data in Kansas is a stratigraphy of time. Most of it belongs to companies that no longer exist.</blockquote>
+    </figure>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="context-heading">
+      <div class="section-head">
+        <h2 class="caps" id="context-heading">Context</h2>
+      </div>
+      <div class="prose">
+        <p>
+          A LAS file (Log ASCII Standard) is what an analyst loads when they want to know what&rsquo;s in a rock. It is the machine-readable version of the wireline log that a logging truck runs after a well is drilled. Older wells have paper logs, or no log at all. The paper is not the same as a LAS file: it cannot be regressed against, cannot be fed into a neural net, cannot be joined to a production database. For the purpose of any analysis beyond reading an individual log by eye, the paper era is functionally dark.
+        </p>
+        <p>
+          Kansas is the cleanest public subsurface-data pipeline in the United States. The Kansas Geological Survey publishes two things openly: a master well list (515,000 records deduping to 477,000 unique wells) and a bulk archive of LAS files. Most state regulators make you scrape per-county case-file PDFs. Kansas is a ten-minute download. That is why it is the proof-of-concept: cheap to execute, fast feedback, teaches the pipeline before we attack messier states.
+        </p>
+        <p>
+          <strong>Why the gap matters.</strong> Every dark offset well is pre-drill intelligence nobody extracted. A 1950 dry hole in the next section tells you what&rsquo;s in your rock, if anyone digitized it. For investors and basin analysts, the first party to digitize a regional log archive has an information monopoly; in brownfield M&amp;A, the dark-data gap is the fog of war. For policy and climate work (orphan-well remediation, groundwater contamination attribution, methane-leak source identification, carbon sequestration site selection) all of these require decades of old logs that don&rsquo;t exist in machine-readable form. You cannot remediate what you cannot locate.
+        </p>
+        <p>
+          This is post 01 of a basin-by-basin series. Next: the Permian, Texas plus southeast New Mexico. Neither the Texas Railroad Commission nor the New Mexico OCD publishes a public LAS archive at the Kansas level of openness. The data picture there is almost certainly worse.
+        </p>
+      </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="data-heading">
+      <div class="section-head">
+        <h2 class="caps" id="data-heading">Data &amp; sources</h2>
+        <span class="caps" aria-hidden="true">Download &middot; Attribute &middot; Reproduce</span>
+      </div>
+      <dl class="sources">
+        <div class="sources-row">
+          <dt>Pipeline &amp; figures&nbsp;<span class="caps" aria-hidden="true" style="margin-left:0.5rem;color:var(--muted);font-size:0.75rem;">This publication</span></dt>
+          <dd>
+            Every figure on this page is reproducible from the two-file KGS source. The repo below contains the scripts (<code>phase2_kgs_merge.py</code> through <code>phase6_county_choropleth.py</code>), the merged master-with-LAS dataset, and the headline-number notes.
+            <p class="csv-repo">Data pipeline, figure scripts, and intermediate files: <a href="https://github.com/salamituns/darkdata-repo">github.com/salamituns/darkdata-repo</a>.</p>
+          </dd>
+        </div>
+        <div class="sources-row">
+          <dt><a href="https://hub.arcgis.com/datasets/KansasGIS::oil-and-gas-wells/">KGS Master Well List</a></dt>
+          <dd>515,000 records from the Kansas Geological Survey, deduped to 477,000 unique API numbers and filtered to 419,777 drilled wells (paper intents and cancelled APIs excluded). Includes API, operator, county, spud and completion dates, latitude/longitude (NAD27), and current status.</dd>
+        </div>
+        <div class="sources-row">
+          <dt><a href="https://www.kgs.ku.edu/Magellan/index.html">KGS WebDocs LAS Archive</a></dt>
+          <dd>Bulk list of LAS-available wells. Join key is API (twelve-digit, no dashes). Coverage: 23,897 of the 419,777 drilled wells.</dd>
+        </div>
+        <div class="sources-row">
+          <dt><a href="https://www.census.gov/geographies/mapping-files/time-series/geo/carto-boundary-file.html">US Census County Boundaries</a></dt>
+          <dd>2010 TIGER/Line county polygons for the choropleth and the Cherokee close-up.</dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="method-heading">
+      <div class="section-head">
+        <h2 class="caps" id="method-heading">Method</h2>
+      </div>
+      <div class="prose">
+        <p>
+          <strong>Dedupe.</strong> The KGS master list ships 515,000 records but the true drilled-well count is smaller. API numbers are deduplicated after normalising the format (strip dashes, strip trailing <code>.0</code> introduced by Excel round-trips). Records whose status is <em>Approved Intent</em>, <em>Expired Intent</em>, or <em>Cancelled API</em> (i.e. &ldquo;paper&rdquo; wells that were permitted but never drilled) are excluded. Net: 419,777 drilled wells.
+        </p>
+        <p>
+          <strong>Dark/lit classification.</strong> Join the drilled-well table to the KGS LAS inventory on the normalised API key. A well is &ldquo;lit&rdquo; if at least one LAS file exists for it in the WebDocs archive; &ldquo;dark&rdquo; otherwise. This is a proxy, not a complete measure. A well can have a scanned paper log behind a paywall, or a proprietary LAS inside an operator archive, and still count as dark here. The proxy captures what a third-party analyst can see without writing a cheque, which is the quantity the series is about.
+        </p>
+        <p>
+          <strong>Vintage bucketing.</strong> Spud year parsed from the <code>Spud Date</code> field with <code>pd.to_datetime(errors='coerce')</code>. Real date coverage is 63.5&percnt; of drilled wells; the remaining wells go into an &ldquo;unknown&rdquo; bucket and are excluded from decade-level reads. The decade-level LAS coverage rate uses the decade&rsquo;s denominator, not a state-wide average.
+        </p>
+        <p>
+          <strong>Orphan definition.</strong> A well is considered &ldquo;orphan&rdquo; for the Figure&nbsp;03 callout if the <code>Current Operator</code> field is blank. This is the state&rsquo;s own record: some of these are plugged-and-abandoned wells whose last operator no longer exists, some are wells where the transfer of ownership was never filed, and some are genuine unknowns. The &ldquo;nobody&rdquo; in the callout is whichever of those three a specific well happens to be.
+        </p>
+        <p>
+          <strong>Cherokee region definition.</strong> Eleven counties: Allen, Bourbon, Chautauqua, Cherokee, Crawford, Elk, Labette, Montgomery, Neosho, Wilson, Woodson. Bounding box for plotting: 36.93&ndash;38.15&nbsp;N, -96.05 to -94.55&nbsp;W.
+        </p>
+        <p>
+          Processing in Python: <code>pandas</code>, <code>geopandas</code>, <code>shapely</code>. Figures are <code>matplotlib</code> at 300&nbsp;DPI. Coordinates are NAD27 as published by KGS.
+        </p>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<footer class="page">
+  <span>&copy; 2026 Olatunde&nbsp;Salami</span>
+  <nav aria-label="Social">
+    <a href="https://linkedin.com/in/salamituns" rel="me">LinkedIn</a>
+    <a href="https://twitter.com/salamituns" rel="me">X</a>
+    <a href="https://github.com/salamituns" rel="me">GitHub</a>
+  </nav>
+</footer>
+
+<div class="lightbox" id="figure-lightbox" role="dialog" aria-modal="true" aria-label="Figure viewer" aria-hidden="true">
+  <button class="lightbox__btn lightbox__close" type="button" aria-label="Close viewer (Esc)">&times;</button>
+  <button class="lightbox__btn lightbox__prev" type="button" aria-label="Previous figure (Left arrow)">&lsaquo;</button>
+  <button class="lightbox__btn lightbox__next" type="button" aria-label="Next figure (Right arrow)">&rsaquo;</button>
+  <div class="lightbox__stage">
+    <img class="lightbox__img" alt="" />
+    <div class="lightbox__meta">
+      <span class="lightbox__caption"></span>
+      <span class="lightbox__counter"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var entries = Array.prototype.slice.call(document.querySelectorAll('.figure-entry'));
+  if (!entries.length) return;
+
+  var lightbox   = document.getElementById('figure-lightbox');
+  var imgEl      = lightbox.querySelector('.lightbox__img');
+  var captionEl  = lightbox.querySelector('.lightbox__caption');
+  var counterEl  = lightbox.querySelector('.lightbox__counter');
+  var btnClose   = lightbox.querySelector('.lightbox__close');
+  var btnPrev    = lightbox.querySelector('.lightbox__prev');
+  var btnNext    = lightbox.querySelector('.lightbox__next');
+  var currentIdx = -1;
+  var lastFocus  = null;
+
+  function preload(i) {
+    var wrapped = (i + entries.length) % entries.length;
+    var href = entries[wrapped].getAttribute('href');
+    if (href) { var im = new Image(); im.src = href; }
+  }
+
+  function open(i) {
+    currentIdx = i;
+    var entry     = entries[i];
+    var href      = entry.getAttribute('href');
+    var thumbImg  = entry.querySelector('.thumb img');
+    var alt       = thumbImg ? (thumbImg.getAttribute('alt') || '') : '';
+    var numEl     = entry.querySelector('.figure-num');
+    var titleEl   = entry.querySelector('.figure-title');
+    var caption   = [numEl && numEl.textContent, titleEl && titleEl.textContent]
+                      .filter(Boolean).join(' \u2014 ');
+
+    imgEl.setAttribute('src', href);
+    imgEl.setAttribute('alt', alt);
+    captionEl.textContent = caption;
+    counterEl.textContent = (i + 1 < 10 ? '0' : '') + (i + 1)
+                          + ' / '
+                          + (entries.length < 10 ? '0' : '') + entries.length;
+
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open');
+    lastFocus = document.activeElement;
+    btnClose.focus();
+    preload(i + 1);
+    preload(i - 1);
+  }
+
+  function close() {
+    if (currentIdx < 0) return;
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lightbox-open');
+    imgEl.removeAttribute('src');
+    currentIdx = -1;
+    if (lastFocus && typeof lastFocus.focus === 'function') lastFocus.focus();
+  }
+
+  function step(delta) {
+    if (currentIdx < 0) return;
+    open((currentIdx + delta + entries.length) % entries.length);
+  }
+
+  entries.forEach(function (entry, i) {
+    entry.addEventListener('click', function (e) {
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) return;
+      e.preventDefault();
+      open(i);
+    });
+  });
+
+  btnClose.addEventListener('click', close);
+  btnPrev.addEventListener('click', function () { step(-1); });
+  btnNext.addEventListener('click', function () { step(1); });
+
+  lightbox.addEventListener('click', function (e) {
+    if (e.target === lightbox) close();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (lightbox.getAttribute('aria-hidden') !== 'false') return;
+    if (e.key === 'Escape')       { e.preventDefault(); close(); }
+    else if (e.key === 'ArrowLeft')  { e.preventDefault(); step(-1); }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); step(1); }
+  });
+})();
+</script>
+
+</body>
+</html>
