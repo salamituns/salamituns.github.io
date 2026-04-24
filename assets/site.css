@@ -320,6 +320,93 @@ h2.caps { /* section label styled as tracked caps */
   line-height: 1.5;
 }
 
+/* Figure gallery — editorial grid of captioned publication figures */
+.figure-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(2rem, 4vw, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+  margin: 0;
+  padding: 0;
+}
+@media (min-width: 820px) {
+  .figure-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.figure-entry {
+  margin: 0;
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 1rem;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 0;
+  transition: opacity 180ms ease;
+}
+.figure-entry:hover { opacity: 1; }
+.figure-entry:hover .figure-title { color: var(--accent); }
+.figure-entry:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 6px;
+  border-radius: 2px;
+}
+
+.figure-entry .thumb {
+  position: relative;
+  display: block;
+  border: 1px solid var(--rule);
+  background: #FFFFFF;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+.figure-entry .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.figure-entry.contain .thumb { background: var(--paper); }
+.figure-entry.contain .thumb img { object-fit: contain; padding: 0.75rem; }
+
+.figure-entry.wide { grid-column: 1 / -1; }
+.figure-entry.wide .thumb { aspect-ratio: 16 / 9; }
+
+.figure-entry figcaption { padding: 0; }
+.figure-entry .figure-num {
+  display: block;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 0.45rem;
+  font-variant-numeric: tabular-nums;
+}
+.figure-entry .figure-title {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 48, "SOFT" 30;
+  font-weight: 450;
+  font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+  color: var(--ink);
+  text-wrap: balance;
+  transition: color 160ms ease;
+}
+.figure-entry .figure-dek {
+  font-family: "Fraunces", serif;
+  font-variation-settings: "opsz" 18;
+  font-weight: 350;
+  font-style: italic;
+  color: var(--muted);
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  max-width: 48ch;
+  text-wrap: pretty;
+}
+
 /* Prose */
 .prose { max-width: var(--measure); }
 .prose p {
