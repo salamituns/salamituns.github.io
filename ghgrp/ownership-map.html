@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ownership Consolidation, 2010&ndash;2023 | @salamituns</title>
+<meta name="description" content="Fourteen years of EPA GHGRP facility ownership. Drag the slider to watch Kinder Morgan go from 24 facilities to 231 and Energy Transfer from 19 to 184.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/assets/map-chrome.css">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<style>
+  /* Year slider — editorial flat */
+  .year-scrubber {
+    margin: 0.5rem 0 1.25rem;
+    padding: 1rem 0 1.1rem;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .scrubber-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 0.85rem;
+  }
+  .scrubber-year {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 20;
+    font-weight: 400;
+    font-size: 2.1rem;
+    line-height: 1;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .scrubber-play {
+    background: var(--paper); border: 1px solid var(--rule);
+    color: var(--ink); font-family: inherit; font-size: 10px;
+    font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase;
+    padding: 0.5rem 0.85rem; cursor: pointer;
+    transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+  }
+  .scrubber-play:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .scrubber-play:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .scrubber-play.playing { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .scrubber-slider {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 2px; background: var(--rule);
+    outline: none; margin: 0;
+  }
+  .scrubber-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 14px; height: 14px; background: var(--accent);
+    cursor: pointer; border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .scrubber-slider::-moz-range-thumb {
+    width: 14px; height: 14px; background: var(--accent);
+    cursor: pointer; border: 2px solid var(--paper);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .scrubber-ticks {
+    display: flex; justify-content: space-between;
+    margin-top: 0.5rem; font-size: 10px;
+    color: var(--muted); font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+  }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+  <div class="em-crumb">
+    <a href="/">Analysis</a>
+    <span aria-hidden="true">/</span>
+    <a href="/ghgrp/">GHGRP</a>
+    <span aria-hidden="true">/</span>
+    <span class="em-current">Ownership</span>
+  </div>
+  <div class="em-siblings" role="group" aria-label="Maps in this project">
+    <span class="em-here" aria-current="page">Ownership</span>
+  </div>
+</nav>
+
+<div id="map"></div>
+
+<aside id="legend" aria-labelledby="legend-title">
+  <span class="eyebrow">Figure &mdash; Ownership</span>
+  <h1 id="legend-title">The pipeline corridor, <em>acquired.</em></h1>
+  <p class="subtitle">Every EPA-reporting facility, coloured by its 2023 parent class. Drag the year to watch Kinder&nbsp;Morgan and Energy&nbsp;Transfer compound from a handful of sites into the twin lattices along the Gulf.</p>
+
+  <div class="year-scrubber" role="group" aria-label="Year scrubber">
+    <div class="scrubber-head">
+      <span class="scrubber-year" id="year-display">2023</span>
+      <button class="scrubber-play" id="play-btn" type="button" aria-label="Play through years">Play</button>
+    </div>
+    <input type="range" min="2010" max="2023" value="2023" step="1" class="scrubber-slider" id="year-slider" aria-label="Reporting year">
+    <div class="scrubber-ticks"><span>2010</span><span>2016</span><span>2023</span></div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-card"><div class="value" id="stat-total">&mdash;</div><div class="label">Facilities</div></div>
+    <div class="stat-card accent"><div class="value" id="stat-top10">&mdash;</div><div class="label">Top&nbsp;10 share</div></div>
+  </div>
+
+  <div class="section-title">Ownership class (2023 parent)</div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background: rgb(162, 59, 42);"></div>
+    <div class="legend-label">Kinder Morgan</div>
+    <div class="legend-count" id="count-km">&mdash;</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background: rgb(184, 107, 56);"></div>
+    <div class="legend-label">Energy Transfer</div>
+    <div class="legend-count" id="count-et">&mdash;</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background: rgb(178, 140, 78);"></div>
+    <div class="legend-label">Joint ventures</div>
+    <div class="legend-count" id="count-jv">&mdash;</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background: rgb(81, 112, 120);"></div>
+    <div class="legend-label">Other top&nbsp;10</div>
+    <div class="legend-count" id="count-t10">&mdash;</div>
+  </div>
+  <div class="legend-item">
+    <div class="legend-dot" style="background: rgb(141, 131, 118); opacity: 0.55;"></div>
+    <div class="legend-label">Everyone else</div>
+    <div class="legend-count" id="count-other">&mdash;</div>
+  </div>
+
+  <div class="insight-box">
+    <span class="insight-label">Read</span>
+    <span id="insight-text">In 2023, Kinder Morgan and Energy Transfer together hold 415 facilities &mdash; more than any other ten parents combined. In 2010, they held 43.</span>
+  </div>
+</aside>
+
+<div class="attribution">
+  Data: <a href="https://www.epa.gov/ghgreporting">EPA GHGRP</a> &middot; <a href="https://carto.com/basemaps/">CARTO Positron</a>
+</div>
+
+<script>
+const CAT_COLORS = {
+  k: [162, 59, 42, 220],
+  e: [184, 107, 56, 220],
+  j: [178, 140, 78, 220],
+  t: [81, 112, 120, 180],
+  o: [141, 131, 118, 110]
+};
+const CAT_RADIUS = { k: 5500, e: 5000, j: 4500, t: 3500, o: 2200 };
+
+const TOOLTIP_STYLE = {
+  backgroundColor: '#F6F3EB',
+  color: '#0E0E0E',
+  border: '1px solid rgba(14,14,14,0.14)',
+  padding: '8px 12px',
+  fontSize: '12px',
+  fontFamily: 'Inter, sans-serif',
+  letterSpacing: '0.02em',
+  boxShadow: 'none',
+  borderRadius: '0'
+};
+
+let allRows = [];
+let currentYear = 2023;
+let playing = false;
+let playTimer = null;
+let deckgl = null;
+
+function buildLayer(rows) {
+  return new deck.ScatterplotLayer({
+    id: 'facilities',
+    data: rows,
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: d => CAT_COLORS[d.cat] || [141, 131, 118, 110],
+    getRadius: d => CAT_RADIUS[d.cat] || 2500,
+    radiusMinPixels: 1.5,
+    radiusMaxPixels: 14,
+    stroked: false,
+    pickable: true
+  });
+}
+
+async function loadData() {
+  const resp = await fetch('data/facilities_panel.csv');
+  const text = await resp.text();
+  const lines = text.trim().split('\n');
+  lines.shift(); // header
+  allRows = lines.map(l => {
+    const [id, year, cat, lat, lon] = l.split(',');
+    return { id: +id, year: +year, cat, lat: +lat, lon: +lon };
+  });
+
+  deckgl = new deck.DeckGL({
+    container: 'map',
+    mapStyle: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    initialViewState: { longitude: -96.5, latitude: 37.5, zoom: 3.6, pitch: 0, bearing: 0 },
+    controller: true,
+    layers: [buildLayer(allRows.filter(r => r.year === currentYear))],
+    getTooltip: ({ object }) => object && {
+      html: `<div><strong>Facility ${object.id}</strong><br>${catLabel(object.cat)} &middot; ${object.year}</div>`,
+      style: TOOLTIP_STYLE
+    }
+  });
+
+  render(currentYear);
+}
+
+function render(year) {
+  currentYear = year;
+  const rows = allRows.filter(r => r.year === year);
+  if (deckgl) deckgl.setProps({ layers: [buildLayer(rows)] });
+  updateUI(rows, year);
+}
+
+function catLabel(c) {
+  return { k: 'Kinder Morgan', e: 'Energy Transfer', j: 'Joint venture',
+           t: 'Other top-10 parent', o: 'Other parent' }[c] || c;
+}
+
+function updateUI(rows, year) {
+  document.getElementById('year-display').textContent = year;
+  const counts = { k: 0, e: 0, j: 0, t: 0, o: 0 };
+  rows.forEach(r => { counts[r.cat] = (counts[r.cat] || 0) + 1; });
+  const total = rows.length;
+  const top10 = counts.k + counts.e + counts.j + counts.t;
+  document.getElementById('stat-total').textContent = total.toLocaleString();
+  document.getElementById('stat-top10').textContent = total
+    ? (100 * top10 / total).toFixed(1) + '%' : '—';
+  document.getElementById('count-km').textContent = counts.k.toLocaleString();
+  document.getElementById('count-et').textContent = counts.e.toLocaleString();
+  document.getElementById('count-jv').textContent = counts.j.toLocaleString();
+  document.getElementById('count-t10').textContent = counts.t.toLocaleString();
+  document.getElementById('count-other').textContent = counts.o.toLocaleString();
+
+  const insight = document.getElementById('insight-text');
+  const km = counts.k, et = counts.e;
+  if (year === 2010) {
+    insight.textContent = `Baseline: Kinder Morgan reports ${km} facilities. Energy Transfer reports ${et}. The pipeline grid is still fragmented across dozens of smaller operators.`;
+  } else if (year === 2012) {
+    insight.textContent = `Kinder Morgan closes the El Paso Corp acquisition. Facility count jumps from ${km - 20}-ish to ${km} inside a single filing year.`;
+  } else if (year === 2015) {
+    insight.textContent = `Energy Transfer finishes absorbing Regency. ${et} facilities now fall under one parent. The 2014→2015 reporter drop is also partly a taxonomy change at EPA, not just real exits.`;
+  } else if (year === 2023) {
+    insight.textContent = `Kinder Morgan: ${km} facilities (+${km - 24} vs 2010). Energy Transfer: ${et} (+${et - 19}). Together they hold more GHGRP reporters than the next ten parents combined.`;
+  } else {
+    insight.textContent = `${year}: Kinder Morgan holds ${km} facilities, Energy Transfer ${et}. The corridor keeps consolidating every year but one.`;
+  }
+}
+
+const slider = document.getElementById('year-slider');
+slider.addEventListener('input', e => render(+e.target.value));
+
+const playBtn = document.getElementById('play-btn');
+playBtn.addEventListener('click', () => {
+  playing = !playing;
+  playBtn.textContent = playing ? 'Pause' : 'Play';
+  playBtn.classList.toggle('playing', playing);
+  if (playing) {
+    let y = currentYear >= 2023 ? 2010 : currentYear;
+    playTimer = setInterval(() => {
+      y++;
+      if (y > 2023) {
+        clearInterval(playTimer);
+        playing = false;
+        playBtn.textContent = 'Play';
+        playBtn.classList.remove('playing');
+        return;
+      }
+      slider.value = y;
+      render(y);
+    }, 900);
+  } else {
+    clearInterval(playTimer);
+  }
+});
+
+loadData();
+</script>
+</body>
+</html>
