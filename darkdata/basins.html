@@ -215,6 +215,106 @@
     font-family: "Fraunces", Georgia, serif;
   }
 
+  /* Dynamic legend strip below the view-toggle */
+  .legend-strip {
+    border-bottom: 1px solid var(--rule);
+    padding: 0.85rem 0 1rem;
+    margin-bottom: 0.75rem;
+    min-height: 50px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+  .legend-strip .ls-title {
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    font-size: 10px;
+    margin-bottom: 0.55rem;
+  }
+  .legend-strip .ls-gradient-row {
+    display: grid;
+    grid-template-columns: 1fr; gap: 0.3rem;
+  }
+  .legend-strip .ls-gradient {
+    height: 8px;
+    border: 1px solid var(--rule);
+    background: linear-gradient(90deg, #DCC39B 0%, #784423 100%);
+  }
+  .legend-strip .ls-axis {
+    display: flex; justify-content: space-between;
+    font-size: 10px; color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .legend-strip .ls-swatches {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+    gap: 0.4rem;
+    margin-top: 0.15rem;
+  }
+  .legend-strip .ls-swatch {
+    display: flex; align-items: center; gap: 0.35rem;
+    font-size: 10.5px; color: var(--ink);
+  }
+  .legend-strip .ls-swatch .sw {
+    width: 11px; height: 11px;
+    border: 1px solid var(--rule);
+    flex-shrink: 0;
+  }
+  .legend-strip .ls-note {
+    margin-top: 0.4rem;
+    font-size: 10.5px; color: var(--muted);
+    line-height: 1.5;
+  }
+
+  /* Sort hint after section title */
+  .sort-hint {
+    margin-left: 0.4rem;
+    font-size: 9.5px;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0.01em;
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  /* Sparkline inside basin cards */
+  .basin-card .row3 {
+    display: flex; align-items: center; gap: 0.5rem;
+    margin-top: 0.4rem;
+    height: 18px;
+  }
+  .basin-card .sparkline {
+    flex: 1;
+    height: 18px;
+    color: var(--basin-color, var(--accent));
+  }
+  .basin-card .sparkline svg {
+    display: block; width: 100%; height: 100%;
+  }
+  .basin-card .spark-label {
+    font-size: 9.5px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .basin-card .spark-na {
+    flex: 1;
+    height: 1px;
+    background: repeating-linear-gradient(
+      90deg, var(--rule) 0 4px, transparent 4px 8px
+    );
+    align-self: center;
+  }
+
+  /* Badge variants for non-dark modes */
+  .basin-card .badge.geology { color: var(--ink); }
+  .basin-card .badge.output  { color: var(--ink); }
+  .basin-card .badge.era     { color: var(--ink); }
+  .basin-card .badge.access  { color: var(--ink); }
+  .basin-card .badge.dim     { color: var(--muted); font-style: italic; }
+
   .map-loader {
     position: absolute; inset: var(--em-nav-h) var(--legend-w) 0 0;
     display: flex; flex-direction: column;
@@ -285,9 +385,12 @@
     <button class="view-btn" data-mode="geology" type="button">Geology</button>
     <button class="view-btn" data-mode="production" type="button">Output</button>
     <button class="view-btn" data-mode="era" type="button">Era</button>
+    <button class="view-btn" data-mode="access" type="button">Access</button>
   </div>
 
-  <div class="section-title" id="basin-list-title">The basins</div>
+  <div class="legend-strip" id="legend-strip" aria-live="polite"></div>
+
+  <div class="section-title" id="basin-list-title">The basins <span class="sort-hint" id="sort-hint">sorted by dark percentage</span></div>
   <div class="basin-list" id="basin-list" role="list"></div>
 
   <div class="insight-quiet">
@@ -318,31 +421,48 @@ const BASIN_COLORS = {
   eagle_ford: '#5C7A8C',
 };
 
+// Geology era palette (also used in the legend strip)
+const GEOLOGY_ERA_COLORS = {
+  appalachia: { rgba: [122, 89, 53, 220],   label: 'Devonian' },
+  williston:  { rgba: [165, 105, 70, 220],  label: 'Late Devonian' },
+  anadarko:   { rgba: [195, 140, 75, 220],  label: 'Pennsylvanian' },
+  kansas:     { rgba: [180, 165, 110, 220], label: 'Penn-Permian' },
+  permian:    { rgba: [197, 123, 53, 220],  label: 'Permian' },
+  eagle_ford: { rgba: [92, 122, 140, 220],  label: 'Cretaceous' },
+};
+
+const ACCESS_TIERS = {
+  open:   { rgba: [107, 78, 138, 220],  label: 'Open',     hex: '#6B4E8A' },
+  multi:  { rgba: [46, 110, 126, 220],  label: 'Multi',    hex: '#2E6E7E' },
+  mixed:  { rgba: [197, 123, 53, 220],  label: 'Mixed',    hex: '#C57B35' },
+  walled: { rgba: [162, 59, 42, 240],   label: 'Walled',   hex: '#A23B2A' },
+};
+
 const VIEW_MODES = {
   dark: {
     label: 'Dark percentage',
+    sortHint: 'sorted by dark percentage (lowest first)',
     fill: (props) => {
       if (props.dark_pct == null) return [162, 59, 42, 70];
       const t = Math.max(0, Math.min(1, (props.dark_pct - 45) / 55));
       return [Math.round(220 - t * 100), Math.round(195 - t * 100), Math.round(155 - t * 60), 200];
     },
+    // Sort: lowest dark % first (Williston wins). Eagle Ford (null) at bottom.
+    sortKey: (p) => p.dark_pct == null ? Infinity : p.dark_pct,
+    badge: (p) => p.dark_pct == null
+      ? { text: 'unmeasured', cls: 'dim' }
+      : { text: p.dark_pct + '% DARK', cls: 'dark' },
   },
   geology: {
     label: 'Target rock era',
-    fill: (props) => {
-      const eraColor = {
-        appalachia: [122, 89, 53, 220],
-        williston:  [165, 105, 70, 220],
-        anadarko:   [195, 140, 75, 220],
-        kansas:     [180, 165, 110, 220],
-        permian:    [197, 123, 53, 220],
-        eagle_ford: [92, 122, 140, 220],
-      };
-      return eraColor[props.id] || [120, 120, 120, 200];
-    },
+    sortHint: 'sorted by target rock age (oldest first)',
+    fill: (props) => GEOLOGY_ERA_COLORS[props.id]?.rgba || [120, 120, 120, 200],
+    sortKey: (p) => p.geology_rank ?? 99,
+    badge: (p) => ({ text: (p.era_short || '—').toUpperCase(), cls: 'geology' }),
   },
   production: {
     label: 'Oil production rank',
+    sortHint: 'sorted by US oil rank (gas-only basins last)',
     fill: (props) => {
       const rankColor = {
         permian:    [162, 59, 42, 240],
@@ -354,20 +474,53 @@ const VIEW_MODES = {
       };
       return rankColor[props.id] || [120, 120, 120, 180];
     },
+    sortKey: (p) => p.oil_rank_numeric ?? (p.gas_dominant ? 90 : 99),
+    badge: (p) => p.oil_rank_numeric != null
+      ? { text: '#' + p.oil_rank_numeric + ' US OIL', cls: 'output' }
+      : (p.gas_dominant ? { text: 'GAS DOMINANT', cls: 'output' } : { text: 'BELOW EIA DPR', cls: 'dim' }),
   },
   era: {
     label: 'First horizontal year',
+    sortHint: 'sorted by horizontal-era start year (earliest first)',
     fill: (props) => {
       const yr = props.horizontal_era_year;
       if (yr == null) return [165, 160, 150, 160];
       const t = Math.max(0, Math.min(1, (yr - 2008) / 6));
       return [Math.round(107 + t * 60), Math.round(78 - t * 30), Math.round(138 - t * 50), 220];
     },
+    sortKey: (p) => p.horizontal_era_year ?? 9999,
+    badge: (p) => p.horizontal_era_year != null
+      ? { text: 'HORIZ ' + p.horizontal_era_year, cls: 'era' }
+      : { text: 'NO ERA', cls: 'dim' },
+  },
+  access: {
+    label: 'Data accessibility',
+    sortHint: 'sorted by data architecture (most open first)',
+    fill: (props) => ACCESS_TIERS[props.accessibility_tier]?.rgba || [120, 120, 120, 180],
+    // Tier order: open < multi < mixed < walled
+    sortKey: (p) => ({ open: 0, multi: 1, mixed: 2, walled: 3 }[p.accessibility_tier] ?? 99),
+    badge: (p) => {
+      const tier = ACCESS_TIERS[p.accessibility_tier];
+      return tier ? { text: tier.label.toUpperCase(), cls: 'access' } : { text: 'UNKNOWN', cls: 'dim' };
+    },
   },
 };
 
+// Per-basin camera target: where deck.gl flies to when a basin is clicked.
+// Hand-tuned based on each basin's centroid + a comfortable zoom level.
+const BASIN_VIEWS = {
+  kansas:     { center: [-98.5,  38.5], zoom: 5.4 },
+  permian:    { center: [-103.0, 32.0], zoom: 5.6 },
+  williston:  { center: [-103.0, 47.6], zoom: 5.7 },
+  anadarko:   { center: [ -98.5, 36.0], zoom: 5.4 },
+  appalachia: { center: [ -79.0, 40.0], zoom: 5.4 },
+  eagle_ford: { center: [ -98.0, 28.7], zoom: 5.6 },
+};
+const HOME_VIEW = { center: [-96, 39], zoom: 3.6 };
+
 let basinFc = null;
 let conusFc = null;
+let eiaDpr = null;
 let mapLib = null;
 let deckOverlay = null;
 let currentMode = 'dark';
@@ -390,17 +543,81 @@ function viewModeFill(props) {
   return VIEW_MODES[currentMode].fill(props);
 }
 
+// Build a sparkline SVG element from a numeric series. Returns null if data
+// is too sparse. Uses a simple baseline-to-peak normalization.
+function buildSparkline(series, color) {
+  if (!series || series.length < 4) return null;
+  const W = 100, H = 18, PAD = 1;
+  const min = Math.min.apply(null, series);
+  const max = Math.max.apply(null, series);
+  const range = max - min || 1;
+  const stepX = (W - PAD * 2) / (series.length - 1);
+  let path = '';
+  for (let i = 0; i < series.length; i++) {
+    const x = PAD + i * stepX;
+    const y = H - PAD - ((series[i] - min) / range) * (H - PAD * 2);
+    path += (i === 0 ? 'M' : 'L') + x.toFixed(2) + ',' + y.toFixed(2) + ' ';
+  }
+  // Build SVG via createElementNS so we don't innerHTML user data
+  const NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(NS, 'svg');
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('preserveAspectRatio', 'none');
+  // Baseline rule
+  const base = document.createElementNS(NS, 'line');
+  base.setAttribute('x1', PAD); base.setAttribute('x2', W - PAD);
+  base.setAttribute('y1', H - PAD); base.setAttribute('y2', H - PAD);
+  base.setAttribute('stroke', 'rgba(14,14,14,0.08)');
+  base.setAttribute('stroke-width', '0.5');
+  svg.appendChild(base);
+  // Sparkline path
+  const p = document.createElementNS(NS, 'path');
+  p.setAttribute('d', path);
+  p.setAttribute('fill', 'none');
+  p.setAttribute('stroke', color);
+  p.setAttribute('stroke-width', '1.2');
+  p.setAttribute('stroke-linecap', 'round');
+  p.setAttribute('stroke-linejoin', 'round');
+  svg.appendChild(p);
+  // Last-value dot
+  const lastX = PAD + (series.length - 1) * stepX;
+  const lastY = H - PAD - ((series[series.length - 1] - min) / range) * (H - PAD * 2);
+  const dot = document.createElementNS(NS, 'circle');
+  dot.setAttribute('cx', lastX.toFixed(2));
+  dot.setAttribute('cy', lastY.toFixed(2));
+  dot.setAttribute('r', '1.6');
+  dot.setAttribute('fill', color);
+  svg.appendChild(dot);
+  return svg;
+}
+
+// Compute the most recent N months of oil production for a basin (in MMbbl/d).
+// Returns null if EIA DPR has no data for that basin (Kansas).
+function recentOilSeries(basinId, n) {
+  if (!eiaDpr || !eiaDpr.data || !eiaDpr.data[basinId]) return null;
+  const arr = eiaDpr.data[basinId];
+  return arr
+    .slice(Math.max(0, arr.length - n))
+    .map(r => (r.oil_total_bbl || 0) / 1e6);
+}
+
 function buildBasinList() {
   const list = document.getElementById('basin-list');
   while (list.firstChild) list.removeChild(list.firstChild);
 
-  const order = ['kansas', 'permian', 'williston', 'anadarko', 'appalachia', 'eagle_ford'];
-  const byId = {};
-  basinFc.features.forEach(f => byId[f.properties.id] = f.properties);
+  const mode = VIEW_MODES[currentMode];
+  const sortKey = mode.sortKey;
+  const sorted = basinFc.features
+    .map(f => f.properties)
+    .slice()
+    .sort((a, b) => sortKey(a) - sortKey(b));
 
-  order.forEach(id => {
-    const p = byId[id];
-    if (!p) return;
+  // Update sort hint text
+  const hint = document.getElementById('sort-hint');
+  if (hint) hint.textContent = mode.sortHint;
+
+  sorted.forEach(p => {
+    const id = p.id;
     const color = BASIN_COLORS[id];
 
     const card = el('div', {
@@ -409,14 +626,17 @@ function buildBasinList() {
       style: { '--basin-color': color },
     });
 
-    // Row 1: name + dark badge
+    // Row 1: name + dynamic badge
     const chip = el('span', { cls: 'basin-color-chip' });
     const nameSpan = el('span', { cls: 'name' });
     nameSpan.appendChild(chip);
     nameSpan.appendChild(document.createTextNode(p.short));
 
-    const darkText = p.dark_pct != null ? p.dark_pct + '% dark' : 'unmeasured';
-    const badge = el('span', { cls: 'badge dark', text: darkText });
+    const badgeInfo = mode.badge(p);
+    const badge = el('span', {
+      cls: 'badge ' + (badgeInfo.cls || ''),
+      text: badgeInfo.text,
+    });
 
     const row1 = el('div', { cls: 'row1', children: [nameSpan, badge] });
 
@@ -434,10 +654,36 @@ function buildBasinList() {
     card.appendChild(row1);
     card.appendChild(row2);
 
-    card.addEventListener('click', () => openDetail(id));
+    // Row 3: 36-month oil sparkline + label, or N/A line for Kansas
+    const series = recentOilSeries(id, 36);
+    const row3 = el('div', { cls: 'row3' });
+    if (series && series.length > 4) {
+      const spark = el('div', { cls: 'sparkline' });
+      const svg = buildSparkline(series, color);
+      if (svg) spark.appendChild(svg);
+      row3.appendChild(spark);
+      const last = series[series.length - 1];
+      row3.appendChild(el('span', {
+        cls: 'spark-label',
+        text: (last >= 1 ? last.toFixed(2) : last.toFixed(3)) + ' MMbbl/d',
+      }));
+    } else {
+      row3.appendChild(el('div', { cls: 'spark-na' }));
+      row3.appendChild(el('span', {
+        cls: 'spark-label',
+        text: 'NOT IN EIA DPR',
+      }));
+    }
+    card.appendChild(row3);
+
+    card.addEventListener('click', () => {
+      flyToBasin(id);
+      openDetail(id);
+    });
     card.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
+        flyToBasin(id);
         openDetail(id);
       }
     });
@@ -549,12 +795,134 @@ function closeDetail() {
   document.querySelectorAll('.basin-card.active').forEach(c => c.classList.remove('active'));
 }
 
+function flyToBasin(basinId) {
+  if (!mapLib) return;
+  const v = BASIN_VIEWS[basinId];
+  if (!v) return;
+  mapLib.flyTo({ center: v.center, zoom: v.zoom, speed: 0.85, curve: 1.4, essential: true });
+}
+
+function flyHome() {
+  if (!mapLib) return;
+  mapLib.flyTo({ center: HOME_VIEW.center, zoom: HOME_VIEW.zoom, speed: 1.0, curve: 1.4, essential: true });
+}
+
+// Build the dynamic legend strip below the view-toggle. Updates when
+// currentMode changes. Each mode owns its own visual encoding.
+function renderLegendStrip() {
+  const root = document.getElementById('legend-strip');
+  if (!root) return;
+  while (root.firstChild) root.removeChild(root.firstChild);
+
+  const title = el('div', { cls: 'ls-title' });
+
+  if (currentMode === 'dark') {
+    title.textContent = 'Dark percentage  ·  45% to 95%';
+    root.appendChild(title);
+    const grad = el('div', { cls: 'ls-gradient' });
+    const row = el('div', { cls: 'ls-gradient-row' });
+    row.appendChild(grad);
+    const axis = el('div', { cls: 'ls-axis' });
+    ['45%', '60%', '75%', '90%', '95%'].forEach(t => axis.appendChild(el('span', { text: t })));
+    row.appendChild(axis);
+    root.appendChild(row);
+    root.appendChild(el('div', {
+      cls: 'ls-note',
+      text: 'Eagle Ford is unmeasured and shown in faint clay; TX RRC architecture blocked the well-level pull.',
+    }));
+  } else if (currentMode === 'geology') {
+    title.textContent = 'Target rock era  ·  oldest to youngest';
+    root.appendChild(title);
+    const sw = el('div', { cls: 'ls-swatches' });
+    // Order = age, oldest first
+    const order = ['appalachia', 'williston', 'anadarko', 'kansas', 'permian', 'eagle_ford'];
+    order.forEach(id => {
+      const e = GEOLOGY_ERA_COLORS[id];
+      if (!e) return;
+      const item = el('div', { cls: 'ls-swatch' });
+      const c = e.rgba;
+      const sq = el('span', { cls: 'sw' });
+      sq.style.background = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (c[3] / 255).toFixed(2) + ')';
+      item.appendChild(sq);
+      item.appendChild(document.createTextNode(e.label));
+      sw.appendChild(item);
+    });
+    root.appendChild(sw);
+  } else if (currentMode === 'production') {
+    title.textContent = 'US oil rank  ·  basin output, 2024';
+    root.appendChild(title);
+    const sw = el('div', { cls: 'ls-swatches' });
+    const tiers = [
+      { color: 'rgba(162,59,42,0.94)',  label: '#1' },
+      { color: 'rgba(197,123,53,0.86)', label: '#2 – #3' },
+      { color: 'rgba(122,111,105,0.71)', label: '#5+' },
+      { color: 'rgba(165,160,150,0.55)', label: 'gas / off-rank' },
+    ];
+    tiers.forEach(t => {
+      const item = el('div', { cls: 'ls-swatch' });
+      const sq = el('span', { cls: 'sw' });
+      sq.style.background = t.color;
+      item.appendChild(sq);
+      item.appendChild(document.createTextNode(t.label));
+      sw.appendChild(item);
+    });
+    root.appendChild(sw);
+    root.appendChild(el('div', {
+      cls: 'ls-note',
+      text: 'Permian leads at over 6 MMbbl/d; Eagle Ford and Williston each plateau near 1.2; Kansas is below the EIA reporting threshold.',
+    }));
+  } else if (currentMode === 'era') {
+    title.textContent = 'Horizontal-era start year';
+    root.appendChild(title);
+    const sw = el('div', { cls: 'ls-swatches' });
+    const tiers = [
+      { color: 'rgba(107,78,138,0.86)', label: '2008 (early)' },
+      { color: 'rgba(137,63,108,0.86)', label: '2010' },
+      { color: 'rgba(167,48,78,0.86)',  label: '2014 (late)' },
+      { color: 'rgba(165,160,150,0.65)', label: 'no era' },
+    ];
+    tiers.forEach(t => {
+      const item = el('div', { cls: 'ls-swatch' });
+      const sq = el('span', { cls: 'sw' });
+      sq.style.background = t.color;
+      item.appendChild(sq);
+      item.appendChild(document.createTextNode(t.label));
+      sw.appendChild(item);
+    });
+    root.appendChild(sw);
+    root.appendChild(el('div', {
+      cls: 'ls-note',
+      text: 'Williston, Eagle Ford, and Appalachia all start in 2008. Permian 2010, Anadarko 2014, Kansas never.',
+    }));
+  } else if (currentMode === 'access') {
+    title.textContent = 'Data architecture  ·  what an analyst can pull';
+    root.appendChild(title);
+    const sw = el('div', { cls: 'ls-swatches' });
+    Object.entries(ACCESS_TIERS).forEach(([key, t]) => {
+      const item = el('div', { cls: 'ls-swatch' });
+      const sq = el('span', { cls: 'sw' });
+      const c = t.rgba;
+      sq.style.background = 'rgba(' + c[0] + ',' + c[1] + ',' + c[2] + ',' + (c[3] / 255).toFixed(2) + ')';
+      item.appendChild(sq);
+      item.appendChild(document.createTextNode(t.label));
+      sw.appendChild(item);
+    });
+    root.appendChild(sw);
+    root.appendChild(el('div', {
+      cls: 'ls-note',
+      text: 'Open: single regulator, direct download. Multi: two or more regulators, all cooperative. Mixed: at least one regulator with a data architecture issue. Walled: cannot pull at all.',
+    }));
+  }
+}
+
 function setView(mode) {
   currentMode = mode;
   document.querySelectorAll('.view-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.mode === mode);
   });
   rebuildLayers();
+  renderLegendStrip();
+  buildBasinList();   // re-sort cards + update badges + sparkline color
 }
 
 function buildLayers() {
@@ -618,7 +986,11 @@ function buildLayers() {
         }
       },
       onClick: info => {
-        if (info.object) openDetail(info.object.properties.id);
+        if (info.object) {
+          const id = info.object.properties.id;
+          flyToBasin(id);
+          openDetail(id);
+        }
       },
     }),
   ];
@@ -629,13 +1001,17 @@ function rebuildLayers() {
 }
 
 async function init() {
-  const [basinResp, conusResp] = await Promise.all([
+  const [basinResp, conusResp, eiaResp] = await Promise.all([
     fetch('/darkdata/primer_data/basins.json'),
     fetch('/darkdata/primer_data/conus_states.json'),
+    fetch('/darkdata/primer_data/eia_dpr_5basins.json'),
   ]);
   if (!basinResp.ok) throw new Error('basins.json load failed: ' + basinResp.status);
   basinFc = await basinResp.json();
   conusFc = await conusResp.json();
+  if (eiaResp.ok) {
+    eiaDpr = await eiaResp.json();
+  }
 
   mapLib = new maplibregl.Map({
     container: 'map',
@@ -665,6 +1041,7 @@ async function init() {
   });
   mapLib.addControl(deckOverlay);
 
+  renderLegendStrip();
   buildBasinList();
 
   document.querySelectorAll('.view-btn').forEach(b => {
