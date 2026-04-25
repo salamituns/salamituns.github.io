@@ -1,0 +1,217 @@
+{
+  "total_wells": 482918,
+  "dark": 439982,
+  "lit": 42936,
+  "pct_dark": 91.1,
+  "by_state": {
+    "KS": {
+      "total": 254562,
+      "dark": 239188,
+      "horizontal_flagged": 0,
+      "pct_dark": 94.0
+    },
+    "OK": {
+      "total": 228356,
+      "dark": 200794,
+      "horizontal_flagged": 27396,
+      "pct_dark": 87.9
+    }
+  },
+  "vintage_distribution": {
+    "0": 254206,
+    "1": 84329,
+    "4": 41104,
+    "5": 38803,
+    "3": 34353,
+    "2": 30123
+  },
+  "top_operators_ok": [
+    {
+      "op": "OTC/OCC NOT ASSIGNED",
+      "total": 67025,
+      "dark": 67007,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "CITATION OIL & GAS CORP",
+      "total": 6500,
+      "dark": 5228,
+      "pct_dark": 80.4
+    },
+    {
+      "op": "DIVERSIFIED PRODUCTION LLC",
+      "total": 3739,
+      "dark": 2665,
+      "pct_dark": 71.3
+    },
+    {
+      "op": "BCE-MACH LLC",
+      "total": 2526,
+      "dark": 1360,
+      "pct_dark": 53.8
+    },
+    {
+      "op": "BCE-MACH III LLC",
+      "total": 2208,
+      "dark": 1373,
+      "pct_dark": 62.2
+    },
+    {
+      "op": "SANDRIDGE EXPLORATION & PRODUCTION LLC",
+      "total": 1723,
+      "dark": 248,
+      "pct_dark": 14.4
+    },
+    {
+      "op": "CONTINENTAL RESOURCES INC",
+      "total": 1652,
+      "dark": 686,
+      "pct_dark": 41.5
+    },
+    {
+      "op": "CHESAPEAKE OPERATING LLC",
+      "total": 1622,
+      "dark": 1516,
+      "pct_dark": 93.5
+    },
+    {
+      "op": "CONOCOPHILLIPS CO",
+      "total": 1377,
+      "dark": 1368,
+      "pct_dark": 99.3
+    },
+    {
+      "op": "DEVON ENERGY PRODUCTION COMPANY LP",
+      "total": 1376,
+      "dark": 381,
+      "pct_dark": 27.7
+    },
+    {
+      "op": "OVINTIV USA INC",
+      "total": 1375,
+      "dark": 351,
+      "pct_dark": 25.5
+    },
+    {
+      "op": "SCOUT ENERGY MANAGEMENT LLC",
+      "total": 1320,
+      "dark": 1165,
+      "pct_dark": 88.3
+    },
+    {
+      "op": "UNBRIDLED RESOURCES LLC",
+      "total": 1290,
+      "dark": 534,
+      "pct_dark": 41.4
+    },
+    {
+      "op": "GREAT HORNED OWLS, LLC",
+      "total": 1255,
+      "dark": 486,
+      "pct_dark": 38.7
+    },
+    {
+      "op": "DAYLIGHT PETROLEUM LLC",
+      "total": 1232,
+      "dark": 964,
+      "pct_dark": 78.2
+    }
+  ],
+  "top_operators_ks": [
+    {
+      "op": " ",
+      "total": 8119,
+      "dark": 8075,
+      "pct_dark": 99.5
+    },
+    {
+      "op": "CITIES SERVICE CO",
+      "total": 3943,
+      "dark": 3921,
+      "pct_dark": 99.4
+    },
+    {
+      "op": "Oxy USA, Inc.",
+      "total": 2391,
+      "dark": 2117,
+      "pct_dark": 88.5
+    },
+    {
+      "op": "Amoco Production Co.",
+      "total": 1765,
+      "dark": 1713,
+      "pct_dark": 97.1
+    },
+    {
+      "op": "American Warrior, Inc.",
+      "total": 1743,
+      "dark": 1175,
+      "pct_dark": 67.4
+    },
+    {
+      "op": "Anadarko Petroleum Corp.",
+      "total": 1168,
+      "dark": 1017,
+      "pct_dark": 87.1
+    },
+    {
+      "op": "Palomino Petroleum, Inc.",
+      "total": 1033,
+      "dark": 556,
+      "pct_dark": 53.8
+    },
+    {
+      "op": "Raymond Oil Co., Inc.",
+      "total": 893,
+      "dark": 835,
+      "pct_dark": 93.5
+    },
+    {
+      "op": "CITIES SERVICE OIL CO.",
+      "total": 885,
+      "dark": 854,
+      "pct_dark": 96.5
+    },
+    {
+      "op": "Merit Energy Company, LLC",
+      "total": 882,
+      "dark": 808,
+      "pct_dark": 91.6
+    },
+    {
+      "op": "Stanolind Oil and Gas Co.",
+      "total": 882,
+      "dark": 875,
+      "pct_dark": 99.2
+    },
+    {
+      "op": "STANOLIND OIL & GAS CO",
+      "total": 870,
+      "dark": 868,
+      "pct_dark": 99.8
+    },
+    {
+      "op": "PETROLEUM INC",
+      "total": 867,
+      "dark": 855,
+      "pct_dark": 98.6
+    },
+    {
+      "op": "McCoy Petroleum Corp.",
+      "total": 859,
+      "dark": 752,
+      "pct_dark": 87.5
+    },
+    {
+      "op": "John O. Farmer, Inc.",
+      "total": 857,
+      "dark": 793,
+      "pct_dark": 92.5
+    }
+  ],
+  "notes": [
+    "Basin clip: USGS GMC Anadarko Basin Province 3D-model MapUnitPolys dissolve.",
+    "Lit/dark proxies are state-asymmetric: OK uses Open_Hole_Logs flag + horizontal drill type from OCC RBDMS completions; KS uses public LAS archive presence (basin 01 logic).",
+    "TX panhandle portion of the Anadarko Basin Province is excluded from v1 (TX RRC bulk data lives behind a JSF/PrimeFaces session portal; deferred to basin 06)."
+  ]
+}

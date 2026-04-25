@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Walking the Anadarko: 482,918 wells, 91% dark | @salamituns</title>
+<meta name="description" content="What we found when we tried to measure how much of the Anadarko Basin is dark. A research-journal StoryMap: 482,918 wells inside the USGS Anadarko Basin Province polygon, 9% lit, 91% dark.">
+<meta property="og:title" content="Walking the Anadarko: 9% lit, 91% dark">
+<meta property="og:description" content="One basin, two regulators, one verdict: even with the SCOOP and STACK horizontal era, the Anadarko stays 91% dark. Sixteen scroll steps across the Kansas-Oklahoma line.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/anadarko/story.html">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/anadarko/figures/anadarko_basin_map.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/anadarko/story.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+<style>
+  :root {
+    --paper: #F6F3EB;
+    --paper-2: #EFEBDE;
+    --ink: #0E0E0E;
+    --muted: #7A7368;
+    --rule: rgba(14,14,14,0.14);
+    --accent: #A23B2A;
+    --amber: #C57B35;
+    --violet: #6B4E8A;
+    --teal: #2E6E7E;
+    --ghost: #B5AEA0;
+    --ks: #2E6E7E;
+    --ok: #C57B35;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    color: var(--ink);
+    overflow-x: clip;
+  }
+
+  .em-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.9rem 1.4rem;
+    background: rgba(246,243,235,0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .em-nav a, .em-nav span { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  .em-nav a { color: var(--ink); text-decoration: none; }
+  .em-nav a:hover { color: var(--accent); }
+  .em-left { display: flex; gap: 1.5rem; align-items: baseline; }
+  .em-back { color: var(--muted); }
+  .em-back-arrow { margin-right: 0.35rem; }
+  .em-here { color: var(--accent); }
+
+  #stage {
+    position: relative;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-template-areas: "narrative map";
+  }
+  #map-wrap {
+    grid-area: map;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    z-index: 1;
+    background: var(--paper);
+  }
+  #map { position: absolute; inset: 0; }
+
+  .legend-chip {
+    position: absolute; right: 1.25rem; bottom: 1.25rem; z-index: 3;
+    background: rgba(246,243,235,0.94);
+    border: 1px solid var(--rule);
+    padding: 0.75rem 0.95rem;
+    font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.04em;
+    min-width: 200px;
+    opacity: 0; transition: opacity 450ms ease;
+  }
+  .legend-chip.on { opacity: 1; }
+  .legend-chip .row { display: flex; align-items: center; gap: 0.55rem; margin: 0.25rem 0; }
+  .legend-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-chip .label { color: var(--ink); letter-spacing: 0.02em; }
+  .legend-chip .note { color: var(--muted); font-size: 0.64rem; margin-top: 0.45rem; line-height: 1.4; }
+
+  .state-chip {
+    position: absolute; left: 1.25rem; top: 1.25rem; z-index: 3;
+    display: flex; gap: 0.6rem; font-size: 0.65rem;
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+    opacity: 0; transition: opacity 350ms ease;
+  }
+  .state-chip.on { opacity: 1; }
+  .state-chip span {
+    background: rgba(246,243,235,0.94);
+    border: 1px solid var(--rule);
+    padding: 0.35rem 0.6rem;
+  }
+  .state-chip .ks-chip { color: var(--ks); }
+  .state-chip .ok-chip { color: var(--ok); }
+
+  .progress {
+    position: fixed; top: 4.5rem; right: 1.4rem; z-index: 20;
+    font-family: "Inter", sans-serif; font-size: 0.72rem;
+    color: var(--ink); letter-spacing: 0.14em; text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    background: rgba(246,243,235,0.92); padding: 0.4rem 0.7rem;
+    border: 1px solid var(--rule);
+  }
+  .progress .pos { color: var(--accent); font-weight: 500; }
+
+  #narrative {
+    grid-area: narrative;
+    position: relative;
+    width: 100%;
+    padding-top: 4.5rem;
+    z-index: 2;
+  }
+  .step {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 2rem 0 2.5rem;
+  }
+  .step-card {
+    background: rgba(246,243,235,0.96);
+    border-left: 2px solid var(--accent);
+    padding: 1.8rem 1.6rem;
+    max-width: 34rem;
+  }
+  .step.ks-theme .step-card { border-left-color: var(--ks); }
+  .step.ok-theme .step-card { border-left-color: var(--ok); }
+  .step.neutral-theme .step-card { border-left-color: var(--ink); }
+
+  .step .eyebrow {
+    display: block; font-size: 0.7rem; color: var(--muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 500; margin-bottom: 0.9rem;
+  }
+  .step h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.1vw, 2.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.9rem;
+  }
+  .step h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+  }
+  .step.ks-theme h2 em { color: var(--ks); }
+  .step.ok-theme h2 em { color: var(--ok); }
+  .step p {
+    font-size: 0.96rem;
+    line-height: 1.6;
+    color: var(--ink);
+    margin: 0 0 0.75rem;
+  }
+  .step p.muted { color: var(--muted); font-size: 0.85rem; }
+  .step .big {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72;
+    font-weight: 400;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    margin: 0.4rem 0 0.5rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .step.ks-theme .big { color: var(--ks); }
+  .step.ok-theme .big { color: var(--ok); }
+
+  .step.cover .step-card { border-left-color: var(--ink); }
+  .step.cover h1 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+  .step.cover h1 em { font-style: italic; color: var(--accent); }
+  .step.cover .lede { font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
+  .step.cover .byline {
+    margin-top: 1.5rem; font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  }
+  .step.cover .byline a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  .step.cover .byline .sep { margin: 0 0.55rem; color: var(--rule); }
+
+  .vintage-chart {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 5rem 1fr 3.4rem;
+    gap: 0.35rem 0.55rem;
+    font-size: 0.76rem;
+    align-items: center;
+  }
+  .vintage-chart .era { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .vintage-chart .track { height: 10px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .vintage-chart .track .fill { position: absolute; inset: 0 auto 0 0; background: var(--ks); }
+  .vintage-chart .track .fill.unk { background: var(--ghost); }
+  .vintage-chart .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .bars {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 11rem 1fr 3.4rem;
+    gap: 0.35rem 0.55rem;
+    font-size: 0.76rem;
+    align-items: center;
+  }
+  .bars .op { color: var(--ink); letter-spacing: 0.01em; }
+  .bars .track { height: 8px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .bars .track .fill { position: absolute; inset: 0 auto 0 0; background: var(--violet); }
+  .bars .track.dark .fill { background: var(--accent); }
+  .bars .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .state-table {
+    margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 7rem 1.5rem 1fr 3.6rem;
+    gap: 0.3rem 0.55rem;
+    font-size: 0.78rem;
+    align-items: center;
+  }
+  .state-table .cnty { color: var(--ink); }
+  .state-table .st { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.1em; padding: 0.1rem 0.3rem; text-align: center; }
+  .state-table .st.ks { background: var(--ks); color: var(--paper); }
+  .state-table .st.ok { background: var(--ok); color: var(--paper); }
+  .state-table .track { height: 7px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .state-table .track .fill { position: absolute; inset: 0 auto 0 0; }
+  .state-table .track.ks .fill { background: var(--ks); }
+  .state-table .track.ok .fill { background: var(--ok); }
+  .state-table .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .outro {
+    position: relative; z-index: 4;
+    background: var(--paper);
+    padding: 6rem 2.5rem 5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .outro-inner { max-width: 56rem; margin: 0 auto; }
+  .outro h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+  .outro h2 em { font-style: italic; color: var(--accent); }
+  .outro p { font-size: 0.97rem; line-height: 1.6; color: var(--ink); margin: 0 0 1rem; max-width: 44rem; }
+  .outro .implications {
+    margin: 2.25rem 0 0;
+    padding: 1.5rem 1.75rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    max-width: 44rem;
+  }
+  .outro .implications-label {
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 0.9rem; font-weight: 500;
+  }
+  .outro .implications h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 36;
+    font-weight: 400; font-style: italic;
+    font-size: 1.15rem; line-height: 1.3;
+    margin: 0 0 1.2rem; color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .outro .implications ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .outro .implications li {
+    font-size: 0.88rem; line-height: 1.55; color: var(--ink);
+    padding: 0.55rem 0; border-top: 1px dashed var(--rule);
+  }
+  .outro .implications li:first-child { border-top: none; padding-top: 0; }
+  .outro .implications li strong {
+    font-weight: 600; color: var(--ink);
+    display: inline-block; min-width: 10rem;
+  }
+  .outro .implications .close {
+    font-size: 0.88rem; line-height: 1.55; color: var(--ink);
+    margin: 0.9rem 0 0; padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+  .outro .implications .close em { font-style: italic; color: var(--accent); }
+  .outro .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .outro .cta {
+    display: inline-block;
+    padding: 0.7rem 1.1rem;
+    font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    border: 1px solid var(--ink); color: var(--ink);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .outro .cta:hover { background: var(--ink); color: var(--paper); }
+  .outro .cta.accent { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .outro .cta.accent:hover { background: var(--ink); border-color: var(--ink); }
+  .outro .footnote { font-size: 0.76rem; color: var(--muted); margin-top: 2rem; line-height: 1.55; }
+  .outro .footnote a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+
+  .loader {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--paper);
+    color: var(--muted); font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: opacity 400ms ease;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  .loader .pulse {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); margin-bottom: 0.8rem;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loader.error .pulse { animation: none; background: var(--accent); }
+  .loader.error .loader-text { color: var(--accent); line-height: 1.5; max-width: 22rem; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loader.done { opacity: 0; pointer-events: none; }
+
+  @media (max-width: 900px) {
+    #stage { grid-template-columns: 1fr; grid-template-areas: "map" "narrative"; }
+    #map-wrap { height: 55vh; }
+    #narrative { padding-top: 0; }
+    .step { min-height: auto; padding: 2.5rem 1.25rem; }
+    .step-card { padding: 1.2rem 1.2rem; max-width: none; }
+    .progress { top: 3.8rem; right: 0.9rem; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <div class="em-left">
+    <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+    <a href="/darkdata/" class="em-back"><span class="em-back-arrow" aria-hidden="true">&larr;</span>Dark&nbsp;Data</a>
+  </div>
+  <span class="em-here" aria-current="page">Anadarko &middot; Walk</span>
+</nav>
+
+<div class="progress" aria-live="polite">
+  Step <span class="pos" id="progress-pos">00</span> / 16
+</div>
+
+<div id="stage">
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="state-chip" id="state-chip">
+      <span class="ks-chip">Kansas</span>
+      <span class="ok-chip">Oklahoma</span>
+    </div>
+    <div class="legend-chip" id="legend">
+      <div class="row"><div class="dot" style="background:#B5AEA0"></div><div class="label">Dark &middot; no public log</div></div>
+      <div class="row"><div class="dot" style="background:#2E6E7E"></div><div class="label">Lit &middot; Kansas</div></div>
+      <div class="row"><div class="dot" style="background:#C57B35"></div><div class="label">Lit &middot; Oklahoma</div></div>
+      <div class="note">KS lit: API in KGS public LAS archive. OK lit: open-hole log filed on the OCC completion record, or horizontal completion. See step 05.</div>
+    </div>
+    <div class="loader" id="loader">
+      <div class="pulse"></div>
+      <div class="loader-text" id="loader-text">Loading 482,918 wells</div>
+    </div>
+  </div>
+
+  <div id="narrative">
+
+    <section class="step cover" data-step="0">
+      <div class="step-card">
+        <span class="eyebrow">Project 03 &middot; Subsurface &middot; Walk 04</span>
+        <h1>Walking the <em>Anadarko</em>.</h1>
+        <p class="lede">
+          One structural basin, two regulators, a half-million wells. 482,918 inside the USGS Anadarko Basin Province polygon, sliced by the Oklahoma-Kansas state line. The SCOOP and STACK horizontal era was the rescue plan. We went looking for what it actually saved.
+        </p>
+        <p class="byline">
+          By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+          <span class="sep" aria-hidden="true">&middot;</span>
+          April&nbsp;2026
+          <span class="sep" aria-hidden="true">&middot;</span>
+          <a href="/darkdata/anadarko/">Long&#8209;form</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="1">
+      <div class="step-card">
+        <span class="eyebrow">01 &middot; The question</span>
+        <h2>Does the SCOOP era <em>buy a lit basin?</em></h2>
+        <p>Kansas was 94% dark. Permian, 78%. Williston, 46%, the lowest in the series so far, courtesy of the post-2008 Bakken horizontal campaign. The Anadarko sits between Kansas and Williston in age and in scale: a hundred-year vertical legacy with a fifteen-year horizontal layer dropped on top.</p>
+        <p class="muted">The hypothesis: SCOOP and STACK lift the Anadarko like the Bakken lifted the Williston. The basin-wide answer should land in the 50s or 60s.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="2">
+      <div class="step-card">
+        <span class="eyebrow">02 &middot; The basin</span>
+        <h2>A boundary <em>geology drew.</em></h2>
+        <p>We clip to the USGS Anadarko Basin Province polygon (Province 058), dissolved from the 2023 Higley 3D model release. The shape covers central and western Oklahoma, the Hugoton Embayment of southwest Kansas, and the Texas Panhandle.</p>
+        <p>We publish Kansas and Oklahoma. Texas is in the polygon. It is not in this cut. The TX Railroad Commission's bulk well download lives behind a JSF session portal and EBCDIC mainframe dumps. That is its own basin in this series, and it ships last.</p>
+        <p class="muted">The Anadarko does not care where Kansas ends and Oklahoma begins. The data does, and the second-largest piece of the basin is missing on purpose.</p>
+      </div>
+    </section>
+
+    <section class="step ks-theme" data-step="3">
+      <div class="step-card">
+        <span class="eyebrow">03 &middot; Kansas arrives</span>
+        <h2><em>476,869</em> wells. One CSV. Half a century of vertical.</h2>
+        <p>The KGS bulk well export ships the full Kansas inventory as a single CSV with 55 columns: API, operator, field, township, spud date, completion date, well type. We already used it for basin 01. Here we re-clip it to the Anadarko Province polygon.</p>
+        <p>The Kansas portion of the basin is the Hugoton Embayment plus the Cherokee shelf: gas-rich, conventional, mostly vertical, mostly drilled before 1980. The KGS public LAS archive carries 23,931 wells. Outside that archive: dark.</p>
+        <p class="muted">Kansas's "lit" definition has not changed since basin 01. A well counts as lit only if the survey can scan a paper file into a public LAS. That bar excludes most of the state.</p>
+      </div>
+    </section>
+
+    <section class="step ok-theme" data-step="4">
+      <div class="step-card">
+        <span class="eyebrow">04 &middot; Oklahoma arrives</span>
+        <h2><em>455,421</em> wells. RBDMS, with an open-hole-log flag.</h2>
+        <p>The OCC publishes its Risk-Based Data Management System as a single 46&nbsp;MB shapefile plus a 126&nbsp;MB CSV. Each surface hole ships API, operator, county, well type, current status, lat/lon. Two completion XLSX files (modern + legacy) carry spud dates, drill type, and the field that makes Oklahoma the cleanest data state in this series so far: <em>Open Hole Logs: Yes / No</em>.</p>
+        <p>That single column lets us call every OK well lit or dark on the regulator's own filing record. No proxy, no scrape. 35,755 OK wells flag Yes. The other 406,153 do not.</p>
+        <p class="muted">The OCC's data posture is the opposite of TX RRC's. Direct CMS URLs, structured XLSX, 348&nbsp;MB pulled in eleven seconds. That posture is the lit half of this story before any well is mapped.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="5">
+      <div class="step-card">
+        <span class="eyebrow">05 &middot; What "dark" means</span>
+        <h2>Two filing protocols, same floor.</h2>
+        <p><strong style="color:var(--ks)">KS dark</strong> = the well's API does not appear in the KGS public LAS archive. Same rule as basin 01.</p>
+        <p><strong style="color:var(--ok)">OK dark</strong> = the well's RBDMS completion record carries Open_Hole_Logs = No, OR no completion record exists, OR the drill type is not horizontal. Horizontal completions count as lit because the lateral itself produces curve data.</p>
+        <p class="muted">Two states, two rules. The asymmetry is the finding, not the problem. Every basin in this series has its own definition of lit. We publish the rule and publish the numbers it produces.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="6">
+      <div class="step-card">
+        <span class="eyebrow">06 &middot; The basin clip</span>
+        <div class="big">482,918</div>
+        <h2>Wells inside the Province polygon.</h2>
+        <p>932,290 wells across both states fall inside their own borders. 482,918 fall inside the Anadarko Basin Province polygon: 254,562 in Kansas and 228,356 in Oklahoma. Everything outside the polygon is a different play, a different petroleum system, and does not belong in this cut.</p>
+        <p class="muted">Kansas's share is 53%, mostly Hugoton plus the Anadarko Shelf. Oklahoma's share is 47%, concentrated in the deep basin and the SCOOP/STACK trend. The split is closer to fifty-fifty than the production economics would suggest.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="7">
+      <div class="step-card">
+        <span class="eyebrow">07 &middot; The reveal</span>
+        <div class="big">91.1%</div>
+        <h2>Anadarko, <em>dark.</em></h2>
+        <p>439,982 of 482,918 wells. The hypothesis collapses on impact. SCOOP and STACK did not save this basin the way the Bakken saved the Williston. The Anadarko's vertical legacy is too deep, too old, and too large to be rescued by one horizontal decade.</p>
+        <p class="muted">91% dark is the highest basin-wide reading in the series so far, surpassing Kansas's 94% only because Oklahoma's horizontal layer drags the average back down by three points.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="8">
+      <div class="step-card">
+        <span class="eyebrow">08 &middot; The state gradient</span>
+        <h2>The basin split, at 37&deg;N.</h2>
+        <div class="state-table">
+          <span class="cnty">Kansas</span><span class="st ks">KS</span>
+          <div class="track ks"><div class="fill" style="width:94%"></div></div><span class="num">94.0%</span>
+          <span class="cnty">Oklahoma</span><span class="st ok">OK</span>
+          <div class="track ok"><div class="fill" style="width:88%"></div></div><span class="num">87.9%</span>
+        </div>
+        <p>The state-line gradient that cracked the Williston open is barely a tilt here. Six points of difference between Kansas and Oklahoma, both above 87%. The proxies disagree on what counts as lit, but the verdict converges in the high eighties. Dark by either rule.</p>
+        <p class="muted">In the Williston the rock was the same and the data was different. In the Anadarko the rock is the same, the data is different, and the dark share is almost the same anyway. That convergence is itself a finding.</p>
+      </div>
+    </section>
+
+    <section class="step ks-theme" data-step="9">
+      <div class="step-card">
+        <span class="eyebrow">09 &middot; Vintage, basin-wide</span>
+        <h2>The basin is <em>a 1970s vertical.</em></h2>
+        <div class="vintage-chart">
+          <span class="era">pre-1980</span>
+          <div class="track"><div class="fill" style="width:100%"></div></div>
+          <span class="num">254,206</span>
+          <span class="era">1980s</span>
+          <div class="track"><div class="fill" style="width:33%"></div></div>
+          <span class="num">84,329</span>
+          <span class="era">1990s</span>
+          <div class="track"><div class="fill" style="width:12%"></div></div>
+          <span class="num">30,123</span>
+          <span class="era">2000s</span>
+          <div class="track"><div class="fill" style="width:14%"></div></div>
+          <span class="num">34,353</span>
+          <span class="era">2010+</span>
+          <div class="track"><div class="fill" style="width:16%"></div></div>
+          <span class="num">41,104</span>
+          <span class="era">unknown</span>
+          <div class="track"><div class="fill unk" style="width:15%"></div></div>
+          <span class="num">38,803</span>
+        </div>
+        <p>53% of the basin was drilled before 1980. A quarter of a million wells. The Hugoton gas field, the Anadarko Shelf carbonates, the deep-basin sandstone gas plays of the 1960s and 70s. Drilled when "filing the log" meant mailing a paper copy to the survey.</p>
+        <p class="muted">The 2010+ bar (41,104) is real but it is not enough. It is 8% of the basin. The Bakken's 2010+ bar was 46% of its basin. That gap is why the dark verdicts diverge.</p>
+      </div>
+    </section>
+
+    <section class="step ok-theme" data-step="10">
+      <div class="step-card">
+        <span class="eyebrow">10 &middot; The horizontal wedge</span>
+        <div class="big">27,396</div>
+        <h2>Oklahoma horizontals, <em>SCOOP and STACK.</em></h2>
+        <p>Every OK well that the OCC completion record marks as a horizontal hole, basin-clipped: 27,396. The bulk of these are SCOOP (South-Central Oklahoma Oil Province, Cana-Woodford) and STACK (Sooner Trend Anadarko Canadian Kingfisher) wells drilled between 2014 and 2022.</p>
+        <p>The horizontal layer is concentrated in a south-southeast band across Canadian, Kingfisher, Blaine, Custer, and Grady counties. Outside that band, the OK side of the basin reverts to a vertical-pre-1980 distribution that looks more like Kansas than like the Bakken.</p>
+        <p class="muted">If we ignored the horizontal flag and called only "open-hole log filed" wells lit, the OK dark share rises by four points. Counting horizontals as lit is a defensible call, not a free one.</p>
+      </div>
+    </section>
+
+    <section class="step ks-theme" data-step="11">
+      <div class="step-card">
+        <span class="eyebrow">11 &middot; Hugoton</span>
+        <h2>Kansas's <em>pre-digital mountain.</em></h2>
+        <p>The Hugoton gas field, straddling Stevens, Grant, Haskell, and Seward counties, was the largest natural gas field in North America for half a century. Most of its wells were drilled between 1945 and 1975. None of them were drilled with anyone in mind who would later want a public log file.</p>
+        <p>The Kansas portion of the basin is Hugoton plus the carbonates of the Anadarko Shelf, plus a thin scatter of CBM and tight-gas attempts. 94% dark is not a measurement error. It is a stratigraphy of when the wells went down.</p>
+        <p class="muted">A well drilled in 1962 that produced for forty years and was plugged in 2003 is a successful well. It is also, by the rules of this analysis, dark. Both are true.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="12">
+      <div class="step-card">
+        <span class="eyebrow">12 &middot; The unknown bucket</span>
+        <div class="big">38,803</div>
+        <h2>Wells with no parseable vintage.</h2>
+        <p>8% of the basin has no usable spud or completion year. The Kansas side carries most of the unknowns: pre-digital records where the date column was filled in as " " or as a 1900-01-01 placeholder. Both states classify the unknown bucket as dark by default.</p>
+        <p class="muted">Every basin in this series carries a similar floor of date-unknown wells. They are the inventory the digitization era did not catch in time. Williston had 14% unknown. Anadarko has 8%. The numbers tell you how much paper each regulator has indexed.</p>
+      </div>
+    </section>
+
+    <section class="step ok-theme" data-step="13">
+      <div class="step-card">
+        <span class="eyebrow">13 &middot; The operators</span>
+        <h2>Different vintages, <em>different operators.</em></h2>
+        <div class="bars">
+          <span class="op">Citation O&amp;G (OK)</span>
+          <div class="track"><div class="fill" style="width:100%"></div></div>
+          <span class="num">6,500</span>
+          <span class="op">Cities Service (KS)</span>
+          <div class="track"><div class="fill" style="width:61%"></div></div>
+          <span class="num">3,943</span>
+          <span class="op">Diversified (OK)</span>
+          <div class="track"><div class="fill" style="width:58%"></div></div>
+          <span class="num">3,739</span>
+          <span class="op">BCE-MACH I+III (OK)</span>
+          <div class="track"><div class="fill" style="width:73%"></div></div>
+          <span class="num">4,734</span>
+          <span class="op">Oxy USA (KS)</span>
+          <div class="track"><div class="fill" style="width:37%"></div></div>
+          <span class="num">2,391</span>
+        </div>
+        <p>Two operator profiles split this basin. Plug-and-abandon majors with deep vintage exposure (Citation, Cities Service, Oxy, ConocoPhillips, Chesapeake) carry thousands of dark wells per name. Modern horizontal operators (SandRidge, Devon, Ovintiv, Continental) post much lower dark rates on smaller portfolios.</p>
+        <p class="muted">The 67,025 wells listed under "OTC/OCC NOT ASSIGNED" in Oklahoma are the orphaned-and-abandoned bucket. We exclude that group from the operator chart and count it separately. It is 100% dark.</p>
+      </div>
+    </section>
+
+    <section class="step ok-theme" data-step="14">
+      <div class="step-card">
+        <span class="eyebrow">14 &middot; Where the lit wells live</span>
+        <h2>A south-rim arc, not a basin-wide light.</h2>
+        <p>Zoom in on the Oklahoma side and the lit dots cluster in a tight east-west arc through Canadian, Kingfisher, Blaine, and Custer counties. That is SCOOP and STACK. North of that arc, on the Anadarko Shelf and across the Hugoton Embayment, the basin reverts to ghost.</p>
+        <p class="muted">The arc is real, the arc is recent, and the arc is small. It is the only lit signal in 53,000 square miles of basin.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="15">
+      <div class="step-card">
+        <span class="eyebrow">15 &middot; The tell</span>
+        <h2>Horizontal eras only rescue <em>young basins.</em></h2>
+        <p>The Williston is 46% lit because its drilling history is dominated by a single fifteen-year horizontal era. The Anadarko is 9% lit because its drilling history is dominated by sixty years of vertical conventional wells, with a horizontal era added at the end as a thin top layer.</p>
+        <p>The lesson is not about geology, regulators, or the cleanness of OCC's open-hole-log column. It is about timing. A basin's dark share is set by the calendar of when its wells went down, not by the calendar of when its data system arrived. The digital era did not retroactively light the rock.</p>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<section class="outro">
+  <div class="outro-inner">
+    <h2>The horizontal era is <em>thinner</em> than its press releases.</h2>
+    <p>Four basins in, the series has a sharper curve. Kansas, 94% dark. Permian, 78%. Williston, 46%. Anadarko, 91%. Three of four basins are in the high eighties or above. Williston is the outlier, not the rule. The Bakken-style rescue is a structural exception that requires a basin where horizontal drilling dominates the entire well count, not just the recent decade. The Anadarko, like Kansas, is a basin whose record is locked in pre-digital paper. The SCOOP and STACK era added 27,396 lit wells. The basin still has 482,918 wells, and over 400,000 of them are still dark.</p>
+
+    <div class="implications">
+      <p class="implications-label">Where this goes</p>
+      <h3>91% dark in a basin with two cooperative regulators is the best evidence yet that the dark-data problem is structural, not administrative.</h3>
+      <ul>
+        <li><strong>Operators &amp; modellers.</strong> Mid-continent type-curve work for the SCOOP, STACK, Cana-Woodford, and Cleveland Sand plays leans on a public log record that is concentrated in 27,000 horizontals. The 254,000 vertical wells underneath them carry the stratigraphic context the modern completion designs were optimized against, and most of that context is paper.</li>
+        <li><strong>Acquirers &amp; underwriters.</strong> The Anadarko's plug-and-abandon liability sits with the operators on the dark inventory chart, not the SCOOP/STACK modern. 67,025 OK wells are already orphaned and unassigned, 100% dark, with surface-hole locations but no operator on the file.</li>
+        <li><strong>Regulators &amp; policy teams.</strong> Hugoton-area CO2 storage and helium accounting both depend on legacy well files being findable. "The basin has a horizontal lit layer" is true and policy-irrelevant if the layer is 8% of the well count.</li>
+      </ul>
+      <p class="close">I build the pipelines, basin-clip analyses, and AI-assisted subsurface QC that close this kind of gap, across basins, regulators, and the geological detail that still matters. If you work any side of this, <em>let's talk</em>.</p>
+    </div>
+
+    <div class="cta-row">
+      <a class="cta accent" href="https://linkedin.com/in/salamituns">Work with me &rarr;</a>
+      <a class="cta" href="https://github.com/salamituns/darkdata-repo">Data &amp; code</a>
+      <a class="cta" href="/darkdata/">The series</a>
+    </div>
+    <p class="footnote">
+      Sources: <a href="https://oklahoma.gov/occ/divisions/oil-gas/oil-gas-data.html">OK Corporation Commission</a> RBDMS_WELLS shapefile, RBDMS wells CSV, completions (modern + legacy XLSX), orphan-well list. <a href="https://www.kgs.ku.edu/">Kansas Geological Survey</a> bulk well export and public LAS archive (basin 01 logic). <a href="https://www.sciencebase.gov/catalog/item/6410e613d34e22162d3e1774">USGS ScienceBase item 6410e613</a>: Anadarko Basin Province (058) 3D model, MapUnitPolys dissolved to a single polygon. TX Panhandle excluded; deferred to basin 06. Wells joined in EPSG:4269 (NAD83). Built with <a href="https://deck.gl/">deck.gl</a> and <a href="https://github.com/russellsamora/scrollama">scrollama</a>. Analysis: <a href="https://twitter.com/salamituns">@salamituns</a>.
+    </p>
+  </div>
+</section>
+
+<script>
+const BASIN_VIEW   = { longitude: -100.2, latitude: 36.4, zoom: 5.6, pitch: 0, bearing: 0 };
+const KS_VIEW      = { longitude: -100.6, latitude: 37.7, zoom: 6.4, pitch: 0, bearing: 0 };
+const OK_VIEW      = { longitude:  -98.6, latitude: 35.6, zoom: 6.4, pitch: 0, bearing: 0 };
+const SCOOP_STACK  = { longitude:  -98.4, latitude: 35.7, zoom: 7.5, pitch: 0, bearing: 0 };
+const HUGOTON      = { longitude: -101.4, latitude: 37.3, zoom: 7.6, pitch: 0, bearing: 0 };
+const STATELINE    = { longitude: -100.0, latitude: 37.0, zoom: 6.5, pitch: 0, bearing: 0 };
+
+const VIEWS = {
+  0:  BASIN_VIEW,  1: BASIN_VIEW,  2: BASIN_VIEW,
+  3:  KS_VIEW,     4: OK_VIEW,     5: BASIN_VIEW,
+  6:  BASIN_VIEW,  7: BASIN_VIEW,  8: STATELINE,
+  9:  BASIN_VIEW, 10: SCOOP_STACK, 11: HUGOTON,
+  12: BASIN_VIEW, 13: OK_VIEW,    14: SCOOP_STACK,
+  15: BASIN_VIEW
+};
+
+// darkKs/darkOk/litKs/litOk in [0,1]; basin polygon always shown
+// vintageFilter: null | 'pre2000' | 'post2010' | 'unknown' to spotlight subsets
+const SCENES = {
+  0:  { darkKs: 0.45, darkOk: 0.45, litKs: 0.65, litOk: 0.65, legend: false, vintageFilter: null },
+  1:  { darkKs: 0.35, darkOk: 0.35, litKs: 0.35, litOk: 0.35, legend: false, vintageFilter: null },
+  2:  { darkKs: 0.22, darkOk: 0.22, litKs: 0.22, litOk: 0.22, legend: false, vintageFilter: null },
+  3:  { darkKs: 0.90, darkOk: 0.10, litKs: 0.90, litOk: 0.10, legend: false, vintageFilter: null },
+  4:  { darkKs: 0.10, darkOk: 0.90, litKs: 0.10, litOk: 0.90, legend: false, vintageFilter: null },
+  5:  { darkKs: 0.55, darkOk: 0.55, litKs: 0.85, litOk: 0.85, legend: true,  vintageFilter: null },
+  6:  { darkKs: 0.55, darkOk: 0.55, litKs: 0.85, litOk: 0.85, legend: true,  vintageFilter: null },
+  7:  { darkKs: 0.75, darkOk: 0.75, litKs: 0.95, litOk: 0.95, legend: true,  vintageFilter: null },
+  8:  { darkKs: 0.85, darkOk: 0.55, litKs: 0.95, litOk: 0.85, legend: true,  vintageFilter: null },
+  9:  { darkKs: 0.55, darkOk: 0.55, litKs: 0.30, litOk: 0.30, legend: true,  vintageFilter: 'pre2000' },
+ 10:  { darkKs: 0.10, darkOk: 0.15, litKs: 0.20, litOk: 1.00, legend: true,  vintageFilter: 'post2010' },
+ 11:  { darkKs: 0.95, darkOk: 0.15, litKs: 0.30, litOk: 0.20, legend: true,  vintageFilter: 'pre2000' },
+ 12:  { darkKs: 0.85, darkOk: 0.85, litKs: 0.25, litOk: 0.25, legend: true,  vintageFilter: 'unknown' },
+ 13:  { darkKs: 0.45, darkOk: 0.45, litKs: 0.85, litOk: 1.00, legend: true,  vintageFilter: null },
+ 14:  { darkKs: 0.20, darkOk: 0.20, litKs: 0.55, litOk: 1.00, legend: true,  vintageFilter: null },
+ 15:  { darkKs: 0.55, darkOk: 0.55, litKs: 0.85, litOk: 0.85, legend: true,  vintageFilter: null }
+};
+
+const KS_LIT_COLOR = [46, 110, 126];   // teal
+const OK_LIT_COLOR = [197, 123, 53];   // amber
+const GHOST_COLOR  = [181, 174, 160];
+
+let darkKsWells = [];
+let darkOkWells = [];
+let litKsWells  = [];
+let litOkWells  = [];
+let basinGeo    = null;
+let statesGeo   = null;
+let deckgl      = null;
+let currentStep = -1;
+
+function matchesVintage(v, filter) {
+  if (!filter) return true;
+  if (filter === 'pre2000') return v === 0 || v === 1 || v === 2;
+  if (filter === 'post2010') return v === 4;
+  if (filter === 'unknown') return v === 5;
+  return true;
+}
+
+function buildWellLayer(id, data, rgb, opacity, radius, vintageFilter) {
+  if (opacity <= 0.01 || data.length === 0) return null;
+  const filtered = vintageFilter ? data.filter(d => matchesVintage(d.v, vintageFilter)) : data;
+  if (filtered.length === 0) return null;
+  return new deck.ScatterplotLayer({
+    id,
+    data: filtered,
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: [rgb[0], rgb[1], rgb[2], Math.round(220 * opacity)],
+    getRadius: radius,
+    radiusMinPixels: 0.7,
+    radiusMaxPixels: 4,
+    stroked: false,
+    pickable: false
+  });
+}
+
+function buildBasinLayer() {
+  if (!basinGeo) return null;
+  return new deck.GeoJsonLayer({
+    id: 'basin-polygon',
+    data: basinGeo,
+    stroked: true,
+    filled: true,
+    getFillColor: [237, 230, 212, 80],
+    getLineColor: [14, 14, 14, 200],
+    getLineWidth: 2,
+    lineWidthMinPixels: 1.2,
+    pickable: false
+  });
+}
+
+function buildStatesLayer() {
+  if (!statesGeo) return null;
+  return new deck.GeoJsonLayer({
+    id: 'state-outlines',
+    data: statesGeo,
+    stroked: true,
+    filled: false,
+    getLineColor: [14, 14, 14, 110],
+    getLineWidth: 1,
+    lineWidthMinPixels: 0.6,
+    pickable: false
+  });
+}
+
+function rebuildLayers(scene) {
+  const vf = scene.vintageFilter;
+  // Anadarko has many more wells than Williston (~480K vs ~46K). Use smaller radius.
+  const layers = [
+    buildStatesLayer(),
+    buildBasinLayer(),
+    buildWellLayer('dark-ks', darkKsWells, GHOST_COLOR,    scene.darkKs, 220, vf),
+    buildWellLayer('dark-ok', darkOkWells, GHOST_COLOR,    scene.darkOk, 220, vf),
+    buildWellLayer('lit-ks',  litKsWells,  KS_LIT_COLOR,   scene.litKs,  320, vf),
+    buildWellLayer('lit-ok',  litOkWells,  OK_LIT_COLOR,   scene.litOk,  320, vf)
+  ].filter(Boolean);
+  deckgl.setProps({ layers });
+}
+
+function applyStep(i) {
+  if (i === currentStep) return;
+  currentStep = i;
+  const view = VIEWS[i] || BASIN_VIEW;
+  deckgl.setProps({
+    initialViewState: { ...view, transitionDuration: 1200 }
+  });
+  const scene = SCENES[i] || SCENES[0];
+  rebuildLayers(scene);
+
+  const legend = document.getElementById('legend');
+  const stateChip = document.getElementById('state-chip');
+  if (scene.legend) legend.classList.add('on'); else legend.classList.remove('on');
+  if (i >= 2 && i <= 14) stateChip.classList.add('on'); else stateChip.classList.remove('on');
+
+  const pos = document.getElementById('progress-pos');
+  pos.textContent = (i < 10 ? '0' : '') + i;
+}
+
+function setLoaderError(msg) {
+  const loader = document.getElementById('loader');
+  const txt = document.getElementById('loader-text');
+  if (txt) txt.textContent = msg;
+  if (loader) loader.classList.add('error');
+}
+
+async function loadData() {
+  const [csvResp, basinResp, statesResp] = await Promise.all([
+    fetch('data/wells.csv'),
+    fetch('data/anadarko_basin.json'),
+    fetch('data/anadarko_states.json')
+  ]);
+  if (!csvResp.ok) throw new Error('wells.csv load failed: ' + csvResp.status);
+  if (!basinResp.ok) throw new Error('anadarko_basin.json load failed: ' + basinResp.status);
+
+  const csvText = await csvResp.text();
+  basinGeo = await basinResp.json();
+  if (statesResp.ok) statesGeo = await statesResp.json();
+
+  const lines = csvText.split('\n');
+  lines.shift();  // header: lat,lon,d,v,s,h
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    if (!ln) continue;
+    const p = ln.split(',');
+    const row = { lat: +p[0], lon: +p[1], v: +p[3] };
+    const d = p[2];
+    const s = p[4];
+    // s = 0 -> Kansas, s = 1 -> Oklahoma
+    if (d === '1') {
+      if (s === '0') darkKsWells.push(row); else darkOkWells.push(row);
+    } else {
+      if (s === '0') litKsWells.push(row);  else litOkWells.push(row);
+    }
+  }
+
+  deckgl = new deck.DeckGL({
+    container: 'map',
+    initialViewState: BASIN_VIEW,
+    controller: { doubleClickZoom: false, scrollZoom: false, dragPan: false, dragRotate: false, keyboard: false },
+    parameters: { clearColor: [246/255, 243/255, 235/255, 1] },
+    layers: []
+  });
+
+  applyStep(0);
+  document.getElementById('loader').classList.add('done');
+
+  const scroller = scrollama();
+  scroller
+    .setup({ step: '.step', offset: 0.55, debug: false })
+    .onStepEnter(resp => {
+      const idx = +resp.element.getAttribute('data-step');
+      applyStep(idx);
+    });
+
+  window.addEventListener('resize', scroller.resize);
+}
+
+loadData().catch(err => {
+  console.error(err);
+  setLoaderError('Could not load the dataset. Open the browser console for details.');
+});
+</script>
+
+</body>
+</html>
