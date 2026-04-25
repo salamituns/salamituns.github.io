@@ -1,0 +1,196 @@
+{
+  "basin": "Williston (Bakken-Three Forks TPS)",
+  "clip_polygon": "USGS 2021 Bakken + Three Forks Assessment Unit union",
+  "jurisdictions": [
+    "North Dakota",
+    "Montana"
+  ],
+  "excluded_jurisdictions": [
+    "South Dakota (<500 wells in TPS)",
+    "Saskatchewan (future extension)"
+  ],
+  "total_wells": 45921,
+  "dark": 21003,
+  "lit": 24918,
+  "pct_dark": 45.7,
+  "by_state": {
+    "MT": {
+      "total": 5265,
+      "dark": 3419,
+      "horizontal_flagged": 0,
+      "pct_dark": 64.9
+    },
+    "ND": {
+      "total": 40656,
+      "dark": 17584,
+      "horizontal_flagged": 21484,
+      "pct_dark": 43.3
+    }
+  },
+  "vintage_distribution": {
+    "0": 7909,
+    "1": 5699,
+    "2": 1608,
+    "3": 3101,
+    "4": 21225,
+    "5": 6379
+  },
+  "vintage_labels": {
+    "0": "pre-1980",
+    "1": "1980s",
+    "2": "1990s",
+    "3": "2000s",
+    "4": "2010+",
+    "5": "unknown"
+  },
+  "top_operators": [
+    {
+      "operator": "CONTINENTAL RESOURCES, INC.",
+      "total": 3069,
+      "dark": 404,
+      "pct_dark": 13.2
+    },
+    {
+      "operator": "HESS BAKKEN INVESTMENTS II, LLC",
+      "total": 2874,
+      "dark": 622,
+      "pct_dark": 21.6
+    },
+    {
+      "operator": "WHITING OIL AND GAS CORPORATION",
+      "total": 2511,
+      "dark": 414,
+      "pct_dark": 16.5
+    },
+    {
+      "operator": "DEVON ENERGY WILLISTON, L.L.C",
+      "total": 2319,
+      "dark": 122,
+      "pct_dark": 5.3
+    },
+    {
+      "operator": "OASIS PETROLEUM NORTH AMERICA LLC",
+      "total": 2192,
+      "dark": 264,
+      "pct_dark": 12.0
+    },
+    {
+      "operator": "BURLINGTON RESOURCES OIL & GAS COMPANY LP",
+      "total": 1359,
+      "dark": 211,
+      "pct_dark": 15.5
+    },
+    {
+      "operator": "XTO ENERGY INC",
+      "total": 1350,
+      "dark": 266,
+      "pct_dark": 19.7
+    },
+    {
+      "operator": "ENERPLUS RESOURCES USA CORPORATION",
+      "total": 1336,
+      "dark": 197,
+      "pct_dark": 14.7
+    },
+    {
+      "operator": "MARATHON OIL COMPANY",
+      "total": 1324,
+      "dark": 142,
+      "pct_dark": 10.7
+    },
+    {
+      "operator": "EOG RESOURCES, INC.",
+      "total": 1269,
+      "dark": 414,
+      "pct_dark": 32.6
+    },
+    {
+      "operator": "PETRO-HUNT, L.L.C.",
+      "total": 1055,
+      "dark": 364,
+      "pct_dark": 34.5
+    },
+    {
+      "operator": "SLAWSON EXPLORATION COMPANY, INC.",
+      "total": 775,
+      "dark": 188,
+      "pct_dark": 24.3
+    },
+    {
+      "operator": "AMERADA HESS CORPORATION",
+      "total": 710,
+      "dark": 708,
+      "pct_dark": 99.7
+    },
+    {
+      "operator": "COBRA OIL & GAS CORPORATION",
+      "total": 686,
+      "dark": 513,
+      "pct_dark": 74.8
+    },
+    {
+      "operator": "NEPTUNE OPERATING LLC",
+      "total": 523,
+      "dark": 37,
+      "pct_dark": 7.1
+    }
+  ],
+  "top_fields": [
+    {
+      "field": "Wildcat Richland",
+      "total": 1457,
+      "dark": 215
+    },
+    {
+      "field": "SANISH",
+      "total": 996,
+      "dark": 106
+    },
+    {
+      "field": "PARSHALL",
+      "total": 835,
+      "dark": 189
+    },
+    {
+      "field": "Wildcat Roosevelt",
+      "total": 708,
+      "dark": 402
+    },
+    {
+      "field": "LITTLE KNIFE",
+      "total": 698,
+      "dark": 314
+    },
+    {
+      "field": "ANTELOPE",
+      "total": 664,
+      "dark": 251
+    },
+    {
+      "field": "BEAVER LODGE",
+      "total": 622,
+      "dark": 373
+    },
+    {
+      "field": "BANKS",
+      "total": 602,
+      "dark": 77
+    },
+    {
+      "field": "BLUE BUTTES",
+      "total": 591,
+      "dark": 241
+    },
+    {
+      "field": "SIVERSTON",
+      "total": 493,
+      "dark": 44
+    }
+  ],
+  "notes": {
+    "dark_definition": "d = 1 if spud/completed year < 2000 AND well is not flagged as a horizontal. NDIC and BOGC digital filing systems went live around 2000; pre-2000 wells rely on paper scans that are not systematically public.",
+    "mt_vintage_note": "MT BOGC ships completion date (not spud date); we use the completion year as a vintage proxy. Completion typically lags spud by 30-90 days in conventional wells.",
+    "mt_horizontal_note": "MT BOGC shapefile ships no horizontal indicator. MT horizontals are counted as non-horizontal in this cut, biasing MT dark share upward by a few points relative to ND. Documented on StoryMap."
+  },
+  "generated_at": "2026-04-24T18:53:58"
+}
