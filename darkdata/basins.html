@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>The basins &mdash; A field guide to the US oil and gas basins | @salamituns</title>
+<meta name="description" content="A reader's primer to six US oil and gas basins. Where they are, what's in the rock, when they were drilled, who they feed. The entry point to the dark-data series.">
+<meta property="og:title" content="The basins. Six US oil and gas basins, mapped.">
+<meta property="og:description" content="Geology shapes the drilling era; the drilling era shapes the data architecture; the data architecture decides what the public can see. A reader's field guide to the six basins covered in the dark-data series.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/basins.html">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_conus_hero.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/basins.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+<link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+<link rel="stylesheet" href="/assets/map-chrome.css">
+<style>
+  /* Primer-specific extensions on top of map-chrome.css */
+  :root { --basin-card-bg: #FBF8F1; }
+
+  .basin-list { margin-top: 0.5rem; }
+  .basin-card {
+    display: block;
+    padding: 0.65rem 0.85rem;
+    margin: 0 -0.85rem;
+    border-bottom: 1px solid var(--rule-soft);
+    text-decoration: none;
+    color: inherit;
+    transition: background 160ms ease;
+    cursor: pointer;
+    position: relative;
+  }
+  .basin-card:hover, .basin-card.active { background: var(--basin-card-bg); }
+  .basin-card.active::before {
+    content: '';
+    position: absolute; top: 0; bottom: 0; left: 0;
+    width: 3px; background: var(--basin-color, var(--accent));
+  }
+  .basin-card .row1 {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 0.65rem;
+  }
+  .basin-card .name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14.5px; font-weight: 400;
+    color: var(--ink);
+    font-feature-settings: "ss01";
+  }
+  .basin-card .badge {
+    font-size: 10px;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    font-weight: 500;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    flex-shrink: 0;
+  }
+  .basin-card .badge.dark { color: var(--accent); }
+  .basin-card .row2 {
+    margin-top: 0.25rem;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+  .basin-card .row2 em { font-style: italic; color: var(--ink); }
+  .basin-color-chip {
+    display: inline-block;
+    width: 10px; height: 10px; border-radius: 1px;
+    background: var(--basin-color);
+    margin-right: 0.45rem;
+    vertical-align: -1px;
+  }
+
+  .detail-panel {
+    position: absolute;
+    top: var(--em-nav-h); left: 0;
+    width: min(420px, 50vw);
+    height: calc(100vh - var(--em-nav-h));
+    background: var(--paper);
+    border-right: 1px solid var(--rule);
+    padding: 1.5rem 1.5rem 4rem;
+    overflow-y: auto;
+    transform: translateX(-105%);
+    transition: transform 280ms ease;
+    z-index: 5;
+    box-shadow: 6px 0 22px rgba(14,14,14,0.06);
+  }
+  .detail-panel.open { transform: translateX(0); }
+  .detail-panel .close {
+    position: absolute; top: 0.65rem; right: 0.85rem;
+    border: none; background: transparent;
+    font-size: 18px; color: var(--muted);
+    cursor: pointer; line-height: 1; padding: 0.5rem;
+  }
+  .detail-panel .close:hover { color: var(--ink); }
+  .detail-panel .eyebrow-d {
+    display: block; font-size: 10px;
+    letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 0.5rem;
+  }
+  .detail-panel h2 {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 1.55rem; font-weight: 400;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    line-height: 1.15; letter-spacing: -0.01em;
+    margin-bottom: 0.4rem;
+    color: var(--ink);
+  }
+  .detail-panel h2 em { font-style: italic; color: var(--basin-color, var(--accent)); }
+  .detail-panel .role {
+    font-size: 12.5px; color: var(--muted);
+    line-height: 1.5; margin-bottom: 1rem;
+  }
+  .detail-panel dl {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 0.6rem 0.8rem;
+    font-size: 12.5px;
+    border-top: 1px solid var(--rule);
+    padding-top: 1rem;
+    margin-top: 0.5rem;
+  }
+  .detail-panel dt {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 10px;
+    font-weight: 500;
+    align-self: start; padding-top: 2px;
+  }
+  .detail-panel dd { color: var(--ink); line-height: 1.5; }
+  .detail-panel dd em { font-style: italic; }
+  .detail-panel .stat-strip {
+    margin-top: 1rem; padding: 0.85rem 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+  }
+  .detail-panel .stat-strip .stat-card { padding: 0; border: none; }
+  .detail-panel .stat-strip .stat-card .value {
+    font-size: 1.25rem;
+    color: var(--basin-color, var(--ink));
+  }
+  .detail-panel .one-line {
+    margin-top: 1.1rem; font-style: italic;
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14px; color: var(--ink);
+    border-left: 2px solid var(--basin-color, var(--accent));
+    padding: 0.4rem 0.85rem; line-height: 1.5;
+  }
+  .detail-panel .cta-row {
+    margin-top: 1.4rem;
+    display: flex; gap: 0.6rem; flex-wrap: wrap;
+  }
+  .detail-panel .cta {
+    display: inline-block;
+    padding: 0.55rem 0.95rem;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-decoration: none;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .detail-panel .cta:hover { background: var(--ink); color: var(--paper); }
+  .detail-panel .cta.primary {
+    background: var(--basin-color, var(--accent));
+    color: var(--paper);
+    border-color: var(--basin-color, var(--accent));
+  }
+  .detail-panel .cta.primary:hover { background: var(--ink); border-color: var(--ink); }
+
+  .map-tooltip {
+    position: absolute; pointer-events: none;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    padding: 0.5rem 0.7rem;
+    font-size: 12px; line-height: 1.4;
+    z-index: 100;
+    box-shadow: 2px 2px 0 rgba(14,14,14,0.08);
+    max-width: 260px;
+  }
+  .map-tooltip .name {
+    font-family: "Fraunces", Georgia, serif;
+    font-size: 14px; font-weight: 500;
+    color: var(--ink); margin-bottom: 0.25rem;
+  }
+  .map-tooltip .stat {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .map-tooltip .stat strong { color: var(--accent); font-weight: 600; }
+  .map-tooltip .one { color: var(--muted); margin-top: 0.2rem; font-size: 11px; }
+
+  .insight-quiet {
+    margin-top: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--basin-card-bg);
+    border: 1px solid var(--rule);
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .insight-quiet em {
+    font-style: italic; color: var(--accent);
+    font-family: "Fraunces", Georgia, serif;
+  }
+
+  .map-loader {
+    position: absolute; inset: var(--em-nav-h) var(--legend-w) 0 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: var(--paper);
+    color: var(--muted);
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    z-index: 50;
+    transition: opacity 350ms ease;
+  }
+  .map-loader.done { opacity: 0; pointer-events: none; }
+  .map-loader .pulse {
+    width: 9px; height: 9px; background: var(--accent);
+    margin-bottom: 0.65rem;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <div class="em-left">
+    <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+    <a href="/darkdata/" class="em-back" aria-label="Back to Dark Data series">
+      <span class="em-back-arrow" aria-hidden="true">&larr;</span>Dark&nbsp;Data
+    </a>
+  </div>
+  <div class="em-siblings" role="group" aria-label="Series">
+    <span class="em-here" aria-current="page">Primer</span>
+    <a href="/darkdata/">Series</a>
+  </div>
+</nav>
+
+<div id="map"></div>
+
+<div class="map-loader" id="map-loader">
+  <div class="pulse"></div>
+  <div>Loading 6 basins</div>
+</div>
+
+<aside id="legend" aria-labelledby="legend-title">
+  <span class="eyebrow">Field Guide &mdash; A primer to the dark-data series</span>
+  <h1 id="legend-title">Six basins drilled the <em>United States.</em></h1>
+  <p class="subtitle">Where the wells are. What rock they target. When they were drilled. Each basin links to its full dark-data walk. Click any basin on the map to inspect.</p>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="value">6</div>
+      <div class="label">Basins</div>
+    </div>
+    <div class="stat-card accent">
+      <div class="value">1.92M</div>
+      <div class="label">Wells&nbsp;mapped</div>
+    </div>
+    <div class="stat-card">
+      <div class="value">89.1%</div>
+      <div class="label">Dark&nbsp;measured</div>
+    </div>
+    <div class="stat-card accent">
+      <div class="value">165</div>
+      <div class="label">Years&nbsp;since&nbsp;Drake</div>
+    </div>
+  </div>
+
+  <div class="view-toggle" role="group" aria-label="Map view">
+    <button class="view-btn active" data-mode="dark" type="button">Dark&nbsp;%</button>
+    <button class="view-btn" data-mode="geology" type="button">Geology</button>
+    <button class="view-btn" data-mode="production" type="button">Output</button>
+    <button class="view-btn" data-mode="era" type="button">Era</button>
+  </div>
+
+  <div class="section-title" id="basin-list-title">The basins</div>
+  <div class="basin-list" id="basin-list" role="list"></div>
+
+  <div class="insight-quiet">
+    <strong>The thesis the series writes:</strong> geology shapes the drilling era; the drilling era shapes the data architecture; the data architecture decides what the public can see. <em>Six basins is enough to make the chain visible.</em>
+  </div>
+
+  <div class="section-title">Sources</div>
+  <p style="font-size:11.5px; line-height:1.55; color:var(--muted); margin-top:-0.2rem;">
+    USGS ScienceBase Assessment Unit polygons (Williston, Anadarko, Eagle Ford). EIA Tight Oil + Shale Plays Lower 48 Dec 2021 (Appalachia). State county dissolves (Kansas, Permian). EIA Drilling Productivity Report monthly time series. US Census TIGER 2024 5m state outlines. Methodology and code: <a href="https://github.com/salamituns/darkdata-repo" style="color:var(--ink); border-bottom:1px solid var(--rule);">darkdata-repo</a>.
+  </p>
+</aside>
+
+<aside class="detail-panel" id="detail" aria-hidden="true"></aside>
+
+<div class="attribution">
+  Analysis: <a href="https://twitter.com/salamituns">@salamituns</a> &middot; deck.gl + maplibre &middot; April 2026
+</div>
+
+<div class="map-tooltip" id="tooltip" style="display:none"></div>
+
+<script>
+const BASIN_COLORS = {
+  kansas:     '#A23B2A',
+  permian:    '#C57B35',
+  williston:  '#6B4E8A',
+  anadarko:   '#2E6E7E',
+  appalachia: '#8B6F3E',
+  eagle_ford: '#5C7A8C',
+};
+
+const VIEW_MODES = {
+  dark: {
+    label: 'Dark percentage',
+    fill: (props) => {
+      if (props.dark_pct == null) return [162, 59, 42, 70];
+      const t = Math.max(0, Math.min(1, (props.dark_pct - 45) / 55));
+      return [Math.round(220 - t * 100), Math.round(195 - t * 100), Math.round(155 - t * 60), 200];
+    },
+  },
+  geology: {
+    label: 'Target rock era',
+    fill: (props) => {
+      const eraColor = {
+        appalachia: [122, 89, 53, 220],
+        williston:  [165, 105, 70, 220],
+        anadarko:   [195, 140, 75, 220],
+        kansas:     [180, 165, 110, 220],
+        permian:    [197, 123, 53, 220],
+        eagle_ford: [92, 122, 140, 220],
+      };
+      return eraColor[props.id] || [120, 120, 120, 200];
+    },
+  },
+  production: {
+    label: 'Oil production rank',
+    fill: (props) => {
+      const rankColor = {
+        permian:    [162, 59, 42, 240],
+        eagle_ford: [197, 123, 53, 220],
+        williston:  [197, 123, 53, 200],
+        anadarko:   [122, 111, 105, 180],
+        appalachia: [110, 105, 100, 180],
+        kansas:     [165, 160, 150, 140],
+      };
+      return rankColor[props.id] || [120, 120, 120, 180];
+    },
+  },
+  era: {
+    label: 'First horizontal year',
+    fill: (props) => {
+      const yr = props.horizontal_era_year;
+      if (yr == null) return [165, 160, 150, 160];
+      const t = Math.max(0, Math.min(1, (yr - 2008) / 6));
+      return [Math.round(107 + t * 60), Math.round(78 - t * 30), Math.round(138 - t * 50), 220];
+    },
+  },
+};
+
+let basinFc = null;
+let conusFc = null;
+let mapLib = null;
+let deckOverlay = null;
+let currentMode = 'dark';
+let activeBasinId = null;
+
+// --- Safe DOM helpers (avoid innerHTML for dynamic content) ---
+function el(tag, opts) {
+  const e = document.createElement(tag);
+  if (!opts) return e;
+  if (opts.cls)   e.className = opts.cls;
+  if (opts.text != null) e.textContent = String(opts.text);
+  if (opts.html != null) e.innerHTML = opts.html;  // only used for static template strings
+  if (opts.attrs) Object.entries(opts.attrs).forEach(([k, v]) => e.setAttribute(k, v));
+  if (opts.style) Object.entries(opts.style).forEach(([k, v]) => e.style.setProperty(k, v));
+  if (opts.children) opts.children.forEach(c => c && e.appendChild(c));
+  return e;
+}
+
+function viewModeFill(props) {
+  return VIEW_MODES[currentMode].fill(props);
+}
+
+function buildBasinList() {
+  const list = document.getElementById('basin-list');
+  while (list.firstChild) list.removeChild(list.firstChild);
+
+  const order = ['kansas', 'permian', 'williston', 'anadarko', 'appalachia', 'eagle_ford'];
+  const byId = {};
+  basinFc.features.forEach(f => byId[f.properties.id] = f.properties);
+
+  order.forEach(id => {
+    const p = byId[id];
+    if (!p) return;
+    const color = BASIN_COLORS[id];
+
+    const card = el('div', {
+      cls: 'basin-card',
+      attrs: { 'data-id': id, role: 'listitem', tabindex: '0' },
+      style: { '--basin-color': color },
+    });
+
+    // Row 1: name + dark badge
+    const chip = el('span', { cls: 'basin-color-chip' });
+    const nameSpan = el('span', { cls: 'name' });
+    nameSpan.appendChild(chip);
+    nameSpan.appendChild(document.createTextNode(p.short));
+
+    const darkText = p.dark_pct != null ? p.dark_pct + '% dark' : 'unmeasured';
+    const badge = el('span', { cls: 'badge dark', text: darkText });
+
+    const row1 = el('div', { cls: 'row1', children: [nameSpan, badge] });
+
+    // Row 2: role · wells (with em emphasis on the well count)
+    const row2 = el('div', { cls: 'row2' });
+    row2.appendChild(document.createTextNode(p.role + ' · '));
+    if (p.well_count != null) {
+      row2.appendChild(el('em', { text: p.well_count.toLocaleString() }));
+      row2.appendChild(document.createTextNode(' wells'));
+    } else {
+      row2.appendChild(el('em', { text: 'walled' }));
+      row2.appendChild(document.createTextNode(' by TX RRC'));
+    }
+
+    card.appendChild(row1);
+    card.appendChild(row2);
+
+    card.addEventListener('click', () => openDetail(id));
+    card.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        openDetail(id);
+      }
+    });
+
+    list.appendChild(card);
+  });
+}
+
+function openDetail(basinId) {
+  const f = basinFc.features.find(x => x.properties.id === basinId);
+  if (!f) return;
+  const p = f.properties;
+  const color = BASIN_COLORS[basinId];
+  activeBasinId = basinId;
+
+  document.querySelectorAll('.basin-card').forEach(c => {
+    c.classList.toggle('active', c.dataset.id === basinId);
+  });
+
+  const detail = document.getElementById('detail');
+  while (detail.firstChild) detail.removeChild(detail.firstChild);
+  detail.style.setProperty('--basin-color', color);
+
+  // Close button
+  const closeBtn = el('button', { cls: 'close', attrs: { type: 'button', 'aria-label': 'Close' }, text: '×' });
+  closeBtn.addEventListener('click', closeDetail);
+  detail.appendChild(closeBtn);
+
+  // Eyebrow
+  detail.appendChild(el('span', { cls: 'eyebrow-d', text: 'Basin profile' }));
+
+  // Title with em
+  const h2 = el('h2');
+  h2.appendChild(document.createTextNode(p.short + ', '));
+  h2.appendChild(el('em', { text: 'at a glance.' }));
+  detail.appendChild(h2);
+
+  // Role
+  detail.appendChild(el('p', { cls: 'role', text: p.role }));
+
+  // Stat strip: Dark, Wells, First well
+  const stats = el('div', { cls: 'stat-strip' });
+  const darkStat = p.dark_pct != null ? (p.dark_pct + '%') : 'unmeasured';
+  const wellsStat = p.well_count != null ? p.well_count.toLocaleString() : '—';
+  const eraStat = p.first_well_year ? String(p.first_well_year) : '—';
+  [
+    [darkStat, 'Dark'],
+    [wellsStat, 'Wells'],
+    [eraStat, 'First well'],
+  ].forEach(([value, label]) => {
+    const card = el('div', { cls: 'stat-card', children: [
+      el('div', { cls: 'value', text: value }),
+      el('div', { cls: 'label', text: label }),
+    ]});
+    stats.appendChild(card);
+  });
+  detail.appendChild(stats);
+
+  // Definition list
+  const dl = el('dl');
+  const horzStart = p.horizontal_era_year ? String(p.horizontal_era_year) : 'none';
+  const facts = [
+    ['Geology', p.era_geology],
+    ['Target rocks', p.target_rocks],
+    ['Trap', p.trap_type],
+    ['Depth', p.depth_range_ft + ' ft'],
+    ['Hydrocarbon', p.oil_or_gas],
+    ['Horizontal era', horzStart],
+    ['US rank', p.production_rank, true],  // wrap in em
+  ];
+  facts.forEach(([key, val, wrapEm]) => {
+    dl.appendChild(el('dt', { text: key }));
+    if (wrapEm) {
+      dl.appendChild(el('dd', { children: [el('em', { text: val })] }));
+    } else {
+      dl.appendChild(el('dd', { text: val }));
+    }
+  });
+  detail.appendChild(dl);
+
+  // One-liner pull quote
+  detail.appendChild(el('p', { cls: 'one-line', text: p.one_line }));
+
+  // CTAs
+  const ctaRow = el('div', { cls: 'cta-row' });
+  const primary = el('a', {
+    cls: 'cta primary',
+    attrs: { href: p.walk_url },
+    text: 'Walk this basin →',
+  });
+  const secondary = el('a', {
+    cls: 'cta',
+    attrs: { href: '/darkdata/' },
+    text: 'All six basins',
+  });
+  ctaRow.appendChild(primary);
+  ctaRow.appendChild(secondary);
+  detail.appendChild(ctaRow);
+
+  detail.classList.add('open');
+  detail.setAttribute('aria-hidden', 'false');
+}
+
+function closeDetail() {
+  const detail = document.getElementById('detail');
+  detail.classList.remove('open');
+  detail.setAttribute('aria-hidden', 'true');
+  activeBasinId = null;
+  document.querySelectorAll('.basin-card.active').forEach(c => c.classList.remove('active'));
+}
+
+function setView(mode) {
+  currentMode = mode;
+  document.querySelectorAll('.view-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  rebuildLayers();
+}
+
+function buildLayers() {
+  return [
+    new deck.GeoJsonLayer({
+      id: 'conus',
+      data: conusFc,
+      stroked: true, filled: true,
+      getFillColor: [246, 243, 235, 60],
+      getLineColor: [14, 14, 14, 110],
+      lineWidthMinPixels: 0.4,
+      pickable: false,
+    }),
+    new deck.GeoJsonLayer({
+      id: 'basins',
+      data: basinFc,
+      stroked: true, filled: true,
+      getFillColor: f => viewModeFill(f.properties),
+      getLineColor: [14, 14, 14, 220],
+      lineWidthMinPixels: 1.2,
+      pickable: true,
+      autoHighlight: true,
+      highlightColor: [14, 14, 14, 40],
+      onHover: info => {
+        const tip = document.getElementById('tooltip');
+        if (info.object) {
+          const p = info.object.properties;
+          const color = BASIN_COLORS[p.id];
+
+          // Build tooltip with safe DOM methods
+          while (tip.firstChild) tip.removeChild(tip.firstChild);
+
+          const nameDiv = el('div', { cls: 'name', text: p.short });
+          nameDiv.style.color = color;
+          tip.appendChild(nameDiv);
+
+          const statDiv = el('div', { cls: 'stat' });
+          const strong1 = el('strong', { text: p.dark_pct != null ? p.dark_pct + '%' : 'unmeasured' });
+          statDiv.appendChild(strong1);
+          statDiv.appendChild(document.createTextNode(p.dark_pct != null ? ' dark · ' : ' · '));
+          statDiv.appendChild(document.createTextNode(p.well_count != null
+            ? p.well_count.toLocaleString() + ' wells'
+            : 'walled by TX RRC'));
+          tip.appendChild(statDiv);
+
+          const oneDiv = el('div', { cls: 'one' });
+          oneDiv.textContent = p.one_line.length > 90 ? p.one_line.slice(0, 87) + '…' : p.one_line;
+          tip.appendChild(oneDiv);
+
+          tip.style.display = 'block';
+          tip.style.left = info.x + 14 + 'px';
+          tip.style.top = info.y + 14 + 'px';
+        } else {
+          tip.style.display = 'none';
+        }
+      },
+      onClick: info => {
+        if (info.object) openDetail(info.object.properties.id);
+      },
+    }),
+  ];
+}
+
+function rebuildLayers() {
+  if (deckOverlay) deckOverlay.setProps({ layers: buildLayers() });
+}
+
+async function init() {
+  const [basinResp, conusResp] = await Promise.all([
+    fetch('/darkdata/primer_data/basins.json'),
+    fetch('/darkdata/primer_data/conus_states.json'),
+  ]);
+  if (!basinResp.ok) throw new Error('basins.json load failed: ' + basinResp.status);
+  basinFc = await basinResp.json();
+  conusFc = await conusResp.json();
+
+  mapLib = new maplibregl.Map({
+    container: 'map',
+    style: {
+      version: 8,
+      glyphs: 'https://demotiles.maplibre.org/font/{fontstack}/{range}.pbf',
+      sources: {},
+      layers: [
+        { id: 'background', type: 'background', paint: { 'background-color': '#FBF8F1' } },
+      ],
+    },
+    center: [-96, 39],
+    zoom: 3.6,
+    minZoom: 2.6,
+    maxZoom: 8,
+    attributionControl: false,
+    pitchWithRotate: false,
+    dragRotate: false,
+  });
+  mapLib.scrollZoom.disable();
+  mapLib.boxZoom.disable();
+  mapLib.touchZoomRotate.disableRotation();
+
+  deckOverlay = new deck.MapboxOverlay({
+    interleaved: false,
+    layers: buildLayers(),
+  });
+  mapLib.addControl(deckOverlay);
+
+  buildBasinList();
+
+  document.querySelectorAll('.view-btn').forEach(b => {
+    b.addEventListener('click', () => setView(b.dataset.mode));
+  });
+
+  document.getElementById('map-loader').classList.add('done');
+
+  document.getElementById('map').addEventListener('mouseleave', () => {
+    document.getElementById('tooltip').style.display = 'none';
+  });
+}
+
+init().catch(err => {
+  console.error(err);
+  const loader = document.getElementById('map-loader');
+  while (loader.firstChild) loader.removeChild(loader.firstChild);
+  const errDiv = el('div', {
+    text: 'Could not load the basin geometry. Open the browser console for details.',
+    style: { color: 'var(--accent)', 'max-width': '24rem', 'text-align': 'center', 'line-height': '1.5' },
+  });
+  loader.appendChild(errDiv);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,54 @@
+{
+  "series_complete": true,
+  "basin_count": 6,
+  "measured_basins": 5,
+  "walled_basins": 1,
+  "wells_mapped_total": 1921013,
+  "measured_dark_pct_weighted": 89.1,
+  "horizontal_era_thesis": "Horizontal eras only rescue young basins where horizontals dominate the well count. Williston confirms (46 percent dark, horizontals are the dominant era). Anadarko refutes (91 percent dark, horizontals are 8 percent of the well count).",
+  "architecture_thesis": "Dark data is a regulator publishing choice, not a continuum. North Dakota chose a shapefile, Oklahoma a CSV, Pennsylvania a flag column, Kansas a survey, Texas kept the mainframe.",
+  "basins_ranked_by_dark_share": [
+    {
+      "id": "williston",
+      "short": "Williston",
+      "dark_pct": 45.7,
+      "wells": 45921,
+      "rank": 1
+    },
+    {
+      "id": "permian",
+      "short": "Permian",
+      "dark_pct": 77.9,
+      "wells": 393073,
+      "rank": 2
+    },
+    {
+      "id": "anadarko",
+      "short": "Anadarko",
+      "dark_pct": 91.1,
+      "wells": 482918,
+      "rank": 3
+    },
+    {
+      "id": "kansas",
+      "short": "Kansas",
+      "dark_pct": 94.3,
+      "wells": 419777,
+      "rank": 4
+    },
+    {
+      "id": "appalachia",
+      "short": "Appalachia",
+      "dark_pct": 94.8,
+      "wells": 579324,
+      "rank": 5
+    },
+    {
+      "id": "eagle_ford",
+      "short": "Eagle Ford",
+      "dark_pct": null,
+      "wells": null,
+      "rank": 6
+    }
+  ]
+}

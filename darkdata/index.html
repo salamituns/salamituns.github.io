@@ -227,6 +227,143 @@
   margin: 0 0.5rem;
   color: var(--rule);
 }
+
+/* ---- Primer callout (entry-point card above the totals strip) ---- */
+.primer-callout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1.25rem, 2.5vw, 2rem);
+  align-items: stretch;
+  padding: clamp(1.5rem, 2.5vw, 2.25rem);
+  border: 1px solid var(--rule);
+  background: linear-gradient(180deg, var(--paper) 0%, #FBF8F1 100%);
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 180ms ease, background 180ms ease;
+  margin: clamp(2rem, 4vw, 3.25rem) 0 clamp(2.5rem, 5vw, 4rem);
+}
+@media (min-width: 800px) {
+  .primer-callout {
+    grid-template-columns: 1.05fr 1.45fr;
+    gap: clamp(2rem, 4vw, 3rem);
+    align-items: center;
+  }
+}
+.primer-callout:hover {
+  border-color: var(--ink);
+  background: var(--paper);
+}
+.primer-callout:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+.primer-callout .visual {
+  position: relative;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+.primer-callout .visual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.primer-callout .body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+.primer-callout .eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.1rem;
+}
+.primer-callout h2 {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-variation-settings: "opsz" 96, "SOFT" 30;
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin: 0 0 0.4rem;
+  text-wrap: balance;
+}
+.primer-callout h2 em {
+  font-style: italic;
+  color: var(--accent);
+  font-variation-settings: "opsz" 96, "SOFT" 80;
+}
+.primer-callout p.lede {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-variation-settings: "opsz" 18, "SOFT" 20;
+  font-weight: 350;
+  font-style: italic;
+  font-size: clamp(1rem, 1.4vw, 1.15rem);
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 50ch;
+  margin: 0;
+  text-wrap: pretty;
+}
+.primer-callout .cta-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.6rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink);
+  border-bottom: 1px solid var(--ink);
+  padding-bottom: 2px;
+  align-self: flex-start;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.primer-callout:hover .cta-line {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+.primer-callout .arrow {
+  font-size: 1.1em;
+  line-height: 1;
+  font-weight: 400;
+}
+.primer-callout .meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  margin-top: 0.25rem;
+}
+.primer-callout .meta-row .pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  padding: 0.25rem 0.55rem;
+  border: 1px solid var(--rule);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.primer-callout .meta-row .pill .num {
+  font-family: "Fraunces", serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+  text-transform: none;
+}
 </style>
 </head>
 <body>
@@ -254,6 +391,26 @@
   </div>
 
   <div class="page">
+    <a class="primer-callout" href="/darkdata/basins.html" aria-labelledby="primer-callout-title">
+      <div class="visual">
+        <img src="/darkdata/primer_data/figures/primer_conus_hero.png"
+             alt="Map of the contiguous United States with six oil and gas basins outlined in distinct colors: Williston in violet across North Dakota and Montana, Permian in amber across West Texas and New Mexico, Anadarko in teal across Oklahoma, Kansas in clay, Appalachia in olive across Pennsylvania, West Virginia, and Ohio, and Eagle Ford in slate across South Texas." />
+      </div>
+      <div class="body">
+        <span class="eyebrow">New &middot; Field guide</span>
+        <h2 id="primer-callout-title">Start with the <em>basins.</em></h2>
+        <p class="lede">
+          A reader's primer to the six US oil and gas basins covered in this series. Where they are. What rock they target. When they were drilled. Click any basin to inspect, then dive into its full dark-data walk.
+        </p>
+        <div class="meta-row">
+          <span class="pill"><span class="num">6</span>basins</span>
+          <span class="pill"><span class="num">4</span>view modes</span>
+          <span class="pill"><span class="num">deck.gl</span> + maplibre</span>
+        </div>
+        <span class="cta-line">Open the primer <span class="arrow" aria-hidden="true">&rarr;</span></span>
+      </div>
+    </a>
+
     <section aria-labelledby="totals-heading">
       <div class="section-head">
         <h2 class="caps" id="totals-heading">Running Totals</h2>
