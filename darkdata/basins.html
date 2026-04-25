@@ -267,6 +267,61 @@
     line-height: 1.5;
   }
 
+  /* Reset-to-CONUS floating button (custom, separate from maplibre's
+     NavigationControl). Sits in the bottom-left of the map area. */
+  .reset-btn {
+    position: absolute;
+    left: 12px;
+    bottom: 14px;
+    z-index: 6;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    padding: 0.5rem 0.75rem;
+    font-family: inherit;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .reset-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .reset-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  .reset-btn .arrow {
+    margin-right: 0.4rem;
+    color: var(--accent);
+    font-size: 12px;
+  }
+  .reset-btn:hover .arrow {
+    color: var(--paper);
+  }
+
+  /* Tighten maplibre's NavigationControl to match the editorial chrome */
+  .maplibregl-ctrl-top-left { top: calc(var(--em-nav-h) + 12px) !important; left: 12px !important; }
+  .maplibregl-ctrl-group {
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid var(--ink) !important;
+    background: var(--paper) !important;
+  }
+  .maplibregl-ctrl-group button {
+    border-radius: 0 !important;
+    background-color: var(--paper) !important;
+  }
+  .maplibregl-ctrl-group button:hover {
+    background-color: var(--basin-card-bg) !important;
+  }
+  .maplibregl-ctrl-group button + button {
+    border-top: 1px solid var(--rule) !important;
+  }
+
   /* Sort hint after section title */
   .sort-hint {
     margin-left: 0.4rem;
@@ -350,6 +405,10 @@
 </nav>
 
 <div id="map"></div>
+
+<button class="reset-btn" id="reset-btn" type="button" aria-label="Reset to continental US view">
+  <span class="arrow" aria-hidden="true">⤺</span>Reset to CONUS
+</button>
 
 <div class="map-loader" id="map-loader">
   <div class="pulse"></div>
@@ -520,6 +579,7 @@ const HOME_VIEW = { center: [-96, 39], zoom: 3.6 };
 
 let basinFc = null;
 let conusFc = null;
+let stateLabels = null;  // [{ usps, name, lon, lat }, ...]
 let eiaDpr = null;
 let mapLib = null;
 let deckOverlay = null;
@@ -799,12 +859,15 @@ function flyToBasin(basinId) {
   if (!mapLib) return;
   const v = BASIN_VIEWS[basinId];
   if (!v) return;
-  mapLib.flyTo({ center: v.center, zoom: v.zoom, speed: 0.85, curve: 1.4, essential: true });
+  // Explicit duration keeps the animation snappy (1.2s) regardless of
+  // how far we are flying. With maplibre's default speed-based timing,
+  // a CONUS-to-basin flight could stretch past 3 seconds.
+  mapLib.flyTo({ center: v.center, zoom: v.zoom, duration: 1200, essential: true });
 }
 
 function flyHome() {
   if (!mapLib) return;
-  mapLib.flyTo({ center: HOME_VIEW.center, zoom: HOME_VIEW.zoom, speed: 1.0, curve: 1.4, essential: true });
+  mapLib.flyTo({ center: HOME_VIEW.center, zoom: HOME_VIEW.zoom, duration: 1200, essential: true });
 }
 
 // Build the dynamic legend strip below the view-toggle. Updates when
@@ -926,7 +989,7 @@ function setView(mode) {
 }
 
 function buildLayers() {
-  return [
+  const layers = [
     new deck.GeoJsonLayer({
       id: 'conus',
       data: conusFc,
@@ -936,6 +999,27 @@ function buildLayers() {
       lineWidthMinPixels: 0.4,
       pickable: false,
     }),
+    // State USPS code labels: drawn UNDER the basin polygons so basin
+    // colors stay dominant, but visible through the gaps and along
+    // basin edges. Font is small + muted so they orient without
+    // competing with the data layer.
+    stateLabels ? new deck.TextLayer({
+      id: 'state-labels',
+      data: stateLabels,
+      pickable: false,
+      getPosition: d => [d.lon, d.lat],
+      getText: d => d.usps,
+      getSize: 11,
+      getColor: [14, 14, 14, 130],
+      fontWeight: 600,
+      fontFamily: '"Inter", "Helvetica Neue", sans-serif',
+      sizeUnits: 'pixels',
+      getTextAnchor: 'middle',
+      getAlignmentBaseline: 'center',
+      // Hide labels when the user is zoomed way out so 49 codes don't
+      // crowd the CONUS view.
+      visible: true,
+    }) : null,
     new deck.GeoJsonLayer({
       id: 'basins',
       data: basinFc,
@@ -994,6 +1078,7 @@ function buildLayers() {
       },
     }),
   ];
+  return layers.filter(Boolean);
 }
 
 function rebuildLayers() {
@@ -1001,16 +1086,21 @@ function rebuildLayers() {
 }
 
 async function init() {
-  const [basinResp, conusResp, eiaResp] = await Promise.all([
+  const [basinResp, conusResp, eiaResp, labelsResp] = await Promise.all([
     fetch('/darkdata/primer_data/basins.json'),
     fetch('/darkdata/primer_data/conus_states.json'),
     fetch('/darkdata/primer_data/eia_dpr_5basins.json'),
+    fetch('/darkdata/primer_data/conus_state_labels.json'),
   ]);
   if (!basinResp.ok) throw new Error('basins.json load failed: ' + basinResp.status);
   basinFc = await basinResp.json();
   conusFc = await conusResp.json();
   if (eiaResp.ok) {
     eiaDpr = await eiaResp.json();
+  }
+  if (labelsResp.ok) {
+    const labelsDoc = await labelsResp.json();
+    stateLabels = labelsDoc.labels || [];
   }
 
   mapLib = new maplibregl.Map({
@@ -1031,9 +1121,16 @@ async function init() {
     pitchWithRotate: false,
     dragRotate: false,
   });
-  mapLib.scrollZoom.disable();
-  mapLib.boxZoom.disable();
+  // Keep rotation locked (we want a flat top-down view), but allow the
+  // reader to pan, scroll-to-zoom, double-click-zoom, and pinch on touch.
   mapLib.touchZoomRotate.disableRotation();
+
+  // Add maplibre's built-in NavigationControl (+/- buttons + compass)
+  // in the top-left of the map, away from the right-side legend panel.
+  mapLib.addControl(new maplibregl.NavigationControl({
+    showCompass: false,
+    visualizePitch: false,
+  }), 'top-left');
 
   deckOverlay = new deck.MapboxOverlay({
     interleaved: false,
@@ -1047,6 +1144,15 @@ async function init() {
   document.querySelectorAll('.view-btn').forEach(b => {
     b.addEventListener('click', () => setView(b.dataset.mode));
   });
+
+  // Reset-to-CONUS button: closes any open detail panel and flies home.
+  const resetBtn = document.getElementById('reset-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (activeBasinId) closeDetail();
+      flyHome();
+    });
+  }
 
   document.getElementById('map-loader').classList.add('done');
 
