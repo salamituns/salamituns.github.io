@@ -63,6 +63,36 @@ h1, h2, h3 { scroll-margin-top: 2rem; }
   margin: 0;
 }
 
+/* Crumb-style links inside .caps eyebrows. Same texture as the
+   surrounding caps text, but interactable: subtle underline on hover,
+   accent color for the current-page indicator. */
+.caps a {
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 1px;
+  transition: color 160ms ease, border-color 160ms ease;
+}
+.caps a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+.caps a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+.caps .crumb-sep {
+  color: var(--rule);
+  margin: 0 0.45em;
+  user-select: none;
+}
+.caps [aria-current="page"] {
+  color: var(--accent);
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 1px;
+}
+
 .page {
   max-width: 72rem;
   margin: 0 auto;
