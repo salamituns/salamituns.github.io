@@ -16,6 +16,83 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<style>
+  /* Findings section: three static analytical figures stacked, each
+     with its own eyebrow / title / lede / dark frame / caption.
+     The source figures are dark-themed (black background, white type),
+     so the figure-frame uses a dark fill to make the contrast read
+     as intentional rather than accidental. */
+  .findings-block {
+    border-top: 1px solid var(--rule);
+    padding-top: clamp(1.5rem, 3vw, 2.5rem);
+    margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  }
+  .findings-block:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+    margin-top: 0;
+  }
+  .findings-block .findings-eyebrow {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 0.7rem;
+  }
+  .findings-block h3 {
+    font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+    margin: 0 0 0.7rem;
+    text-wrap: balance;
+    max-width: 28ch;
+  }
+  .findings-block h3 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 72, "SOFT" 80;
+  }
+  .findings-block p.lede {
+    font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+    font-variation-settings: "opsz" 18, "SOFT" 20;
+    font-weight: 350;
+    font-style: italic;
+    font-size: clamp(0.98rem, 1.35vw, 1.1rem);
+    line-height: 1.5;
+    color: var(--muted);
+    max-width: 56ch;
+    margin: 0 0 1.2rem;
+    text-wrap: pretty;
+  }
+  .findings-block .figure-frame-dark {
+    margin: 0;
+    background: #0E0E0E;
+    border: 1px solid var(--rule);
+    padding: 0;
+    line-height: 0;
+  }
+  .findings-block .figure-frame-dark img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .findings-block figcaption {
+    margin-top: 0.9rem;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 64ch;
+  }
+  .findings-block figcaption strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+</style>
 </head>
 <body>
 
@@ -109,6 +186,60 @@
         </div>
         <span class="status" aria-label="Open map">Open</span>
       </a>
+    </section>
+  </div>
+
+  <div class="page">
+    <section aria-labelledby="findings-heading">
+      <div class="section-head">
+        <h2 class="caps" id="findings-heading">Findings</h2>
+        <span class="caps" aria-hidden="true">03 charts</span>
+      </div>
+
+      <div class="findings-block">
+        <span class="findings-eyebrow">01 &middot; The thesis</span>
+        <h3>Breaches scale with <em>agency density.</em></h3>
+        <p class="lede">
+          Plot every state's home health agency count against its HIPAA breach count. The relationship is close to linear. California and Texas are the rightmost outliers; the mid-range cluster (Florida, Illinois, Pennsylvania) sits exactly where regression would put them.
+        </p>
+        <figure class="figure-frame-dark">
+          <img src="/hipaa/figures/threat_vs_exposure_scatter.png"
+               alt="Scatter plot: 50 US states, x-axis is number of Medicare-certified home health agencies (0 to 3,300), y-axis is number of HIPAA breaches affecting 500+ individuals (0 to about 1,000). Dots are colored by for-profit percentage on a yellow-to-red gradient. California sits in the upper right at roughly 3,150 agencies and 860 breaches. Texas at roughly 1,850 agencies and 630 breaches. Florida at 1,150 and 410. A dashed regression line passes through the cluster." />
+        </figure>
+        <figcaption>
+          <strong>Same person, same population, same federal data.</strong> If a state has more agencies caring for more patients, it has more places where a breach can happen. The for-profit color encoding shows the dominant ownership type sits around 70 to 95 percent in every high-volume state.
+        </figcaption>
+      </div>
+
+      <div class="findings-block">
+        <span class="findings-eyebrow">02 &middot; The temporal shift</span>
+        <h3>Hacking <em>swallowed</em> every other breach type.</h3>
+        <p class="lede">
+          Stacked area, 2015 to 2025. Total breaches climbed roughly 6x. Hacking and IT incidents went from a thin layer in the mix to dominating the stack outright. Theft, loss, and improper disposal are now rounding errors.
+        </p>
+        <figure class="figure-frame-dark">
+          <img src="/hipaa/figures/breach_type_evolution.png"
+               alt="Stacked area chart of HIPAA breaches by type, 2015 to 2025. Five bands: Hacking/IT Incident in red, Unauthorized Access in orange, Theft in yellow, Loss in blue, Improper Disposal in purple. Total height grows from about 200 in 2015 to over 1,300 in 2025. The Hacking/IT Incident band starts as a thin slice in 2015 and grows to make up the vast majority of breaches by 2025." />
+        </figure>
+        <figcaption>
+          <strong>Healthcare cybersecurity is not the same problem it was ten years ago.</strong> A 2015-era HIPAA program was built to address physical theft and improper disposal. Those categories are still in the data; they just don't move the chart anymore.
+        </figcaption>
+      </div>
+
+      <div class="findings-block">
+        <span class="findings-eyebrow">03 &middot; The ownership concentration</span>
+        <h3>For-profit agencies own the <em>exposure footprint.</em></h3>
+        <p class="lede">
+          Top 15 states by Medicare-certified home health agency count, split by ownership type. Across every high-volume state, for-profit operators carry the majority of the agency footprint: 94 percent in Texas, 87 percent in California, similar shares in Florida and Ohio.
+        </p>
+        <figure class="figure-frame-dark">
+          <img src="/hipaa/figures/agency_ownership_by_state.png"
+               alt="Horizontal stacked bar chart of the top 15 US states by Medicare-certified home health agency count. Each state's bar is split by ownership type: For-Profit in red-orange (dominating every bar), Non-Profit in blue, Government in green, Other in grey. California's bar is the longest at over 3,100 agencies; Texas at about 1,850; Florida at 1,150. For-profit makes up roughly 70 to 94 percent of every bar." />
+        </figure>
+        <figcaption>
+          <strong>The exposure surface is privately operated.</strong> Across the country, the home health industry runs through for-profit corporate networks more than through nonprofit and government providers combined. That structural fact shapes who carries the breach risk and who can be reached by a compliance program.
+        </figcaption>
+      </div>
     </section>
   </div>
 
