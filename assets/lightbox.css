@@ -1,0 +1,124 @@
+/* =========================================================
+   lightbox.css — shared figure viewer used by /ghgrp/, /hipaa/,
+   /darkdata/. Originally inlined per page; extracted here so all
+   project landings get identical figure-click behavior.
+   Pair with /assets/lightbox.js + the modal HTML snippet on
+   each page (see project source for the snippet).
+   ========================================================= */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 3vw, 2rem);
+  background: rgba(246, 243, 235, 0.96);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.lightbox[aria-hidden="false"] { display: flex; }
+.lightbox__stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: min(92vw, 1600px);
+  max-height: 100%;
+}
+.lightbox__img {
+  display: block;
+  max-width: min(92vw, 1600px);
+  max-height: 82vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  background: #F6F3EB;
+  box-shadow: 0 14px 48px rgba(14, 14, 14, 0.14);
+}
+.lightbox__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  width: 100%;
+  color: #5E574C;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 0.825rem;
+}
+.lightbox__caption { letter-spacing: 0.02em; }
+.lightbox__counter {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #0E0E0E;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.lightbox__btn {
+  position: absolute;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 1.35rem;
+  line-height: 1;
+  color: #0E0E0E;
+  background: #F6F3EB;
+  border: 1px solid rgba(14, 14, 14, 0.14);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease, border-color 150ms ease;
+}
+.lightbox__btn:hover {
+  background: #A23B2A;
+  color: #F6F3EB;
+  border-color: #A23B2A;
+}
+.lightbox__btn:focus-visible {
+  outline: 2px solid #A23B2A;
+  outline-offset: 3px;
+}
+.lightbox__close { top: clamp(1rem, 2vw, 1.5rem); right: clamp(1rem, 2vw, 1.5rem); }
+.lightbox__prev  { left:  clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+.lightbox__next  { right: clamp(0.5rem, 2vw, 1.5rem); top: 50%; transform: translateY(-50%); }
+body.lightbox-open { overflow: hidden; }
+
+/* Hide prev/next buttons when there is only one figure on the page
+   (single-figure pages like /darkdata/ thesis-figure). */
+.lightbox.single-figure .lightbox__prev,
+.lightbox.single-figure .lightbox__next,
+.lightbox.single-figure .lightbox__counter { display: none; }
+
+/* The figure-entry link itself: ensures a pointer cursor and
+   removes the underline from any wrapping link styling. */
+.figure-entry {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 0;
+  cursor: zoom-in;
+}
+.figure-entry:hover { border-bottom: 0; }
+.figure-entry:focus-visible {
+  outline: 2px solid #A23B2A;
+  outline-offset: 4px;
+}
+
+@media (max-width: 640px) {
+  .lightbox__img { max-height: 68vh; }
+  .lightbox__prev, .lightbox__next {
+    top: auto;
+    bottom: clamp(0.75rem, 3vw, 1.25rem);
+    transform: none;
+  }
+  .lightbox__prev { left: 50%;  margin-left: -3.25rem; }
+  .lightbox__next { right: 50%; margin-right: -3.25rem; }
+  .lightbox__meta { flex-direction: column; align-items: flex-start; gap: 0.25rem; }
+}

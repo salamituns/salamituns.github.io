@@ -16,6 +16,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/lightbox.css">
 <style>
   /* Findings section: three static analytical figures stacked, each
      with its own eyebrow / title / lede / paper-toned frame / caption.
@@ -202,10 +203,14 @@
         <p class="lede">
           Plot every state's home health agency count against its HIPAA breach count. The relationship is close to linear. California and Texas are the rightmost outliers; the mid-range cluster (Florida, Illinois, Pennsylvania) sits exactly where regression would put them.
         </p>
-        <figure class="figure-frame">
-          <img src="/hipaa/figures/threat_vs_exposure_scatter.png"
-               alt="Scatter plot: 50 US states, x-axis is number of Medicare-certified home health agencies (0 to 3,300), y-axis is number of HIPAA breaches affecting 500+ individuals (0 to about 1,000). Dots are colored by for-profit percentage on a yellow-to-red gradient. California sits in the upper right at roughly 3,150 agencies and 860 breaches. Texas at roughly 1,850 agencies and 630 breaches. Florida at 1,150 and 410. A dashed regression line passes through the cluster." />
-        </figure>
+        <a class="figure-entry"
+           href="/hipaa/figures/threat_vs_exposure_scatter.png"
+           data-caption="Fig 01 — Breaches scale with agency density">
+          <figure class="figure-frame">
+            <img src="/hipaa/figures/threat_vs_exposure_scatter.png"
+                 alt="Scatter plot: 50 US states, x-axis is number of Medicare-certified home health agencies (0 to 3,300), y-axis is number of HIPAA breaches affecting 500+ individuals (0 to about 1,000). Dots are colored by for-profit percentage on a faint-to-clay gradient. California sits in the upper right at roughly 3,150 agencies and 860 breaches. Texas at roughly 1,850 agencies and 630 breaches. Florida at 1,150 and 410. A dashed regression line passes through the cluster." />
+          </figure>
+        </a>
         <figcaption>
           <strong>Same person, same population, same federal data.</strong> If a state has more agencies caring for more patients, it has more places where a breach can happen. The for-profit color encoding shows the dominant ownership type sits around 70 to 95 percent in every high-volume state.
         </figcaption>
@@ -217,10 +222,14 @@
         <p class="lede">
           Stacked area, 2015 to 2025. Total breaches climbed roughly 6x. Hacking and IT incidents went from a thin layer in the mix to dominating the stack outright. Theft, loss, and improper disposal are now rounding errors.
         </p>
-        <figure class="figure-frame">
-          <img src="/hipaa/figures/breach_type_evolution.png"
-               alt="Stacked area chart of HIPAA breaches by type, 2015 to 2025. Five bands: Hacking/IT Incident in red, Unauthorized Access in orange, Theft in yellow, Loss in blue, Improper Disposal in purple. Total height grows from about 200 in 2015 to over 1,300 in 2025. The Hacking/IT Incident band starts as a thin slice in 2015 and grows to make up the vast majority of breaches by 2025." />
-        </figure>
+        <a class="figure-entry"
+           href="/hipaa/figures/breach_type_evolution.png"
+           data-caption="Fig 02 — Hacking swallowed every other breach type">
+          <figure class="figure-frame">
+            <img src="/hipaa/figures/breach_type_evolution.png"
+                 alt="Stacked area chart of HIPAA breaches by type, 2015 to 2025, in editorial paper palette. Five bands: Hacking/IT Incident in clay, Unauthorized Access in amber, Theft in violet, Loss in teal, Improper Disposal in ghost. Total height grows from about 200 in 2015 to over 1,300 in 2025. The Hacking/IT Incident band starts as a thin slice in 2015 and grows to dominate the stack by 2024-2025." />
+          </figure>
+        </a>
         <figcaption>
           <strong>Healthcare cybersecurity is not the same problem it was ten years ago.</strong> A 2015-era HIPAA program was built to address physical theft and improper disposal. Those categories are still in the data; they just don't move the chart anymore.
         </figcaption>
@@ -232,10 +241,14 @@
         <p class="lede">
           Top 15 states by Medicare-certified home health agency count, split by ownership type. For-profit operators run the majority of the network in every high-volume state: 94 percent in Texas, 86 percent in Illinois, 90 percent in Oklahoma. California is the structural outlier at 56 percent for-profit, with an unusually large &ldquo;Other&rdquo; classification covering more than a third of its 3,147 agencies.
         </p>
-        <figure class="figure-frame">
-          <img src="/hipaa/figures/agency_ownership_by_state.png"
-               alt="Horizontal stacked bar chart of the top 15 US states by Medicare-certified home health agency count, in editorial paper palette. Each state's bar is split by ownership type: For-Profit in clay (dominating most bars), Non-Profit in teal, Government in amber, Other in grey-ghost. California's bar is the longest at 3,147 agencies but only 56 percent for-profit, with a large Other slice. Texas next at 1,850 agencies and 94 percent for-profit. Florida at 1,134 and 72 percent for-profit. Each row is annotated with total count and for-profit percentage." />
-        </figure>
+        <a class="figure-entry"
+           href="/hipaa/figures/agency_ownership_by_state.png"
+           data-caption="Fig 03 — For-profit agencies own the exposure footprint">
+          <figure class="figure-frame">
+            <img src="/hipaa/figures/agency_ownership_by_state.png"
+                 alt="Horizontal stacked bar chart of the top 15 US states by Medicare-certified home health agency count, in editorial paper palette. Each state's bar is split by ownership type: For-Profit in clay (dominating most bars), Non-Profit in teal, Government in amber, Other in grey-ghost. California's bar is the longest at 3,147 agencies but only 56 percent for-profit, with a large Other slice. Texas next at 1,850 agencies and 94 percent for-profit. Florida at 1,134 and 72 percent for-profit. Each row is annotated with total count and for-profit percentage." />
+          </figure>
+        </a>
         <figcaption>
           <strong>The exposure surface is privately operated, except where it is not classified at all.</strong> Across most high-volume states, the home health industry runs through for-profit corporate networks more than through nonprofit and government providers combined. California is the conspicuous exception: more than a third of its agencies are classified as &ldquo;Other,&rdquo; which means the structural ownership mix in the largest state market is partially opaque even to the federal data system that tracks it.
         </figcaption>
@@ -297,6 +310,8 @@
     <a href="https://github.com/salamituns" rel="me">GitHub</a>
   </nav>
 </footer>
+
+<script src="/assets/lightbox.js" defer></script>
 
 </body>
 </html>

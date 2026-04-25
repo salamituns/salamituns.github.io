@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/assets/site.css">
+<link rel="stylesheet" href="/assets/lightbox.css">
 <style>
 /* ---- Collection hero (scoped) ---- */
 .collection-hero {
@@ -515,10 +516,14 @@
       <p class="lede">
         Five measurable basins, two axes. Y axis: percent dark. X axis: share of the basin's well count drilled in the post-2008 horizontal era. The pattern is monotonic. Williston is the only basin where horizontals dominate the well count, and it is the only basin in the lit majority. Eagle Ford sits off the chart because TX RRC's data architecture would not let us measure it.
       </p>
-      <figure class="figure-frame">
-        <img src="/darkdata/primer_data/figures/primer_cross_basin_matrix.png"
-             alt="Scatter plot. Y axis: percent dark, 35 to 100 percent. X axis: horizontal-era share of basin well count, 0 to 55 percent. Six points: Williston at 47 percent horizontal share and 46 percent dark, Permian at 28 percent and 78 percent dark, Anadarko at 6 percent and 91 percent dark, Kansas at 0 percent and 94 percent dark, Appalachia at 5 percent and 95 percent dark. A dashed trend line drops from 97 percent dark at zero horizontal share to 40 percent dark at 50 percent horizontal share. A side panel notes that Eagle Ford is unmeasured because TX RRC does not publish bulk well data, and that the predicted dark share for Eagle Ford given EIA's well-count estimates would land in the high eighties." />
-      </figure>
+      <a class="figure-entry"
+         href="/darkdata/primer_data/figures/primer_cross_basin_matrix.png"
+         data-caption="The thesis: horizontal eras only rescue young basins">
+        <figure class="figure-frame">
+          <img src="/darkdata/primer_data/figures/primer_cross_basin_matrix.png"
+               alt="Scatter plot. Y axis: percent dark, 35 to 100 percent. X axis: horizontal-era share of basin well count, 0 to 55 percent. Six points: Williston at 47 percent horizontal share and 46 percent dark, Permian at 28 percent and 78 percent dark, Anadarko at 6 percent and 91 percent dark, Kansas at 0 percent and 94 percent dark, Appalachia at 5 percent and 95 percent dark. A dashed trend line drops from 97 percent dark at zero horizontal share to 40 percent dark at 50 percent horizontal share. A side panel notes that Eagle Ford is unmeasured because TX RRC does not publish bulk well data, and that the predicted dark share for Eagle Ford given EIA's well-count estimates would land in the high eighties." />
+        </figure>
+      </a>
       <figcaption>
         <strong>The single image of the dark-data series.</strong> Five basins prove the rule, the sixth proves the architectural exception. The full breakdown lives in the basin walks below; the primer at <a href="/darkdata/basins.html" style="color:var(--ink); border-bottom:1px solid var(--rule);">/darkdata/basins.html</a> lets you toggle the same six basins through five different lenses.
       </figcaption>
@@ -688,6 +693,8 @@
     <a href="https://github.com/salamituns" rel="me" style="border-bottom-color:transparent;">GitHub</a>
   </nav>
 </footer>
+
+<script src="/assets/lightbox.js" defer></script>
 
 </body>
 </html>
