@@ -11,7 +11,11 @@
 <meta property="og:description" content="Geology shapes the drilling era; the drilling era shapes the data architecture; the data architecture decides what the public can see. A reader's field guide to the six basins covered in the dark-data series.">
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://salamituns.github.io/darkdata/basins.html">
-<meta property="og:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_conus_hero.png">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_social_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A US map showing the six oil and gas basins covered in this primer (Williston, Kansas, Anadarko, Permian, Eagle Ford, Appalachia), with headline numbers: 6 basins, 1.92 million wells mapped, 89.1 percent dark measured, 165 years since Drake.">
+<meta name="twitter:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_social_card.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://salamituns.github.io/darkdata/basins.html">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -89,7 +93,10 @@
     overflow-y: auto;
     transform: translateX(-105%);
     transition: transform 280ms ease;
-    z-index: 5;
+    /* z-index sits above the Reset-to-CONUS button (z-index: 6) so the
+       button does not bleed through the detail panel on mobile, where
+       the panel covers the full screen. */
+    z-index: 30;
     box-shadow: 6px 0 22px rgba(14,14,14,0.06);
   }
   .detail-panel.open { transform: translateX(0); }
@@ -387,6 +394,55 @@
     animation: pulse 1.2s ease-in-out infinite;
   }
   @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* ---------- Mobile (<= 720px) ---------- */
+  /* The base layout (map left + 380px legend right) flips to map-on-top
+     and full-width legend-on-bottom via /assets/map-chrome.css. The
+     elements added in this primer (Reset button, detail panel, view
+     toggle with 5 buttons, legend strip) need their own responsive
+     behavior on top of that. */
+  @media (max-width: 720px) {
+    /* Map fills 55vh; legend 45vh. Reset button needs to land on the map. */
+    .reset-btn {
+      bottom: calc(45vh + 12px);
+      left: 12px;
+      padding: 0.4rem 0.6rem;
+      font-size: 9.5px;
+    }
+    .map-loader {
+      inset: var(--em-nav-h) 0 45vh 0;
+    }
+
+    /* Detail panel: full-screen overlay on mobile (was 420px slide-in). */
+    .detail-panel {
+      width: 100%;
+      max-width: 100%;
+      height: calc(100vh - var(--em-nav-h));
+      padding: 1.25rem 1.25rem 3rem;
+      box-shadow: none;
+    }
+
+    /* View toggle: keep 5 buttons readable. Tighter padding so they fit. */
+    .view-btn {
+      padding: 0.7rem 0.15rem;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+    }
+
+    /* Legend strip: tighter swatches grid on narrow screens. */
+    .legend-strip .ls-swatches {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.3rem 0.55rem;
+    }
+    .legend-strip { padding: 0.65rem 0 0.85rem; min-height: 0; }
+    .legend-strip .ls-note { font-size: 10px; }
+
+    /* Sort hint: drop to a new line on mobile (avoids overflow). */
+    .sort-hint { display: block; margin: 0.2rem 0 0; }
+
+    /* Maplibre nav control: nudge up to clear the editorial nav strip. */
+    .maplibregl-ctrl-top-left { top: calc(var(--em-nav-h) + 8px) !important; }
+  }
 </style>
 </head>
 <body>

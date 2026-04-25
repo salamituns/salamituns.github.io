@@ -11,12 +11,14 @@
 <meta property="og:description" content="Six basins, 1.92 million measurable wells, one architectural wall. The complete series: dark data is set by drilling-era timing for the basins regulators publish, and by the regulator itself for the basin one does not.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://salamituns.github.io/darkdata/">
-<meta property="og:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
-<meta property="og:image:alt" content="Kansas state map with all 419,777 drilled wells shown as dots; 94 percent are ghost-grey dark wells, 6 percent are coloured by spud decade.">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_social_card.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="A US map showing the six oil and gas basins covered in this series (Williston, Kansas, Anadarko, Permian, Eagle Ford, Appalachia), with headline numbers: 6 basins, 1.92 million wells mapped, 89.1 percent dark measured, 165 years since Drake.">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Where US Oil Data Lives">
 <meta name="twitter:description" content="The complete series. Six basins, five measurable, one architecturally walled. Eagle Ford is the finale: TX RRC publishes through a JSF session portal backed by EBCDIC mainframe dumps. The architecture itself is the dark-data verdict.">
-<meta name="twitter:image" content="https://salamituns.github.io/darkdata/kansas/figures/kansas_dark_data_map.png">
+<meta name="twitter:image" content="https://salamituns.github.io/darkdata/primer_data/figures/primer_social_card.png">
 <link rel="canonical" href="https://salamituns.github.io/darkdata/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -364,6 +366,73 @@
   letter-spacing: 0;
   text-transform: none;
 }
+
+/* ---- Thesis figure (the cross-basin matrix as a single-image hero) ---- */
+.thesis-figure {
+  margin: clamp(2.5rem, 5vw, 4rem) 0 clamp(2.5rem, 5vw, 4rem);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(2rem, 3.5vw, 3rem) 0;
+}
+.thesis-figure .figure-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 0.85rem;
+  display: block;
+}
+.thesis-figure h2 {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-variation-settings: "opsz" 96, "SOFT" 30;
+  font-weight: 400;
+  font-size: clamp(1.7rem, 3.2vw, 2.3rem);
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+  margin: 0 0 0.85rem;
+  text-wrap: balance;
+  max-width: 24ch;
+}
+.thesis-figure h2 em {
+  font-style: italic;
+  color: var(--accent);
+  font-variation-settings: "opsz" 96, "SOFT" 80;
+}
+.thesis-figure p.lede {
+  font-family: "Fraunces", "Iowan Old Style", "Georgia", serif;
+  font-variation-settings: "opsz" 24, "SOFT" 20;
+  font-weight: 350;
+  font-style: italic;
+  font-size: clamp(1rem, 1.5vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--muted);
+  max-width: 56ch;
+  margin: 0 0 1.5rem;
+  text-wrap: pretty;
+}
+.thesis-figure .figure-frame {
+  margin: 0;
+  background: #FBF8F1;
+  border: 1px solid var(--rule);
+  padding: 0;
+}
+.thesis-figure .figure-frame img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.thesis-figure figcaption {
+  margin-top: 1rem;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--muted);
+  max-width: 64ch;
+}
+.thesis-figure figcaption strong {
+  color: var(--ink);
+  font-weight: 500;
+}
 </style>
 </head>
 <body>
@@ -404,7 +473,7 @@
         </p>
         <div class="meta-row">
           <span class="pill"><span class="num">6</span>basins</span>
-          <span class="pill"><span class="num">4</span>view modes</span>
+          <span class="pill"><span class="num">5</span>view modes</span>
           <span class="pill"><span class="num">deck.gl</span> + maplibre</span>
         </div>
         <span class="cta-line">Open the primer <span class="arrow" aria-hidden="true">&rarr;</span></span>
@@ -434,6 +503,23 @@
           <span class="label">Architectural&nbsp;wall</span>
         </div>
       </div>
+    </section>
+  </div>
+
+  <div class="page">
+    <section class="thesis-figure" aria-labelledby="thesis-figure-title">
+      <span class="figure-eyebrow">The thesis, on one chart</span>
+      <h2 id="thesis-figure-title">Horizontal eras only rescue <em>young</em> basins.</h2>
+      <p class="lede">
+        Five measurable basins, two axes. Y axis: percent dark. X axis: share of the basin's well count drilled in the post-2008 horizontal era. The pattern is monotonic. Williston is the only basin where horizontals dominate the well count, and it is the only basin in the lit majority. Eagle Ford sits off the chart because TX RRC's data architecture would not let us measure it.
+      </p>
+      <figure class="figure-frame">
+        <img src="/darkdata/primer_data/figures/primer_cross_basin_matrix.png"
+             alt="Scatter plot. Y axis: percent dark, 35 to 100 percent. X axis: horizontal-era share of basin well count, 0 to 55 percent. Six points: Williston at 47 percent horizontal share and 46 percent dark, Permian at 28 percent and 78 percent dark, Anadarko at 6 percent and 91 percent dark, Kansas at 0 percent and 94 percent dark, Appalachia at 5 percent and 95 percent dark. A dashed trend line drops from 97 percent dark at zero horizontal share to 40 percent dark at 50 percent horizontal share. A side panel notes that Eagle Ford is unmeasured because TX RRC does not publish bulk well data, and that the predicted dark share for Eagle Ford given EIA's well-count estimates would land in the high eighties." />
+      </figure>
+      <figcaption>
+        <strong>The single image of the dark-data series.</strong> Five basins prove the rule, the sixth proves the architectural exception. The full breakdown lives in the basin walks below; the primer at <a href="/darkdata/basins.html" style="color:var(--ink); border-bottom:1px solid var(--rule);">/darkdata/basins.html</a> lets you toggle the same six basins through five different lenses.
+      </figcaption>
     </section>
   </div>
 
