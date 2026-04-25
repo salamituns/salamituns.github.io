@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Walking the Appalachia: 579,324 wells, 95% dark, 165 years | @salamituns</title>
+<meta name="description" content="What we found when we tried to measure how much of the Appalachian Basin is dark. A research-journal StoryMap: 579,324 wells inside the EIA Appalachian shale envelope, 5% lit, 95% dark.">
+<meta property="og:title" content="Walking the Appalachia: 5% lit, 95% dark">
+<meta property="og:description" content="One basin, three regulators, 165 years of drilling, all the way back to Drake 1859. The Marcellus and Utica horizontal eras lit a thin top layer. Most of the basin is still pre-digital paper.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/appalachia/story.html">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/appalachia/figures/appalachia_basin_map.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/appalachia/story.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&display=swap">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+<style>
+  :root {
+    --paper: #F6F3EB;
+    --paper-2: #EFEBDE;
+    --ink: #0E0E0E;
+    --muted: #7A7368;
+    --rule: rgba(14,14,14,0.14);
+    --accent: #A23B2A;
+    --amber: #C57B35;
+    --violet: #6B4E8A;
+    --teal: #2E6E7E;
+    --ghost: #B5AEA0;
+    --pa: #C57B35;
+    --wv: #2E6E7E;
+    --oh: #6B4E8A;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); }
+  body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); overflow-x: clip; }
+
+  .em-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.9rem 1.4rem;
+    background: rgba(246,243,235,0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .em-nav a, .em-nav span { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  .em-nav a { color: var(--ink); text-decoration: none; }
+  .em-nav a:hover { color: var(--accent); }
+  .em-left { display: flex; gap: 1.5rem; align-items: baseline; }
+  .em-back { color: var(--muted); }
+  .em-back-arrow { margin-right: 0.35rem; }
+  .em-here { color: var(--accent); }
+
+  #stage {
+    position: relative; width: 100%;
+    display: grid;
+    grid-template-columns: 40% 60%;
+    grid-template-areas: "narrative map";
+  }
+  #map-wrap {
+    grid-area: map;
+    position: sticky; top: 0;
+    width: 100%; height: 100vh;
+    z-index: 1;
+    background: var(--paper);
+  }
+  #map { position: absolute; inset: 0; }
+
+  .legend-chip {
+    position: absolute; right: 1.25rem; bottom: 1.25rem; z-index: 3;
+    background: rgba(246,243,235,0.94);
+    border: 1px solid var(--rule);
+    padding: 0.75rem 0.95rem;
+    font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.04em;
+    min-width: 220px;
+    opacity: 0; transition: opacity 450ms ease;
+  }
+  .legend-chip.on { opacity: 1; }
+  .legend-chip .row { display: flex; align-items: center; gap: 0.55rem; margin: 0.25rem 0; }
+  .legend-chip .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .legend-chip .label { color: var(--ink); letter-spacing: 0.02em; }
+  .legend-chip .note { color: var(--muted); font-size: 0.64rem; margin-top: 0.45rem; line-height: 1.4; }
+
+  .state-chip {
+    position: absolute; left: 1.25rem; top: 1.25rem; z-index: 3;
+    display: flex; gap: 0.5rem; font-size: 0.65rem;
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+    opacity: 0; transition: opacity 350ms ease;
+  }
+  .state-chip.on { opacity: 1; }
+  .state-chip span {
+    background: rgba(246,243,235,0.94);
+    border: 1px solid var(--rule);
+    padding: 0.35rem 0.55rem;
+  }
+  .state-chip .pa-chip { color: var(--pa); }
+  .state-chip .wv-chip { color: var(--wv); }
+  .state-chip .oh-chip { color: var(--oh); }
+
+  .progress {
+    position: fixed; top: 4.5rem; right: 1.4rem; z-index: 20;
+    font-family: "Inter", sans-serif; font-size: 0.72rem;
+    color: var(--ink); letter-spacing: 0.14em; text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    background: rgba(246,243,235,0.92); padding: 0.4rem 0.7rem;
+    border: 1px solid var(--rule);
+  }
+  .progress .pos { color: var(--accent); font-weight: 500; }
+
+  #narrative {
+    grid-area: narrative;
+    position: relative; width: 100%;
+    padding-top: 4.5rem; z-index: 2;
+  }
+  .step {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 0 2rem 0 2.5rem;
+  }
+  .step-card {
+    background: rgba(246,243,235,0.96);
+    border-left: 2px solid var(--accent);
+    padding: 1.8rem 1.6rem;
+    max-width: 34rem;
+  }
+  .step.pa-theme .step-card { border-left-color: var(--pa); }
+  .step.wv-theme .step-card { border-left-color: var(--wv); }
+  .step.oh-theme .step-card { border-left-color: var(--oh); }
+  .step.neutral-theme .step-card { border-left-color: var(--ink); }
+
+  .step .eyebrow {
+    display: block; font-size: 0.7rem; color: var(--muted);
+    letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 500; margin-bottom: 0.9rem;
+  }
+  .step h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.1vw, 2.2rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.9rem;
+  }
+  .step h2 em {
+    font-style: italic;
+    color: var(--accent);
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+  }
+  .step.pa-theme h2 em { color: var(--pa); }
+  .step.wv-theme h2 em { color: var(--wv); }
+  .step.oh-theme h2 em { color: var(--oh); }
+  .step p { font-size: 0.96rem; line-height: 1.6; color: var(--ink); margin: 0 0 0.75rem; }
+  .step p.muted { color: var(--muted); font-size: 0.85rem; }
+  .step .big {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72;
+    font-weight: 400;
+    font-size: 3rem;
+    color: var(--accent);
+    line-height: 1;
+    margin: 0.4rem 0 0.5rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+  .step.pa-theme .big { color: var(--pa); }
+  .step.wv-theme .big { color: var(--wv); }
+  .step.oh-theme .big { color: var(--oh); }
+
+  .step.cover .step-card { border-left-color: var(--ink); }
+  .step.cover h1 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 1rem;
+    letter-spacing: -0.02em;
+  }
+  .step.cover h1 em { font-style: italic; color: var(--accent); }
+  .step.cover .lede { font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
+  .step.cover .byline {
+    margin-top: 1.5rem; font-size: 0.72rem; color: var(--muted);
+    letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500;
+  }
+  .step.cover .byline a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  .step.cover .byline .sep { margin: 0 0.55rem; color: var(--rule); }
+
+  .vintage-chart {
+    margin-top: 1rem;
+    display: grid; grid-template-columns: 5rem 1fr 3.4rem;
+    gap: 0.35rem 0.55rem;
+    font-size: 0.76rem; align-items: center;
+  }
+  .vintage-chart .era { color: var(--ink); font-variant-numeric: tabular-nums; }
+  .vintage-chart .track { height: 10px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .vintage-chart .track .fill { position: absolute; inset: 0 auto 0 0; background: var(--pa); }
+  .vintage-chart .track .fill.unk { background: var(--ghost); }
+  .vintage-chart .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .state-table {
+    margin-top: 1rem;
+    display: grid; grid-template-columns: 8rem 1.5rem 1fr 3.6rem;
+    gap: 0.3rem 0.55rem;
+    font-size: 0.78rem; align-items: center;
+  }
+  .state-table .cnty { color: var(--ink); }
+  .state-table .st { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; padding: 0.1rem 0.3rem; text-align: center; }
+  .state-table .st.pa { background: var(--pa); color: var(--paper); }
+  .state-table .st.wv { background: var(--wv); color: var(--paper); }
+  .state-table .st.oh { background: var(--oh); color: var(--paper); }
+  .state-table .track { height: 7px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .state-table .track .fill { position: absolute; inset: 0 auto 0 0; }
+  .state-table .track.pa .fill { background: var(--pa); }
+  .state-table .track.wv .fill { background: var(--wv); }
+  .state-table .track.oh .fill { background: var(--oh); }
+  .state-table .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .outro {
+    position: relative; z-index: 4;
+    background: var(--paper);
+    padding: 6rem 2.5rem 5rem;
+    border-top: 1px solid var(--rule);
+  }
+  .outro-inner { max-width: 56rem; margin: 0 auto; }
+  .outro h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    line-height: 1.15;
+    margin: 0 0 1rem;
+    letter-spacing: -0.01em;
+  }
+  .outro h2 em { font-style: italic; color: var(--accent); }
+  .outro p { font-size: 0.97rem; line-height: 1.6; color: var(--ink); margin: 0 0 1rem; max-width: 44rem; }
+  .outro .implications {
+    margin: 2.25rem 0 0;
+    padding: 1.5rem 1.75rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    max-width: 44rem;
+  }
+  .outro .implications-label {
+    font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 0.9rem; font-weight: 500;
+  }
+  .outro .implications h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 36;
+    font-weight: 400; font-style: italic;
+    font-size: 1.15rem; line-height: 1.3;
+    margin: 0 0 1.2rem; color: var(--ink);
+    letter-spacing: -0.005em;
+  }
+  .outro .implications ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .outro .implications li {
+    font-size: 0.88rem; line-height: 1.55; color: var(--ink);
+    padding: 0.55rem 0; border-top: 1px dashed var(--rule);
+  }
+  .outro .implications li:first-child { border-top: none; padding-top: 0; }
+  .outro .implications li strong { font-weight: 600; color: var(--ink); display: inline-block; min-width: 10rem; }
+  .outro .implications .close {
+    font-size: 0.88rem; line-height: 1.55; color: var(--ink);
+    margin: 0.9rem 0 0; padding-top: 0.9rem;
+    border-top: 1px solid var(--rule);
+  }
+  .outro .implications .close em { font-style: italic; color: var(--accent); }
+  .outro .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .outro .cta {
+    display: inline-block; padding: 0.7rem 1.1rem;
+    font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    border: 1px solid var(--ink); color: var(--ink);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .outro .cta:hover { background: var(--ink); color: var(--paper); }
+  .outro .cta.accent { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .outro .cta.accent:hover { background: var(--ink); border-color: var(--ink); }
+  .outro .footnote { font-size: 0.76rem; color: var(--muted); margin-top: 2rem; line-height: 1.55; }
+  .outro .footnote a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+
+  .loader {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--paper);
+    color: var(--muted); font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: opacity 400ms ease;
+    text-align: center;
+    padding: 0 1rem;
+  }
+  .loader .pulse {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); margin-bottom: 0.8rem;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loader.error .pulse { animation: none; background: var(--accent); }
+  .loader.error .loader-text { color: var(--accent); line-height: 1.5; max-width: 22rem; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loader.done { opacity: 0; pointer-events: none; }
+
+  @media (max-width: 900px) {
+    #stage { grid-template-columns: 1fr; grid-template-areas: "map" "narrative"; }
+    #map-wrap { height: 55vh; }
+    #narrative { padding-top: 0; }
+    .step { min-height: auto; padding: 2.5rem 1.25rem; }
+    .step-card { padding: 1.2rem 1.2rem; max-width: none; }
+    .progress { top: 3.8rem; right: 0.9rem; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <div class="em-left">
+    <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+    <a href="/darkdata/" class="em-back"><span class="em-back-arrow" aria-hidden="true">&larr;</span>Dark&nbsp;Data</a>
+  </div>
+  <span class="em-here" aria-current="page">Appalachia &middot; Walk</span>
+</nav>
+
+<div class="progress" aria-live="polite">
+  Step <span class="pos" id="progress-pos">00</span> / 16
+</div>
+
+<div id="stage">
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="state-chip" id="state-chip">
+      <span class="pa-chip">Pennsylvania</span>
+      <span class="wv-chip">West&nbsp;Virginia</span>
+      <span class="oh-chip">Ohio</span>
+    </div>
+    <div class="legend-chip" id="legend">
+      <div class="row"><div class="dot" style="background:#B5AEA0"></div><div class="label">Dark &middot; no public log</div></div>
+      <div class="row"><div class="dot" style="background:#C57B35"></div><div class="label">Lit &middot; Pennsylvania</div></div>
+      <div class="row"><div class="dot" style="background:#2E6E7E"></div><div class="label">Lit &middot; West Virginia</div></div>
+      <div class="row"><div class="dot" style="background:#6B4E8A"></div><div class="label">Lit &middot; Ohio</div></div>
+      <div class="note">PA lit: UNCONVENTI flag or horizontal config. OH lit: SLANT=H or Marcellus/Utica formation. WV: 100% dark by data architecture (see step 04).</div>
+    </div>
+    <div class="loader" id="loader">
+      <div class="pulse"></div>
+      <div class="loader-text" id="loader-text">Loading 579,324 wells</div>
+    </div>
+  </div>
+
+  <div id="narrative">
+
+    <section class="step cover" data-step="0">
+      <div class="step-card">
+        <span class="eyebrow">Project 03 &middot; Subsurface &middot; Walk 05</span>
+        <h1>Walking the <em>Appalachia</em>.</h1>
+        <p class="lede">
+          Edwin Drake spudded the first commercial oil well in North America in Titusville, Pennsylvania, in 1859. The basin has been drilled, logged, plugged, paved over, and re-drilled for 165 years since. We mapped what its three regulators can still see.
+        </p>
+        <p class="byline">
+          By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+          <span class="sep" aria-hidden="true">&middot;</span>
+          April&nbsp;2026
+          <span class="sep" aria-hidden="true">&middot;</span>
+          <a href="/darkdata/appalachia/">Long&#8209;form</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="1">
+      <div class="step-card">
+        <span class="eyebrow">01 &middot; The question</span>
+        <h2>Can the Marcellus <em>buy a lit basin</em> when the basin is 165 years old?</h2>
+        <p>Williston was 46% lit because horizontals dominated its well count. Anadarko was 91% dark because horizontals were a thin top layer. The Appalachian Basin is the extreme case. The Marcellus and Utica horizontal eras dropped a 30,000-well lit layer onto a vertical legacy that started at Drake and never stopped.</p>
+        <p class="muted">If the Bakken-style rescue scales to age, Appalachia should be in the high eighties dark. If 165 years of paper-era drilling overwhelms even the modern era, it ends up worse.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="2">
+      <div class="step-card">
+        <span class="eyebrow">02 &middot; The basin</span>
+        <h2>A boundary <em>geology drew, four times.</em></h2>
+        <p>We clip to the EIA Appalachian Basin shales: the union of Marcellus, Utica, Devonian (Ohio), and Chattanooga shale polygons, published December 2021. It covers 173,000 square miles across PA, WV, OH, NY, KY, TN, MD, and VA.</p>
+        <p>For v1 we publish PA + WV + OH, where 95% of the basin's drilling activity sits. New York's moratorium kept the play out. Kentucky and Tennessee carry under 5,000 wells each in the polygon. Maryland and Virginia carry slivers. They are documented but not in this cut.</p>
+        <p class="muted">USGS ScienceBase was timing out on every Appalachian Basin Province query the night this was built. The EIA shale envelope is the working substitute. It traces the same play boundaries.</p>
+      </div>
+    </section>
+
+    <section class="step pa-theme" data-step="3">
+      <div class="step-card">
+        <span class="eyebrow">03 &middot; Pennsylvania arrives</span>
+        <h2><em>254,269</em> wells. The cleanest dark/lit flag in the series.</h2>
+        <p>The PA DEP publishes its full well inventory through PASDA: a 24&nbsp;MB shapefile carrying API, operator, well type, well configuration, spud date, and a single column called UNCONVENTI: Y or N. Marcellus and Utica horizontals are Y. Everything else is N. There is no proxy in PA. The regulator decided.</p>
+        <p>A second PA DEP file ships 30,527 historic wells digitized from WPA mapping efforts and the USGS K Sheet and H Sheet. Drake-era through pre-1900s drilling, mostly in the northwest. All counted dark, all bucketed pre-1980.</p>
+        <p class="muted">PA is the only state in this series whose regulator publishes its own dark/lit answer. The other states need a proxy. PA hands you the column.</p>
+      </div>
+    </section>
+
+    <section class="step wv-theme" data-step="4">
+      <div class="step-card">
+        <span class="eyebrow">04 &middot; West Virginia arrives</span>
+        <h2><em>114,259</em> wells. Two databases that <em>do not link.</em></h2>
+        <p>WV DEP publishes a 2016 well location file: 114,259 records with PERMIT_ID, operator, county, well status, UTM coordinates. The file uses 6-digit permit numbers as the primary key.</p>
+        <p>WV DEP also publishes a 2024 Q4 horizontal H6A production roll: 3,305 wells flagged horizontal Marcellus or deep Devonian, keyed on 10-digit API numbers.</p>
+        <p>The two files do not share an identifier. The state does not publish a cross-reference. That is the dark-data verdict for West Virginia: the well-location data and the horizontal-production data both exist, and both are useful, and neither can be joined to the other by anyone outside the agency.</p>
+        <p class="muted">We count WV at 100% dark on this map. That number is not a measurement of paper. It is a measurement of database architecture.</p>
+      </div>
+    </section>
+
+    <section class="step oh-theme" data-step="5">
+      <div class="step-card">
+        <span class="eyebrow">05 &middot; Ohio arrives</span>
+        <h2><em>242,035</em> wells. One REST endpoint, paginated.</h2>
+        <p>OH DNR's Division of Oil and Gas Resources Management publishes its public well layer as a queryable ArcGIS REST endpoint at gis.ohiodnr.gov. No bulk ZIP. We pull it 1,000 records at a time across 243 paginated requests.</p>
+        <p>The OH layer ships a SLANT field with single-letter codes (V, H, D, O) and depth flags for Marcellus_Shale and Utica_Shale formation tops. Lit means SLANT=H or one of the formation depths is non-zero. 4,670 OH wells out of 242,035 clear that bar.</p>
+        <p class="muted">Ohio's Utica horizontal era began around 2011, lagging the PA Marcellus by three years. The state's lit signal is concentrated in a four-county arc through Carroll, Harrison, Belmont, and Monroe.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="6">
+      <div class="step-card">
+        <span class="eyebrow">06 &middot; What "dark" means</span>
+        <h2>Three regulators, three rules, one floor.</h2>
+        <p><strong style="color:var(--pa)">PA dark</strong> = UNCONVENTI is N AND well configuration is not horizontal, OR well is in the historic WPA inventory.</p>
+        <p><strong style="color:var(--wv)">WV dark</strong> = present in 2016 well location data (a state-level architecture verdict, not a paper-records verdict).</p>
+        <p><strong style="color:var(--oh)">OH dark</strong> = SLANT is not H AND no Marcellus/Utica formation depth recorded.</p>
+        <p class="muted">Asymmetric proxies, three different verdicts, but the basin-wide answer converges anyway. That convergence is the headline.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="7">
+      <div class="step-card">
+        <span class="eyebrow">07 &middot; The basin clip</span>
+        <div class="big">579,324</div>
+        <h2>Wells inside the EIA shale envelope.</h2>
+        <p>610,821 wells across the three states fall inside their own borders. 579,324 fall inside the EIA Appalachian shale union: 254,130 in Pennsylvania, 109,666 in West Virginia, 215,528 in Ohio. The largest basin in the series.</p>
+        <p class="muted">Outside the polygon is mostly central PA Allegheny Plateau (older Devonian sandstone gas, less drilled), eastern OH Niagara reef structures, and the deep WV Appalachian Plateau. We exclude them so the map is the unconventional petroleum system, not the conventional fringe.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="8">
+      <div class="step-card">
+        <span class="eyebrow">08 &middot; The reveal</span>
+        <div class="big">94.8%</div>
+        <h2>Appalachia, <em>dark.</em></h2>
+        <p>549,432 of 579,324 wells. Higher than Anadarko's 91%. Higher than Permian's 78%. Within striking distance of Kansas's 94%. The 165 years of vertical drilling overwhelms the Marcellus + Utica era. The horizontal rescue does not scale to age.</p>
+        <p class="muted">If we removed WV from the calculation entirely (the state is dark by data architecture, not by record), the basin lands at 93.5%. Either way, the answer is the same kind of number.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="9">
+      <div class="step-card">
+        <span class="eyebrow">09 &middot; The state gradient</span>
+        <h2>Three regulators, three dark shares.</h2>
+        <div class="state-table">
+          <span class="cnty">Pennsylvania</span><span class="st pa">PA</span>
+          <div class="track pa"><div class="fill" style="width:90%"></div></div><span class="num">90.1%</span>
+          <span class="cnty">West Virginia</span><span class="st wv">WV</span>
+          <div class="track wv"><div class="fill" style="width:100%"></div></div><span class="num">100.0%</span>
+          <span class="cnty">Ohio</span><span class="st oh">OH</span>
+          <div class="track oh"><div class="fill" style="width:98%"></div></div><span class="num">97.8%</span>
+        </div>
+        <p>Pennsylvania has the most lit signal in the basin. The PA DEP UNCONVENTI flag captures roughly 25,000 Marcellus and Utica horizontals, with the Marcellus core running through Bradford, Tioga, Lycoming, and Susquehanna counties.</p>
+        <p>Ohio's Utica era is real but small. 4,670 lit wells in a state with 242,035 total. WV's 100% is the architectural verdict, not a paper count.</p>
+      </div>
+    </section>
+
+    <section class="step pa-theme" data-step="10">
+      <div class="step-card">
+        <span class="eyebrow">10 &middot; The Drake well</span>
+        <h2>Titusville, <em>August 27, 1859.</em></h2>
+        <p>Edwin Drake's well was 69 feet deep, drilled with a steam-powered cable tool, and produced 25 barrels a day. It established the first commercial petroleum industry in North America. Its location, three miles south of Titusville on Oil Creek, is inside our basin polygon.</p>
+        <p>The Drake well is not in our well count. It was plugged and abandoned in 1861, fifty years before any state required permits, and a hundred years before WPA mapping efforts went looking for the wells the industry had forgotten. It is one of an estimated 700,000 to a million unaccounted-for wells in Pennsylvania alone.</p>
+        <p class="muted">The dark-data problem in this basin is not a database issue. It is a memory issue. The wells were drilled before anyone built a system that could remember them.</p>
+      </div>
+    </section>
+
+    <section class="step pa-theme" data-step="11">
+      <div class="step-card">
+        <span class="eyebrow">11 &middot; The Marcellus core</span>
+        <div class="big">23,237</div>
+        <h2>PA horizontals, <em>2008 onward.</em></h2>
+        <p>Pennsylvania flagged its first Marcellus unconventional well in 2005. Ground broke at scale in 2008. By 2014 the state was producing more dry gas than any province in North America that was not the Williston, including more than the entire Gulf of Mexico shelf. 23,237 of those wells are inside our polygon, almost all in northeastern PA's Bradford-Tioga-Susquehanna trend.</p>
+        <p>Every one of them is lit. The PA DEP indexes them. The operators file digital completion reports because their next pad's design depends on the previous pad's logs. The Marcellus is the model of how a modern petroleum system should keep its records.</p>
+        <p class="muted">25,112 PA wells total are lit, including a few thousand non-horizontal modern conventionals. The other 229,158 PA wells in this cut are dark.</p>
+      </div>
+    </section>
+
+    <section class="step oh-theme" data-step="12">
+      <div class="step-card">
+        <span class="eyebrow">12 &middot; The Utica overlay</span>
+        <h2>Ohio's <em>2011 wedge.</em></h2>
+        <p>The Utica horizontal era in Ohio began with Chesapeake's first wells in 2011. By 2014 Carroll, Harrison, Belmont, and Monroe counties were the lit edge of the Ohio half of the basin. Northeast of that arc, Cleveland and Youngstown sit on top of pre-1950 vertical Devonian and Berea sandstone wells. South of the arc, Cincinnati and the Hocking Valley are the same.</p>
+        <p>The Utica wedge is smaller than the Marcellus wedge, started later, and covers a thinner section of the play. Ohio's lit count is 4,670: less than a fifth of Pennsylvania's. The state's 97.8% dark share is the result.</p>
+        <p class="muted">The OH layer ships horizontal-leg geometries on a separate sub-layer (Layer 6 of the public service). Those traces are not on this map; we plot only the surface holes. The lit dots are the SH locations of horizontal wells.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="13">
+      <div class="step-card">
+        <span class="eyebrow">13 &middot; Vintage, basin-wide</span>
+        <h2>The basin is <em>a 19th-century well</em> with a 21st-century top.</h2>
+        <div class="vintage-chart">
+          <span class="era">pre-1980</span>
+          <div class="track"><div class="fill" style="width:100%"></div></div>
+          <span class="num">38,937</span>
+          <span class="era">1980s</span>
+          <div class="track"><div class="fill" style="width:32%"></div></div>
+          <span class="num">12,556</span>
+          <span class="era">1990s</span>
+          <div class="track"><div class="fill" style="width:40%"></div></div>
+          <span class="num">15,587</span>
+          <span class="era">2000s</span>
+          <div class="track"><div class="fill" style="width:36%"></div></div>
+          <span class="num">14,108</span>
+          <span class="era">2010+</span>
+          <div class="track"><div class="fill" style="width:65%"></div></div>
+          <span class="num">25,394</span>
+          <span class="era">unknown</span>
+          <div class="track"><div class="fill unk" style="width:100%"></div></div>
+          <span class="num">472,742</span>
+        </div>
+        <p>81% of the basin has unknown spud-vintage. WV and OH ship no spud-date column on their public well files; both states default the entire population to bucket 5. The vintage signal we have is almost entirely Pennsylvania.</p>
+        <p class="muted">PA's pre-1980 mountain (38,937 wells, mostly historic WPA-mapped) plus its 2010+ Marcellus bar (25,394 wells) is the legible chart. Everything else is regulatory dark, not record-keeping dark.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="14">
+      <div class="step-card">
+        <span class="eyebrow">14 &middot; The operators</span>
+        <h2>Three states, three top-of-list logics.</h2>
+        <p>Pennsylvania's top operators are split between Marcellus modern (Range Resources, EQT, Chesapeake, Coterra) and conventional legacy plug-and-abandon (PennGrade Energy, Snyder Brothers). Marcellus operators carry single-digit dark shares. Conventional names average 95%+.</p>
+        <p>West Virginia's "operators" are dominated by "OPERATOR UNKNOWN" placeholders, plus modern Marcellus operators (Antero, Southwestern, EQT, Diversified) all flagged 100% dark by the architectural rule.</p>
+        <p>Ohio's top names are a mix of Utica-era horizontal operators (Encino, Eclipse, Ascent) and legacy independents (Artex, Petromax). The Utica names carry sub-30% dark shares, the legacy names 95%+.</p>
+        <p class="muted">"OPERATOR UNKNOWN" carries roughly 14,000 WV wells. That field is the cleanest single category of dark inventory in the entire series so far.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="15">
+      <div class="step-card">
+        <span class="eyebrow">15 &middot; The tell</span>
+        <h2>Age and architecture <em>both</em> defeat the modern era.</h2>
+        <p>The Williston was 46% lit because its drilling history was dominated by one fifteen-year horizontal era. The Anadarko was 91% dark because its horizontal era was a thin top on sixty years of vertical legacy. The Appalachian Basin is 95% dark because both factors compound: 165 years of legacy, plus three regulators with three different filing protocols, plus a dozen pre-regulatory decades when no one filed anything at all.</p>
+        <p>The dark-data problem is not solved by waiting for technology. It is not solved by waiting for the regulators to catch up. It is solved by going back, finding the wells, and digitizing them. Every basin in this series tells you the same thing in a different accent. Appalachia tells you in the loudest one.</p>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<section class="outro">
+  <div class="outro-inner">
+    <h2>The horizontal era is the <em>top</em> of the basin, not the basin.</h2>
+    <p>Five basins in, the curve has hardened. Kansas 94%, Permian 78%, Williston 46%, Anadarko 91%, Appalachia 95%. Williston is the only basin where horizontals dominate the well count, and it is the only basin in the lit majority. Every other basin in the series carries a vertical legacy that the modern era does not have time, money, or political will to digitize. The Marcellus is the most successful unconventional play in modern North America, and inside its own basin polygon it is a thin top layer on a quarter-million wells the regulators inherited from the WPA, the K Sheet, and Edwin Drake.</p>
+
+    <div class="implications">
+      <p class="implications-label">Where this goes</p>
+      <h3>The dark-data problem is now provably structural. Five basins, five architectures, one verdict above 90% in four of them.</h3>
+      <ul>
+        <li><strong>Operators &amp; modellers.</strong> Marcellus and Utica type-curve work leans on the 28,000 lit wells in the basin. The 549,000 dark wells underneath them include the Devonian sandstone gas plays of the 1900s-1970s, which tell you what the structural traps did before fracs got involved. That stratigraphic context is paper.</li>
+        <li><strong>Acquirers &amp; underwriters.</strong> 700,000 to a million unaccounted-for wells in PA alone is the canonical environmental liability of the basin. The Drake well's exact bottomhole location was lost by 1880; the same is true of the next ten thousand wells drilled around it. P&amp;A liability has to be priced against an inventory that does not exist publicly.</li>
+        <li><strong>Regulators &amp; policy teams.</strong> The state-level architectural problem in WV, where the well-location and horizontal-production data do not link, is fixable. Cross-references exist inside the agency. Publishing them would lift WV's lit share materially. That is not a 165-year problem; it is a one-quarter problem.</li>
+      </ul>
+      <p class="close">I build the pipelines, basin-clip analyses, and AI-assisted subsurface QC that close this kind of gap, across basins, regulators, and the geological detail that still matters. If you work any side of this, <em>let's talk</em>.</p>
+    </div>
+
+    <div class="cta-row">
+      <a class="cta accent" href="https://linkedin.com/in/salamituns">Work with me &rarr;</a>
+      <a class="cta" href="https://github.com/salamituns/darkdata-repo">Data &amp; code</a>
+      <a class="cta" href="/darkdata/">The series</a>
+    </div>
+    <p class="footnote">
+      Sources: <a href="https://www.pasda.psu.edu/uci/SearchResults.aspx?Keyword=oil%20gas%20wells">PASDA</a> for the PA DEP Conv/Unconv shapefile and the PA Historic WPA wells. <a href="https://dep.wv.gov/oil-and-gas/databaseinfo/Pages/default.aspx">WV DEP Office of Oil and Gas</a> for the 2016 well location file and the 2024 Q4 H6A horizontal production roll. <a href="https://gis.ohiodnr.gov/arcgis/rest/services/DOG_Services/Oilgas_Wells_public/MapServer">OH DNR DOG_Services</a> Oilgas_Wells_public REST endpoint, paginated 1,000 records per request. <a href="https://www.eia.gov/maps/maps.php">EIA Tight Oil + Shale Plays Lower 48</a> Dec 2021, Basin=Appalachian filter. Wells joined in EPSG:4269 (NAD83). Built with <a href="https://deck.gl/">deck.gl</a> and <a href="https://github.com/russellsamora/scrollama">scrollama</a>. Analysis: <a href="https://twitter.com/salamituns">@salamituns</a>.
+    </p>
+  </div>
+</section>
+
+<script>
+const BASIN_VIEW    = { longitude: -80.0, latitude: 39.6, zoom: 5.6, pitch: 0, bearing: 0 };
+const PA_VIEW       = { longitude: -77.5, latitude: 41.4, zoom: 6.4, pitch: 0, bearing: 0 };
+const WV_VIEW       = { longitude: -80.5, latitude: 38.6, zoom: 6.6, pitch: 0, bearing: 0 };
+const OH_VIEW       = { longitude: -82.0, latitude: 40.2, zoom: 6.5, pitch: 0, bearing: 0 };
+const TITUSVILLE    = { longitude: -79.67, latitude: 41.63, zoom: 8.6, pitch: 0, bearing: 0 };
+const MARCELLUS_CORE= { longitude: -76.7, latitude: 41.7, zoom: 7.5, pitch: 0, bearing: 0 };
+const UTICA_ARC     = { longitude: -81.0, latitude: 40.4, zoom: 7.6, pitch: 0, bearing: 0 };
+
+const VIEWS = {
+  0:  BASIN_VIEW,  1: BASIN_VIEW,  2: BASIN_VIEW,
+  3:  PA_VIEW,     4: WV_VIEW,     5: OH_VIEW,
+  6:  BASIN_VIEW,  7: BASIN_VIEW,  8: BASIN_VIEW,
+  9:  BASIN_VIEW, 10: TITUSVILLE, 11: MARCELLUS_CORE,
+  12: UTICA_ARC,  13: BASIN_VIEW, 14: BASIN_VIEW,
+  15: BASIN_VIEW
+};
+
+// dark/lit per state in [0,1]; vintageFilter: null | 'pre2000' | 'post2010' | 'unknown'
+const SCENES = {
+  0:  { darkPa: 0.45, darkWv: 0.45, darkOh: 0.45, litPa: 0.65, litWv: 0.65, litOh: 0.65, legend: false, vintageFilter: null },
+  1:  { darkPa: 0.30, darkWv: 0.30, darkOh: 0.30, litPa: 0.30, litWv: 0.30, litOh: 0.30, legend: false, vintageFilter: null },
+  2:  { darkPa: 0.20, darkWv: 0.20, darkOh: 0.20, litPa: 0.20, litWv: 0.20, litOh: 0.20, legend: false, vintageFilter: null },
+  3:  { darkPa: 0.85, darkWv: 0.10, darkOh: 0.10, litPa: 0.95, litWv: 0.10, litOh: 0.10, legend: false, vintageFilter: null },
+  4:  { darkPa: 0.10, darkWv: 0.85, darkOh: 0.10, litPa: 0.10, litWv: 0.85, litOh: 0.10, legend: false, vintageFilter: null },
+  5:  { darkPa: 0.10, darkWv: 0.10, darkOh: 0.85, litPa: 0.10, litWv: 0.10, litOh: 1.00, legend: false, vintageFilter: null },
+  6:  { darkPa: 0.55, darkWv: 0.55, darkOh: 0.55, litPa: 0.85, litWv: 0.85, litOh: 0.85, legend: true,  vintageFilter: null },
+  7:  { darkPa: 0.55, darkWv: 0.55, darkOh: 0.55, litPa: 0.85, litWv: 0.85, litOh: 0.85, legend: true,  vintageFilter: null },
+  8:  { darkPa: 0.75, darkWv: 0.75, darkOh: 0.75, litPa: 0.95, litWv: 0.95, litOh: 0.95, legend: true,  vintageFilter: null },
+  9:  { darkPa: 0.55, darkWv: 0.85, darkOh: 0.85, litPa: 0.95, litWv: 0.85, litOh: 0.95, legend: true,  vintageFilter: null },
+ 10:  { darkPa: 0.85, darkWv: 0.20, darkOh: 0.20, litPa: 0.40, litWv: 0.10, litOh: 0.10, legend: true,  vintageFilter: 'pre2000' },
+ 11:  { darkPa: 0.20, darkWv: 0.10, darkOh: 0.10, litPa: 1.00, litWv: 0.10, litOh: 0.20, legend: true,  vintageFilter: 'post2010' },
+ 12:  { darkPa: 0.20, darkWv: 0.20, darkOh: 0.30, litPa: 0.20, litWv: 0.10, litOh: 1.00, legend: true,  vintageFilter: null },
+ 13:  { darkPa: 0.50, darkWv: 0.50, darkOh: 0.50, litPa: 0.95, litWv: 0.30, litOh: 0.85, legend: true,  vintageFilter: null },
+ 14:  { darkPa: 0.50, darkWv: 0.50, darkOh: 0.50, litPa: 0.95, litWv: 0.30, litOh: 0.85, legend: true,  vintageFilter: null },
+ 15:  { darkPa: 0.55, darkWv: 0.55, darkOh: 0.55, litPa: 0.85, litWv: 0.85, litOh: 0.85, legend: true,  vintageFilter: null }
+};
+
+const PA_LIT_COLOR = [197, 123, 53];   // amber
+const WV_LIT_COLOR = [46, 110, 126];   // teal
+const OH_LIT_COLOR = [107, 78, 138];   // violet
+const GHOST_COLOR  = [181, 174, 160];
+
+let darkPaWells = []; let litPaWells = [];
+let darkWvWells = []; let litWvWells = [];
+let darkOhWells = []; let litOhWells = [];
+let basinGeo    = null;
+let statesGeo   = null;
+let deckgl      = null;
+let currentStep = -1;
+
+function matchesVintage(v, filter) {
+  if (!filter) return true;
+  if (filter === 'pre2000') return v === 0 || v === 1 || v === 2;
+  if (filter === 'post2010') return v === 4;
+  if (filter === 'unknown') return v === 5;
+  return true;
+}
+
+function buildWellLayer(id, data, rgb, opacity, radius, vintageFilter) {
+  if (opacity <= 0.01 || data.length === 0) return null;
+  const filtered = vintageFilter ? data.filter(d => matchesVintage(d.v, vintageFilter)) : data;
+  if (filtered.length === 0) return null;
+  return new deck.ScatterplotLayer({
+    id, data: filtered,
+    getPosition: d => [d.lon, d.lat],
+    getFillColor: [rgb[0], rgb[1], rgb[2], Math.round(220 * opacity)],
+    getRadius: radius,
+    radiusMinPixels: 0.6,
+    radiusMaxPixels: 4,
+    stroked: false, pickable: false
+  });
+}
+
+function buildBasinLayer() {
+  if (!basinGeo) return null;
+  return new deck.GeoJsonLayer({
+    id: 'basin-polygon', data: basinGeo,
+    stroked: true, filled: true,
+    getFillColor: [237, 230, 212, 70],
+    getLineColor: [14, 14, 14, 200],
+    getLineWidth: 2, lineWidthMinPixels: 1.2,
+    pickable: false
+  });
+}
+
+function buildStatesLayer() {
+  if (!statesGeo) return null;
+  return new deck.GeoJsonLayer({
+    id: 'state-outlines', data: statesGeo,
+    stroked: true, filled: false,
+    getLineColor: [14, 14, 14, 110],
+    getLineWidth: 1, lineWidthMinPixels: 0.6,
+    pickable: false
+  });
+}
+
+function rebuildLayers(scene) {
+  const vf = scene.vintageFilter;
+  const layers = [
+    buildStatesLayer(),
+    buildBasinLayer(),
+    buildWellLayer('dark-pa', darkPaWells, GHOST_COLOR, scene.darkPa, 200, vf),
+    buildWellLayer('dark-wv', darkWvWells, GHOST_COLOR, scene.darkWv, 200, vf),
+    buildWellLayer('dark-oh', darkOhWells, GHOST_COLOR, scene.darkOh, 200, vf),
+    buildWellLayer('lit-pa',  litPaWells,  PA_LIT_COLOR, scene.litPa, 320, vf),
+    buildWellLayer('lit-wv',  litWvWells,  WV_LIT_COLOR, scene.litWv, 320, vf),
+    buildWellLayer('lit-oh',  litOhWells,  OH_LIT_COLOR, scene.litOh, 320, vf)
+  ].filter(Boolean);
+  deckgl.setProps({ layers });
+}
+
+function applyStep(i) {
+  if (i === currentStep) return;
+  currentStep = i;
+  const view = VIEWS[i] || BASIN_VIEW;
+  deckgl.setProps({
+    initialViewState: { ...view, transitionDuration: 1200 }
+  });
+  const scene = SCENES[i] || SCENES[0];
+  rebuildLayers(scene);
+  const legend = document.getElementById('legend');
+  const stateChip = document.getElementById('state-chip');
+  if (scene.legend) legend.classList.add('on'); else legend.classList.remove('on');
+  if (i >= 2 && i <= 14) stateChip.classList.add('on'); else stateChip.classList.remove('on');
+  const pos = document.getElementById('progress-pos');
+  pos.textContent = (i < 10 ? '0' : '') + i;
+}
+
+function setLoaderError(msg) {
+  const loader = document.getElementById('loader');
+  const txt = document.getElementById('loader-text');
+  if (txt) txt.textContent = msg;
+  if (loader) loader.classList.add('error');
+}
+
+async function loadData() {
+  const [csvResp, basinResp, statesResp] = await Promise.all([
+    fetch('data/wells.csv'),
+    fetch('data/appalachia_basin.json'),
+    fetch('data/appalachia_states.json')
+  ]);
+  if (!csvResp.ok) throw new Error('wells.csv load failed: ' + csvResp.status);
+  if (!basinResp.ok) throw new Error('appalachia_basin.json load failed: ' + basinResp.status);
+
+  const csvText = await csvResp.text();
+  basinGeo = await basinResp.json();
+  if (statesResp.ok) statesGeo = await statesResp.json();
+
+  const lines = csvText.split('\n');
+  lines.shift();  // header: lat,lon,d,v,s,h
+  for (let i = 0; i < lines.length; i++) {
+    const ln = lines[i];
+    if (!ln) continue;
+    const p = ln.split(',');
+    const row = { lat: +p[0], lon: +p[1], v: +p[3] };
+    const d = p[2];
+    const s = p[4];
+    // s = 0 -> PA, s = 1 -> WV, s = 2 -> OH
+    if (d === '1') {
+      if (s === '0') darkPaWells.push(row);
+      else if (s === '1') darkWvWells.push(row);
+      else darkOhWells.push(row);
+    } else {
+      if (s === '0') litPaWells.push(row);
+      else if (s === '1') litWvWells.push(row);
+      else litOhWells.push(row);
+    }
+  }
+
+  deckgl = new deck.DeckGL({
+    container: 'map',
+    initialViewState: BASIN_VIEW,
+    controller: { doubleClickZoom: false, scrollZoom: false, dragPan: false, dragRotate: false, keyboard: false },
+    parameters: { clearColor: [246/255, 243/255, 235/255, 1] },
+    layers: []
+  });
+
+  applyStep(0);
+  document.getElementById('loader').classList.add('done');
+
+  const scroller = scrollama();
+  scroller
+    .setup({ step: '.step', offset: 0.55, debug: false })
+    .onStepEnter(resp => {
+      const idx = +resp.element.getAttribute('data-step');
+      applyStep(idx);
+    });
+  window.addEventListener('resize', scroller.resize);
+}
+
+loadData().catch(err => {
+  console.error(err);
+  setLoaderError('Could not load the dataset. Open the browser console for details.');
+});
+</script>
+
+</body>
+</html>

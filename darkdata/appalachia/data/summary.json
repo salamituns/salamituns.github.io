@@ -1,0 +1,316 @@
+{
+  "total_wells": 579324,
+  "dark": 549432,
+  "lit": 29892,
+  "pct_dark": 94.8,
+  "by_state": {
+    "PA": {
+      "total": 254130,
+      "dark": 229021,
+      "horizontal_flagged": 23237,
+      "pct_dark": 90.1
+    },
+    "WV": {
+      "total": 109666,
+      "dark": 109666,
+      "horizontal_flagged": 0,
+      "pct_dark": 100.0
+    },
+    "OH": {
+      "total": 215528,
+      "dark": 210745,
+      "horizontal_flagged": 4670,
+      "pct_dark": 97.8
+    }
+  },
+  "vintage_distribution": {
+    "5": 360463,
+    "0": 126765,
+    "3": 33465,
+    "1": 25332,
+    "4": 21285,
+    "2": 12014
+  },
+  "top_operators_pa": [
+    {
+      "op": "HISTORIC (WPA / K Sheet / H Sheet)",
+      "total": 30527,
+      "dark": 30527,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "DIVERSIFIED PROD LLC",
+      "total": 21611,
+      "dark": 21201,
+      "pct_dark": 98.1
+    },
+    {
+      "op": "PA DEP OFC OIL & GAS MGMT",
+      "total": 12786,
+      "dark": 12785,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "UNKNOWN OPR",
+      "total": 8171,
+      "dark": 8171,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "QUAKER STATE CORP",
+      "total": 7014,
+      "dark": 7014,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "PENNZOIL PROD CO",
+      "total": 6722,
+      "dark": 6722,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "RANGE RESOURCES APPALACHIA LLC",
+      "total": 3827,
+      "dark": 1144,
+      "pct_dark": 29.9
+    },
+    {
+      "op": "MINARD RUN OIL CO",
+      "total": 3821,
+      "dark": 3821,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "EQT PROD CO",
+      "total": 3110,
+      "dark": 1263,
+      "pct_dark": 40.6
+    },
+    {
+      "op": "PA GEN ENERGY CORP",
+      "total": 2929,
+      "dark": 2929,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "EXPAND OPER LLC",
+      "total": 2631,
+      "dark": 1,
+      "pct_dark": 0.0
+    },
+    {
+      "op": "OWS ENERGY LLC",
+      "total": 2609,
+      "dark": 2607,
+      "pct_dark": 99.9
+    },
+    {
+      "op": "SENECA RESOURCES CO LLC",
+      "total": 2566,
+      "dark": 857,
+      "pct_dark": 33.4
+    },
+    {
+      "op": "SNYDER BROS INC",
+      "total": 2529,
+      "dark": 2232,
+      "pct_dark": 88.3
+    },
+    {
+      "op": "CHESAPEAKE APPALACHIA LLC",
+      "total": 2194,
+      "dark": 15,
+      "pct_dark": 0.7
+    }
+  ],
+  "top_operators_wv": [
+    {
+      "op": "OPERATOR UNKNOWN",
+      "total": 11487,
+      "dark": 11487,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "EQT PRODUCTION COMPANY",
+      "total": 7108,
+      "dark": 7108,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "CONSOL GAS COMPANY",
+      "total": 5849,
+      "dark": 5849,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "CABOT OIL & GAS CORPORATION",
+      "total": 4200,
+      "dark": 4200,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "CHESAPEAKE APPALACHIA, L.L.C.",
+      "total": 3877,
+      "dark": 3877,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "ENERGY CORPORATION OF AMERICA",
+      "total": 2823,
+      "dark": 2823,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "DOMINION TRANSMISSION, INC.",
+      "total": 2623,
+      "dark": 2623,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "ALLIANCE PETROLEUM CORPORATION",
+      "total": 2588,
+      "dark": 2588,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "EXCO RESOURCES (PA), LLC",
+      "total": 2133,
+      "dark": 2133,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "ROSS AND WHARTON GAS COMPANY, INC.",
+      "total": 1753,
+      "dark": 1753,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "ENERVEST OPERATING L. L. C.",
+      "total": 1681,
+      "dark": 1681,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "CONSOLIDATION COAL COMPANY",
+      "total": 1451,
+      "dark": 1451,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "TRIAD HUNTER, LLC",
+      "total": 1427,
+      "dark": 1427,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "ANTERO RESOURCES CORPORATION",
+      "total": 1257,
+      "dark": 1257,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "COLUMBIA NATURAL RESOURCES, LLC",
+      "total": 1193,
+      "dark": 1193,
+      "pct_dark": 100.0
+    }
+  ],
+  "top_operators_oh": [
+    {
+      "op": "HISTORIC OWNER",
+      "total": 94073,
+      "dark": 94073,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "OWS ACQUISITION CO LLC",
+      "total": 5621,
+      "dark": 5621,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "DIVERSIFIED PRODUCTION LLC",
+      "total": 4708,
+      "dark": 4669,
+      "pct_dark": 99.2
+    },
+    {
+      "op": "COLUMBIA GAS TRANSMISSION LLC",
+      "total": 2760,
+      "dark": 2760,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "Eco Power Crypto LLC",
+      "total": 2374,
+      "dark": 2373,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "OXFORD OIL",
+      "total": 1712,
+      "dark": 1712,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "KENOIL LLC",
+      "total": 1625,
+      "dark": 1625,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "NORTHWOOD ENERGY CORP",
+      "total": 1553,
+      "dark": 1547,
+      "pct_dark": 99.6
+    },
+    {
+      "op": "EOG Ohio, LLC ",
+      "total": 1247,
+      "dark": 7,
+      "pct_dark": 0.6
+    },
+    {
+      "op": "PETROX, INC",
+      "total": 1199,
+      "dark": 1199,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "PIN OAK ENERGY PARTNERS LLC",
+      "total": 1170,
+      "dark": 1146,
+      "pct_dark": 97.9
+    },
+    {
+      "op": "ASCENT RESOURCES UTICA LLC",
+      "total": 1164,
+      "dark": 45,
+      "pct_dark": 3.9
+    },
+    {
+      "op": "CGAS EXPLORATION",
+      "total": 1111,
+      "dark": 1111,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "STONEBRIDGE OPERATING CO LLC",
+      "total": 1090,
+      "dark": 1090,
+      "pct_dark": 100.0
+    },
+    {
+      "op": "J D DRILLING COMPANY",
+      "total": 1018,
+      "dark": 1018,
+      "pct_dark": 100.0
+    }
+  ],
+  "notes": [
+    "Basin clip: EIA Tight Oil + Shale Plays Lower48 (Dec 2021), filtered to Basin=Appalachian. Union of Marcellus + Utica + Devonian (Ohio) + Chattanooga shale polygons.",
+    "Lit/dark proxies are state-asymmetric. PA uses UNCONVENTI flag + horizontal well config (the cleanest of the three). OH uses SLANT field (V/H/D/O codes) + Marcellus/Utica formation depth flags. WV is a special case: its 2016 well location file uses PERMIT_ID while its 2024 H6A horizontal production file uses 10-digit API numbers; the two do not link without a cross-reference table WV DEP does not publish. WV is therefore counted 100 percent dark; that is the dark-data verdict for the state.",
+    "PA Historic Oil and Gas Wells (WPA-mapped pre-regulatory wells, 30,527) are pre-1860 to ca. 1900s. All counted dark, all bucketed pre-1980.",
+    "WV and OH have no parseable spud-date column on the public well files. Both states default to vintage bucket 5 (unknown). Vintage signal lives mostly in PA."
+  ]
+}
