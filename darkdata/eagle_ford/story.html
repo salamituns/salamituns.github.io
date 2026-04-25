@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#F6F3EB">
+<title>Walking the Eagle Ford: a basin without per-well data | @salamituns</title>
+<meta name="description" content="The series finale. Texas Railroad Commission publishes its bulk well data through a JSF/PrimeFaces session portal backed by EBCDIC mainframe dumps. Eagle Ford ships without per-well data on purpose: the architecture itself is the dark-data verdict.">
+<meta property="og:title" content="Walking the Eagle Ford: when the data architecture IS the dark data">
+<meta property="og:description" content="Five basins down, one walled. TX RRC's regulatory data posture is the series capstone. Sixteen scroll steps through what we cannot show, and why that absence is the answer.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://salamituns.github.io/darkdata/eagle_ford/story.html">
+<meta property="og:image" content="https://salamituns.github.io/darkdata/eagle_ford/figures/eagle_ford_basin_map.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://salamituns.github.io/darkdata/eagle_ford/story.html">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..700,0..100;1,9..144,300..500,0..100&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<script src="https://unpkg.com/deck.gl@8.9.35/dist.min.js"></script>
+<script src="https://unpkg.com/scrollama@3.2.0/build/scrollama.min.js"></script>
+<style>
+  :root {
+    --paper: #F6F3EB;
+    --paper-2: #EFEBDE;
+    --ink: #0E0E0E;
+    --muted: #7A7368;
+    --rule: rgba(14,14,14,0.14);
+    --accent: #A23B2A;
+    --amber: #C57B35;
+    --violet: #6B4E8A;
+    --teal: #2E6E7E;
+    --ghost: #B5AEA0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: var(--paper); }
+  body { font-family: "Inter", system-ui, sans-serif; color: var(--ink); overflow-x: clip; }
+
+  .em-nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0.9rem 1.4rem;
+    background: rgba(246,243,235,0.92);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--rule);
+  }
+  .em-nav a, .em-nav span { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; font-weight: 500; }
+  .em-nav a { color: var(--ink); text-decoration: none; }
+  .em-nav a:hover { color: var(--accent); }
+  .em-left { display: flex; gap: 1.5rem; align-items: baseline; }
+  .em-back { color: var(--muted); }
+  .em-back-arrow { margin-right: 0.35rem; }
+  .em-here { color: var(--accent); }
+
+  #stage {
+    position: relative; width: 100%;
+    display: grid; grid-template-columns: 40% 60%;
+    grid-template-areas: "narrative map";
+  }
+  #map-wrap {
+    grid-area: map;
+    position: sticky; top: 0;
+    width: 100%; height: 100vh;
+    z-index: 1; background: var(--paper);
+  }
+  #map { position: absolute; inset: 0; }
+
+  .progress {
+    position: fixed; top: 4.5rem; right: 1.4rem; z-index: 20;
+    font-family: "Inter", sans-serif; font-size: 0.72rem;
+    color: var(--ink); letter-spacing: 0.14em; text-transform: uppercase;
+    font-variant-numeric: tabular-nums;
+    background: rgba(246,243,235,0.92); padding: 0.4rem 0.7rem;
+    border: 1px solid var(--rule);
+  }
+  .progress .pos { color: var(--accent); font-weight: 500; }
+
+  #narrative { grid-area: narrative; position: relative; width: 100%; padding-top: 4.5rem; z-index: 2; }
+  .step { min-height: 100vh; display: flex; align-items: center; padding: 0 2rem 0 2.5rem; }
+  .step-card {
+    background: rgba(246,243,235,0.96);
+    border-left: 2px solid var(--accent);
+    padding: 1.8rem 1.6rem;
+    max-width: 34rem;
+  }
+  .step.tx-theme .step-card { border-left-color: var(--accent); }
+  .step.neutral-theme .step-card { border-left-color: var(--ink); }
+
+  .step .eyebrow { display: block; font-size: 0.7rem; color: var(--muted); letter-spacing: 0.16em; text-transform: uppercase; font-weight: 500; margin-bottom: 0.9rem; }
+  .step h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48, "SOFT" 20;
+    font-weight: 400;
+    font-size: clamp(1.6rem, 3.1vw, 2.2rem);
+    line-height: 1.1; letter-spacing: -0.01em;
+    margin: 0 0 0.9rem;
+  }
+  .step h2 em { font-style: italic; color: var(--accent); font-variation-settings: "opsz" 48, "SOFT" 20; }
+  .step p { font-size: 0.96rem; line-height: 1.6; color: var(--ink); margin: 0 0 0.75rem; }
+  .step p.muted { color: var(--muted); font-size: 0.85rem; }
+  .step .big {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72;
+    font-weight: 400; font-size: 3rem;
+    color: var(--accent); line-height: 1;
+    margin: 0.4rem 0 0.5rem;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums lining-nums;
+  }
+
+  .step.cover .step-card { border-left-color: var(--ink); }
+  .step.cover h1 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 72, "SOFT" 30;
+    font-weight: 400;
+    font-size: clamp(2.2rem, 4.8vw, 3.4rem);
+    line-height: 1.05; margin: 0 0 1rem; letter-spacing: -0.02em;
+  }
+  .step.cover h1 em { font-style: italic; color: var(--accent); }
+  .step.cover .lede { font-size: 1.02rem; line-height: 1.55; color: var(--ink); }
+  .step.cover .byline { margin-top: 1.5rem; font-size: 0.72rem; color: var(--muted); letter-spacing: 0.14em; text-transform: uppercase; font-weight: 500; }
+  .step.cover .byline a { color: inherit; text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+  .step.cover .byline .sep { margin: 0 0.55rem; color: var(--rule); }
+
+  .reg-rank {
+    margin-top: 1rem;
+    display: grid; grid-template-columns: 8rem 1.5rem 1fr 2.5rem;
+    gap: 0.3rem 0.55rem; font-size: 0.78rem; align-items: center;
+  }
+  .reg-rank .lbl { color: var(--ink); font-size: 0.75rem; }
+  .reg-rank .st { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.08em; padding: 0.1rem 0.3rem; text-align: center; color: var(--paper); }
+  .reg-rank .st.live { background: var(--violet); }
+  .reg-rank .st.live2 { background: var(--amber); }
+  .reg-rank .st.live3 { background: var(--teal); }
+  .reg-rank .st.dead { background: var(--accent); }
+  .reg-rank .st.gray { background: var(--muted); }
+  .reg-rank .track { height: 7px; background: rgba(14,14,14,0.04); border: 1px solid var(--rule); position: relative; }
+  .reg-rank .track .fill { position: absolute; inset: 0 auto 0 0; }
+  .reg-rank .track.live .fill { background: var(--violet); }
+  .reg-rank .track.live2 .fill { background: var(--amber); }
+  .reg-rank .track.live3 .fill { background: var(--teal); }
+  .reg-rank .track.gray .fill { background: var(--muted); }
+  .reg-rank .track.dead .fill { background: var(--accent); }
+  .reg-rank .num { color: var(--muted); text-align: right; font-variant-numeric: tabular-nums; }
+
+  .series-table {
+    margin-top: 1rem;
+    display: grid; grid-template-columns: 6rem 1fr 4rem;
+    gap: 0.3rem 0.55rem; font-size: 0.8rem; align-items: center;
+  }
+  .series-table .b { color: var(--ink); font-weight: 500; }
+  .series-table .b .sub { color: var(--muted); font-weight: 400; font-size: 0.72rem; }
+  .series-table .num { color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+  .series-table .num.tx { color: var(--ink); font-weight: 500; }
+  .series-table .v { font-size: 0.65rem; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .code-line {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.78rem;
+    background: var(--paper-2);
+    border: 1px solid var(--rule);
+    padding: 0.65rem 0.85rem;
+    margin: 0.65rem 0;
+    color: var(--ink);
+    overflow-x: auto;
+  }
+  .code-line .ok { color: var(--teal); }
+  .code-line .fail { color: var(--accent); }
+
+  .outro {
+    position: relative; z-index: 4; background: var(--paper);
+    padding: 6rem 2.5rem 5rem; border-top: 1px solid var(--rule);
+  }
+  .outro-inner { max-width: 56rem; margin: 0 auto; }
+  .outro h2 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 48; font-weight: 400;
+    font-size: clamp(1.6rem, 3vw, 2.1rem);
+    line-height: 1.15; margin: 0 0 1rem; letter-spacing: -0.01em;
+  }
+  .outro h2 em { font-style: italic; color: var(--accent); }
+  .outro p { font-size: 0.97rem; line-height: 1.6; color: var(--ink); margin: 0 0 1rem; max-width: 44rem; }
+  .outro .implications {
+    margin: 2.25rem 0 0; padding: 1.5rem 1.75rem;
+    background: var(--paper-2); border: 1px solid var(--rule);
+    max-width: 44rem;
+  }
+  .outro .implications-label { font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); margin: 0 0 0.9rem; font-weight: 500; }
+  .outro .implications h3 {
+    font-family: "Fraunces", serif;
+    font-variation-settings: "opsz" 36;
+    font-weight: 400; font-style: italic;
+    font-size: 1.15rem; line-height: 1.3;
+    margin: 0 0 1.2rem; color: var(--ink); letter-spacing: -0.005em;
+  }
+  .outro .implications ul { list-style: none; padding: 0; margin: 0 0 1rem; }
+  .outro .implications li { font-size: 0.88rem; line-height: 1.55; color: var(--ink); padding: 0.55rem 0; border-top: 1px dashed var(--rule); }
+  .outro .implications li:first-child { border-top: none; padding-top: 0; }
+  .outro .implications li strong { font-weight: 600; color: var(--ink); display: inline-block; min-width: 10rem; }
+  .outro .implications .close { font-size: 0.88rem; line-height: 1.55; color: var(--ink); margin: 0.9rem 0 0; padding-top: 0.9rem; border-top: 1px solid var(--rule); }
+  .outro .implications .close em { font-style: italic; color: var(--accent); }
+  .outro .cta-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+  .outro .cta {
+    display: inline-block; padding: 0.7rem 1.1rem;
+    font-size: 0.74rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 500; text-decoration: none;
+    border: 1px solid var(--ink); color: var(--ink);
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .outro .cta:hover { background: var(--ink); color: var(--paper); }
+  .outro .cta.accent { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .outro .cta.accent:hover { background: var(--ink); border-color: var(--ink); }
+  .outro .footnote { font-size: 0.76rem; color: var(--muted); margin-top: 2rem; line-height: 1.55; }
+  .outro .footnote a { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 2px; }
+
+  .loader {
+    position: absolute; inset: 0; z-index: 10;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: var(--paper);
+    color: var(--muted); font-size: 0.8rem; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: opacity 400ms ease; text-align: center; padding: 0 1rem;
+  }
+  .loader .pulse {
+    width: 10px; height: 10px; border-radius: 50%;
+    background: var(--accent); margin-bottom: 0.8rem;
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  .loader.error .pulse { animation: none; background: var(--accent); }
+  .loader.error .loader-text { color: var(--accent); line-height: 1.5; max-width: 22rem; text-transform: none; letter-spacing: 0.02em; font-size: 0.85rem; }
+  @keyframes pulse { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .loader.done { opacity: 0; pointer-events: none; }
+
+  @media (max-width: 900px) {
+    #stage { grid-template-columns: 1fr; grid-template-areas: "map" "narrative"; }
+    #map-wrap { height: 55vh; }
+    #narrative { padding-top: 0; }
+    .step { min-height: auto; padding: 2.5rem 1.25rem; }
+    .step-card { padding: 1.2rem 1.2rem; max-width: none; }
+    .progress { top: 3.8rem; right: 0.9rem; font-size: 0.65rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="em-nav" aria-label="Site navigation">
+  <div class="em-left">
+    <a href="/" class="em-home" translate="no">Olatunde&nbsp;Salami</a>
+    <a href="/darkdata/" class="em-back"><span class="em-back-arrow" aria-hidden="true">&larr;</span>Dark&nbsp;Data</a>
+  </div>
+  <span class="em-here" aria-current="page">Eagle Ford &middot; Finale</span>
+</nav>
+
+<div class="progress" aria-live="polite">
+  Step <span class="pos" id="progress-pos">00</span> / 16
+</div>
+
+<div id="stage">
+
+  <div id="map-wrap">
+    <div id="map"></div>
+    <div class="loader" id="loader">
+      <div class="pulse"></div>
+      <div class="loader-text" id="loader-text">Loading basin geometry</div>
+    </div>
+  </div>
+
+  <div id="narrative">
+
+    <section class="step cover" data-step="0">
+      <div class="step-card">
+        <span class="eyebrow">Project 03 &middot; Subsurface &middot; Walk 06 (finale)</span>
+        <h1>Walking the <em>Eagle Ford</em>.</h1>
+        <p class="lede">
+          Five basins and 1.92 million wells later, this is the basin we cannot show you. Texas Railroad Commission ships its bulk well data through a JSF session portal backed by EBCDIC mainframe dumps. The wells exist. The architecture decided we cannot count them.
+        </p>
+        <p class="byline">
+          By <a href="https://linkedin.com/in/salamituns" rel="author">Olatunde&nbsp;Salami</a>
+          <span class="sep" aria-hidden="true">&middot;</span>
+          April&nbsp;2026
+          <span class="sep" aria-hidden="true">&middot;</span>
+          <a href="/darkdata/eagle_ford/">Long&#8209;form</a>
+        </p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="1">
+      <div class="step-card">
+        <span class="eyebrow">01 &middot; The question this basin answers</span>
+        <h2>What is <em>dark data</em>, exactly?</h2>
+        <p>The first five basins answered "how much": Williston 46% dark, Permian 78%, Anadarko 91%, Kansas 94%, Appalachia 95%. The numbers settled into a pattern. The shapes settled into a verdict. The pattern said horizontal eras don't rescue old basins; the verdict said most US oil and gas data is structurally dark.</p>
+        <p>Eagle Ford is the basin that answers the deeper question. Not how much is dark, but what dark IS. We chose this basin last on purpose. The architecture itself is the answer.</p>
+        <p class="muted">By the time we publish, the other five regulators have done their job: ship the wells in a form we can plot. TX RRC is the regulator that didn't.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="2">
+      <div class="step-card">
+        <span class="eyebrow">02 &middot; The basin</span>
+        <h2>USGS Eagle Ford Group, <em>76 South Texas counties.</em></h2>
+        <p>The 2018 USGS Eagle Ford Group Assessment ships seven Continuous AU polygons covering the Cenomanian-Turonian Mudstone, the Eagle Ford Marl, and the Submarine Plateau Karnes Trough plays. They span 76 Texas counties from Maverick on the Mexico border up through Karnes and DeWitt and out to Brazos and Madison. The map you are looking at is the basin and the counties.</p>
+        <p>What is missing from this map: the wells. EIA estimates more than 30,000 horizontal wells permitted in the Eagle Ford since 2008, plus a half-million conventional wells of every vintage drilled around them. None of them are dots on this page.</p>
+        <p class="muted">Compare to Williston, where we plotted 45,921 wells inside the basin polygon, or Anadarko, where we plotted 482,918. Same series, same code, same intent. Eagle Ford ships empty.</p>
+      </div>
+    </section>
+
+    <section class="step tx-theme" data-step="3">
+      <div class="step-card">
+        <span class="eyebrow">03 &middot; The data hunt</span>
+        <h2>Five attempts, five dead ends.</h2>
+        <p>We probed the obvious paths first. TX RRC's ArcGIS REST host (gis2.rrc.texas.gov) is unreachable from this network. The HTML viewer at gis.rrc.texas.gov requires a Silverlight-era control. The HIFLD national oil/gas wells layer requires an ArcGIS Online token. The Texas Open Data Portal has no oil/gas wells dataset. The TX Bureau of Economic Geology does not publish a public well shapefile.</p>
+        <div class="code-line">HEAD https://gis2.rrc.texas.gov/...     <span class="fail">network unreachable</span></div>
+        <div class="code-line">HEAD https://gis.rrc.texas.gov/files/OG_WELLS.zip     <span class="fail">404</span></div>
+        <div class="code-line">HEAD https://services.arcgis.com/.../Oil_and_Natural_Gas_Wells     <span class="fail">Token Required</span></div>
+        <p class="muted">Each one of these had a public PA, OK, ND, KS, or WV equivalent that ships in a single click. TX did not.</p>
+      </div>
+    </section>
+
+    <section class="step tx-theme" data-step="4">
+      <div class="step-card">
+        <span class="eyebrow">04 &middot; The JSF wall</span>
+        <h2>The bulk-data portal <em>has a session timer.</em></h2>
+        <p>TX RRC's MFT (Managed File Transfer) portal lists more than 200 direct download links to oil-and-gas datasets: Statewide API Data, Drilling Permit Master, Wellbore Query Data, Completion Information in Data Format. We tried them all.</p>
+        <p>Each link returns a JSF page with a five-minute session timer instead of a file. The page is generated by a PrimeFaces-stack web app. Download requires the session cookie, the JSF ViewState token, and a click on a control that POSTs back to the same JSF state. Vanilla HTTP cannot fetch the file.</p>
+        <div class="code-line">HEAD https://mft.rrc.texas.gov/link/d551fb20-...     <span class="ok">200 OK</span></div>
+        <div class="code-line">Content-Type: text/html;charset=UTF-8     <span class="fail">(not the file)</span></div>
+        <div class="code-line">&lt;title&gt;RRC Web Client - GoDrive&lt;/title&gt;</div>
+        <p class="muted">We do not run Selenium scrapers on regulator portals at scale. That is not a methodological purity claim; it is a cost claim. Each basin in this series shipped in 3 to 5 hours of pull, parse, and join. Texas would be 2 to 3 days of fragile session-replay code.</p>
+      </div>
+    </section>
+
+    <section class="step tx-theme" data-step="5">
+      <div class="step-card">
+        <span class="eyebrow">05 &middot; The EBCDIC layer</span>
+        <h2>The older records are <em>mainframe.</em></h2>
+        <p>Behind the JSF portal sits an even older layer: EBCDIC fixed-width files originally produced for an IBM mainframe. The TX RRC dataset list shows EBCDIC versions of Statewide Oil Production, Statewide Gas Production, Historical Ledger Statewide Oil, Statewide Gas Ledger Districts 1 through 10, and Certificate of Authorization P-4. The ASCII versions are companions, not replacements.</p>
+        <p>You can decode EBCDIC. You can write a fixed-width parser. The economics of doing it for a research-journal basin walk do not pencil out, especially when North Dakota ships its entire well inventory as a 43 MB shapefile that opens in QGIS in three seconds.</p>
+        <p class="muted">"The state did not migrate" is the cleanest way to describe what TX RRC is. Other regulators upgraded their data publishing posture between 1995 and 2015. TX kept the mainframe.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="6">
+      <div class="step-card">
+        <span class="eyebrow">06 &middot; The cooperative regulators</span>
+        <h2>Five basins shipped. One walled.</h2>
+        <div class="series-table">
+          <span class="b">Kansas<br><span class="sub">KGS</span></span>
+          <span class="v">basin 01</span>
+          <span class="num">94.3% dark</span>
+          <span class="b">Permian<br><span class="sub">TX RRC + NM OCD</span></span>
+          <span class="v">basin 02</span>
+          <span class="num">77.9% dark</span>
+          <span class="b">Williston<br><span class="sub">NDIC + MT BOGC</span></span>
+          <span class="v">basin 03</span>
+          <span class="num">45.7% dark</span>
+          <span class="b">Anadarko<br><span class="sub">OCC + KGS</span></span>
+          <span class="v">basin 04</span>
+          <span class="num">91.1% dark</span>
+          <span class="b">Appalachia<br><span class="sub">PA DEP + WV DEP + OH DOG</span></span>
+          <span class="v">basin 05</span>
+          <span class="num">94.8% dark</span>
+          <span class="b">Eagle Ford<br><span class="sub">TX RRC</span></span>
+          <span class="v">basin 06</span>
+          <span class="num tx">unmeasured</span>
+        </div>
+        <p class="muted">The Permian (basin 02) is the only basin that crossed Texas and survived. It survived because we relied on the New Mexico OCD dataset for the lit population, and because the eastern Delaware basin counties carry enough metadata to make the dark-share estimate without a TX RRC join.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="7">
+      <div class="step-card">
+        <span class="eyebrow">07 &middot; The accessibility ranking</span>
+        <h2>Six basins, nine regulators, <em>one outlier.</em></h2>
+        <div class="reg-rank">
+          <span class="lbl">ND NDIC</span><span class="st live">100</span>
+          <div class="track live"><div class="fill" style="width:100%"></div></div><span class="num">100</span>
+          <span class="lbl">OK OCC</span><span class="st live">100</span>
+          <div class="track live"><div class="fill" style="width:100%"></div></div><span class="num">100</span>
+          <span class="lbl">PA DEP</span><span class="st live">95</span>
+          <div class="track live"><div class="fill" style="width:95%"></div></div><span class="num">95</span>
+          <span class="lbl">KS KGS</span><span class="st live2">90</span>
+          <div class="track live2"><div class="fill" style="width:90%"></div></div><span class="num">90</span>
+          <span class="lbl">NM OCD</span><span class="st live2">80</span>
+          <div class="track live2"><div class="fill" style="width:80%"></div></div><span class="num">80</span>
+          <span class="lbl">MT BOGC</span><span class="st live3">75</span>
+          <div class="track live3"><div class="fill" style="width:75%"></div></div><span class="num">75</span>
+          <span class="lbl">OH DOG</span><span class="st live3">75</span>
+          <div class="track live3"><div class="fill" style="width:75%"></div></div><span class="num">75</span>
+          <span class="lbl">WV DEP</span><span class="st gray">50</span>
+          <div class="track gray"><div class="fill" style="width:50%"></div></div><span class="num">50</span>
+          <span class="lbl">TX RRC</span><span class="st dead">5</span>
+          <div class="track dead"><div class="fill" style="width:5%"></div></div><span class="num">5</span>
+        </div>
+        <p>Eight regulators publish bulk well data we can pull. One does not. The cooperative regulators are not all equally polished, but every one of them shipped the wells. The outlier is not on a continuum with the rest.</p>
+        <p class="muted">Score is a working analyst's rating: 100 = direct CMS download, no auth, no session. 0 = inaccessible without browser automation. The full table is in <a href="data/regulatory_comparison.json">regulatory_comparison.json</a>.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="8">
+      <div class="step-card">
+        <span class="eyebrow">08 &middot; What we know anyway</span>
+        <div class="big">279</div>
+        <h2>Rigs in May 2012.</h2>
+        <p>EIA's Drilling Productivity Report aggregates Eagle Ford rig count and production at the region level. We can see the rig count rise from under 50 in 2008 to a peak of 279 in May 2012. Oil production followed, peaking at 1.72 million barrels per day in March 2015. The 2014-2016 oil price collapse cut the rig count to 38 by 2016, but production only fell from 1.72 to 1.05 MMbbl/d. The wells that were already drilled kept producing.</p>
+        <p class="muted">The wells we cannot see produced 1.2 to 1.7 million barrels of oil a day for ten years. They are real. They are documented somewhere inside TX RRC. We just cannot pull them.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="9">
+      <div class="step-card">
+        <span class="eyebrow">09 &middot; The boom shape</span>
+        <h2>2008 to 2015, then a plateau.</h2>
+        <p>Eagle Ford's rig count went from 13 to 279 in 50 months. That is the fastest rig-count buildup of any basin in the EIA DPR data. The Marcellus took 60 months to add as many; the Williston took 70.</p>
+        <p>Production peaked in March 2015 at 1.72 MMbbl/d, fell to 1.05 in late 2016, and has held a 1.0 to 1.3 MMbbl/d plateau since 2018 with progressively fewer rigs needed to sustain it. The plateau is the operational success of the play. The plateau is also the record we cannot index.</p>
+        <p class="muted">A successful basin can also be a dark basin. The two are not in tension.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="10">
+      <div class="step-card">
+        <span class="eyebrow">10 &middot; What we cannot show</span>
+        <h2>Per-well lat, lon, vintage, dark/lit.</h2>
+        <p>For each of the other five basins we ship a CSV of every basin-clipped well, six columns, 25 to 580 thousand rows. Eagle Ford has no equivalent. We chose this basin last on purpose, with the working assumption that we would have to ship without it. We confirm that here.</p>
+        <p>What we cannot show: where the wells are. What vintage they are. Which operator drilled which one. Which ones were horizontals targeting the Eagle Ford Marl in Karnes and which ones were 1960s vertical Wilcox wells in Live Oak.</p>
+        <p class="muted">If TX RRC publishes a bulk well shapefile, this basin gets a v2 with a wells.csv. The pipeline is built. The slot is empty.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="11">
+      <div class="step-card">
+        <span class="eyebrow">11 &middot; The pre-digital floor</span>
+        <h2>South Texas was drilled <em>long before 2008.</em></h2>
+        <p>The Eagle Ford horizontal era started in 2008 with EOG's first wells in La Salle County. The Wilcox sandstone gas plays of Live Oak and Bee counties date to the 1940s. Spraberry-Wilcox conventional oil in McMullen and Atascosa goes back to the 1930s. Frio gas in the southern counties has been drilled since the 1920s.</p>
+        <p>The 30,000 Eagle Ford horizontals are the lit layer. The 470,000 conventional wells underneath them are the dark floor. We know the floor exists from EIA aggregate counts and from individual operators' SEC filings. We do not know it well-by-well.</p>
+        <p class="muted">If you assume Eagle Ford follows the Anadarko shape (8% modern horizontals as a top layer, 92% conventional vertical legacy underneath), the basin's expected dark share is in the high 80s. We document the assumption, not the verdict.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="12">
+      <div class="step-card">
+        <span class="eyebrow">12 &middot; What dark data IS</span>
+        <h2>Architecture <em>is</em> the verdict.</h2>
+        <p>The first five basins demonstrated that dark data is a measurable property of a basin's drilling history. The Williston's lit layer is genuinely big. Anadarko's is genuinely small. Kansas's pre-digital legacy is genuinely overwhelming.</p>
+        <p>This basin demonstrates the second property. Dark data is also a measurable property of the regulator. The drilling history of the Eagle Ford could be perfectly recorded inside TX RRC's databases (it largely is) and still be dark to the public, the academic community, the underwriting industry, and the policy teams that need it. The wells exist. The architecture is the question.</p>
+        <p class="muted">The dark-data problem is not solved by waiting for technology. It is not solved by waiting for the operators to file better. It is solved by the regulator choosing to ship.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="13">
+      <div class="step-card">
+        <span class="eyebrow">13 &middot; What this basin is for</span>
+        <h2>Six basins is enough to <em>finalize the thesis.</em></h2>
+        <p>Five measurable basins gave us a falsifiable claim: horizontal eras only rescue young basins where horizontals dominate the well count. Williston (46% dark) confirms it. Permian (78%), Anadarko (91%), Kansas (94%), Appalachia (95%) refute the alternative. The thesis holds across every basin where we can see the wells.</p>
+        <p>One unmeasurable basin gives us the second claim: the dark-data problem is structural. It does not respond to drilling-era timing. It responds to the regulator's data publishing choice. Texas chose. The choice is the basin.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="14">
+      <div class="step-card">
+        <span class="eyebrow">14 &middot; The series, one chart</span>
+        <h2>Six basins, 1.92 million wells, <em>one Texas.</em></h2>
+        <div class="series-table">
+          <span class="b">Williston</span><span class="v">2010+ horizontal era dominant</span><span class="num">46%</span>
+          <span class="b">Permian</span><span class="v">NM lit, TX dark, Delaware basin core</span><span class="num">78%</span>
+          <span class="b">Anadarko</span><span class="v">SCOOP/STACK on a 60-year vertical legacy</span><span class="num">91%</span>
+          <span class="b">Kansas</span><span class="v">Pre-2000 vertical conventional, no horizontal era</span><span class="num">94%</span>
+          <span class="b">Appalachia</span><span class="v">Drake 1859, 165 years, three regulators</span><span class="num">95%</span>
+          <span class="b">Eagle Ford</span><span class="v">TX RRC: JSF + EBCDIC, no public bulk pull</span><span class="num tx">opaque</span>
+        </div>
+        <p>The pattern is in the gap. The five legible basins land between 46% and 95% dark, set by drilling-era timing. The sixth basin lands at "we cannot see," set by regulatory choice. Both are dark-data verdicts. Both are real. Neither is in tension with the other.</p>
+      </div>
+    </section>
+
+    <section class="step neutral-theme" data-step="15">
+      <div class="step-card">
+        <span class="eyebrow">15 &middot; The tell</span>
+        <h2>Dark data is <em>a choice the regulator made.</em></h2>
+        <p>The first five basins showed what the choice looked like under different drilling histories. Williston, where the horizontal era was big enough to overwhelm the legacy. Anadarko, where it was not. The output of the choice changes with the geology and with the calendar.</p>
+        <p>Eagle Ford shows what the choice looks like when it has been made. North Dakota chose a shapefile. Oklahoma chose a CSV. Pennsylvania chose a flag column. Kansas chose a survey. Texas chose to keep the mainframe.</p>
+        <p>That last sentence is the thesis of the entire series. We needed six basins to write it.</p>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+
+<section class="outro">
+  <div class="outro-inner">
+    <h2>The series in <em>one</em> sentence.</h2>
+    <p>The US oil and gas industry's relationship to its own data is not a continuum of technical capacity. It is a binary product of regulatory choice, propagated through a calendar of drilling-era timing. Five regulators chose to publish what they had. One did not. The first five let us measure the dark fraction at varying levels (46 to 95 percent) and prove that horizontal eras only rescue the basins where horizontals dominate the well count. The sixth lets us prove that the dark-data problem is not a technology gap or an operator failure. It is a regulator's published posture. Drake's well went dark in 1861 because there was no system to remember it. The Eagle Ford's wells are dark in 2026 because the system that does remember them does not let anyone outside the building look in.</p>
+
+    <div class="implications">
+      <p class="implications-label">Where this series goes</p>
+      <h3>Six basins, 1.92 million measurable wells, one architectural wall, one falsifiable thesis. The series ends here on the substance side. The work it points to begins in the rest of the country.</h3>
+      <ul>
+        <li><strong>For operators &amp; modellers.</strong> Type-curve work in any basin in this series rests on the lit fraction documented here. The dark fraction sits in PDFs, scanned tax forms, EBCDIC mainframe dumps, and operator filing-cabinet rooms that no one has opened since 1992. Those wells carry the stratigraphic context the modern wells were optimized against. They are not findable. They are findable.</li>
+        <li><strong>For acquirers &amp; underwriters.</strong> Plug-and-abandon liability in the legacy fractions, especially in Texas, is the canonical environmental price of inheriting a basin. The price is being calculated against an inventory that does not exist publicly. That is a market problem.</li>
+        <li><strong>For regulators &amp; policy teams.</strong> The five publishers spent years building data architectures that ship wells. The cost of that decision was real. The benefit, six years later, is six basin walks, one open thesis, and the hard data underneath it. Texas is a publishing decision away from joining.</li>
+      </ul>
+      <p class="close">I build the pipelines, basin-clip analyses, and AI-assisted subsurface QC that close this kind of gap, across basins, regulators, and the geological detail that still matters. If you work any side of this, <em>let's talk</em>.</p>
+    </div>
+
+    <div class="cta-row">
+      <a class="cta accent" href="https://linkedin.com/in/salamituns">Work with me &rarr;</a>
+      <a class="cta" href="https://github.com/salamituns/darkdata-repo">Data &amp; code</a>
+      <a class="cta" href="/darkdata/">The series</a>
+    </div>
+    <p class="footnote">
+      Sources: <a href="https://www.sciencebase.gov/catalog/item/5d1246c2e4b0941bde56e84f">USGS ScienceBase item 5d1246c2: Eagle Ford Group Assessment Unit boundaries</a>. <a href="https://www.eia.gov/petroleum/drilling/">EIA Drilling Productivity Report</a> Eagle Ford monthly time series, January 2007 onward. <a href="https://www2.census.gov/geo/tiger/GENZ2024/shp/">US Census TIGER 2024 cartographic boundary files</a> for state and county outlines. Regulatory accessibility scores reflect the experience of pulling each basin in this six-basin series, January 2026 to April 2026. Built with <a href="https://deck.gl/">deck.gl</a> and <a href="https://github.com/russellsamora/scrollama">scrollama</a>. Analysis: <a href="https://twitter.com/salamituns">@salamituns</a>.
+    </p>
+  </div>
+</section>
+
+<script>
+const BASIN_VIEW   = { longitude: -98.0, latitude: 30.0, zoom: 5.7, pitch: 0, bearing: 0 };
+const TX_VIEW      = { longitude: -99.0, latitude: 31.0, zoom: 5.2, pitch: 0, bearing: 0 };
+const KARNES_VIEW  = { longitude: -97.7, latitude: 28.7, zoom: 7.1, pitch: 0, bearing: 0 };
+const VIEWS = {
+  0:  BASIN_VIEW,  1: BASIN_VIEW,  2: BASIN_VIEW,
+  3:  TX_VIEW,     4: TX_VIEW,     5: TX_VIEW,
+  6:  TX_VIEW,     7: TX_VIEW,     8: BASIN_VIEW,
+  9:  BASIN_VIEW, 10: KARNES_VIEW, 11: BASIN_VIEW,
+  12: BASIN_VIEW, 13: BASIN_VIEW,  14: BASIN_VIEW,
+  15: BASIN_VIEW
+};
+
+const AU_COLORS = {
+  'Cenomanian-Turonian Mudstone Continuous Gas': [197, 123, 53, 110],
+  'Cenomanian-Turonian Mudstone Continuous Oil': [162, 59, 42, 110],
+  'Eagle Ford Marl Continuous Gas':              [107, 78, 138, 110],
+  'Eagle Ford Marl Continuous Oil':              [46, 110, 126, 110],
+  'Submarine Plateau - Karnes Trough Continuous Oil': [168, 160, 136, 130],
+  'Submarine Plateau - Karnes Trough Continuous Gas': [122, 111, 170, 130],
+  'Cenomanian-Turonian Downdip Continuous Gas':       [62, 128, 149, 130],
+};
+
+let auData = null;
+let countiesData = null;
+let stateData = null;
+let deckgl = null;
+let currentStep = -1;
+
+function buildLayers(scene) {
+  const layers = [];
+  if (stateData) {
+    layers.push(new deck.GeoJsonLayer({
+      id: 'state',
+      data: stateData,
+      stroked: true, filled: true,
+      getFillColor: [237, 230, 212, 110],
+      getLineColor: [14, 14, 14, 220],
+      getLineWidth: 2, lineWidthMinPixels: 1.4,
+      pickable: false,
+    }));
+  }
+  if (countiesData) {
+    layers.push(new deck.GeoJsonLayer({
+      id: 'ef-counties',
+      data: countiesData,
+      stroked: true, filled: true,
+      getFillColor: [226, 216, 194, scene.countyOpacity || 80],
+      getLineColor: [14, 14, 14, 90],
+      getLineWidth: 0.5, lineWidthMinPixels: 0.4,
+      pickable: false,
+    }));
+  }
+  if (auData) {
+    auData.features.forEach((feat, i) => {
+      const name = feat.properties.au_name || '';
+      const color = AU_COLORS[name] || [122, 115, 104, 110];
+      layers.push(new deck.GeoJsonLayer({
+        id: `au-${i}`,
+        data: feat,
+        stroked: true, filled: true,
+        getFillColor: [color[0], color[1], color[2], Math.round(color[3] * (scene.auOpacity || 1))],
+        getLineColor: [14, 14, 14, 200],
+        getLineWidth: 1.4, lineWidthMinPixels: 1.0,
+        pickable: false,
+      }));
+    });
+  }
+  return layers;
+}
+
+const SCENES = {
+  0:  { auOpacity: 1.0, countyOpacity: 110 },
+  1:  { auOpacity: 0.4, countyOpacity: 60 },
+  2:  { auOpacity: 1.0, countyOpacity: 130 },
+  3:  { auOpacity: 0.5, countyOpacity: 50 },
+  4:  { auOpacity: 0.5, countyOpacity: 50 },
+  5:  { auOpacity: 0.5, countyOpacity: 50 },
+  6:  { auOpacity: 0.6, countyOpacity: 80 },
+  7:  { auOpacity: 0.6, countyOpacity: 80 },
+  8:  { auOpacity: 0.9, countyOpacity: 110 },
+  9:  { auOpacity: 0.9, countyOpacity: 110 },
+ 10:  { auOpacity: 1.2, countyOpacity: 140 },
+ 11:  { auOpacity: 0.95, countyOpacity: 110 },
+ 12:  { auOpacity: 0.7, countyOpacity: 90 },
+ 13:  { auOpacity: 0.85, countyOpacity: 110 },
+ 14:  { auOpacity: 0.85, countyOpacity: 110 },
+ 15:  { auOpacity: 1.0, countyOpacity: 130 },
+};
+
+function applyStep(i) {
+  if (i === currentStep) return;
+  currentStep = i;
+  const view = VIEWS[i] || BASIN_VIEW;
+  deckgl.setProps({
+    initialViewState: { ...view, transitionDuration: 1200 }
+  });
+  const scene = SCENES[i] || SCENES[0];
+  deckgl.setProps({ layers: buildLayers(scene) });
+  document.getElementById('progress-pos').textContent = (i < 10 ? '0' : '') + i;
+}
+
+function setLoaderError(msg) {
+  const loader = document.getElementById('loader');
+  const txt = document.getElementById('loader-text');
+  if (txt) txt.textContent = msg;
+  if (loader) loader.classList.add('error');
+}
+
+async function loadData() {
+  const [auResp, countiesResp, stateResp] = await Promise.all([
+    fetch('data/eagle_ford_aus.json'),
+    fetch('data/eagle_ford_counties.json'),
+    fetch('data/state_outline.json'),
+  ]);
+  if (!auResp.ok) throw new Error('eagle_ford_aus.json load failed: ' + auResp.status);
+  auData       = await auResp.json();
+  if (countiesResp.ok) countiesData = await countiesResp.json();
+  if (stateResp.ok)    stateData    = await stateResp.json();
+
+  deckgl = new deck.DeckGL({
+    container: 'map',
+    initialViewState: BASIN_VIEW,
+    controller: { doubleClickZoom: false, scrollZoom: false, dragPan: false, dragRotate: false, keyboard: false },
+    parameters: { clearColor: [246/255, 243/255, 235/255, 1] },
+    layers: [],
+  });
+
+  applyStep(0);
+  document.getElementById('loader').classList.add('done');
+
+  const scroller = scrollama();
+  scroller
+    .setup({ step: '.step', offset: 0.55, debug: false })
+    .onStepEnter(resp => {
+      const idx = +resp.element.getAttribute('data-step');
+      applyStep(idx);
+    });
+  window.addEventListener('resize', scroller.resize);
+}
+
+loadData().catch(err => {
+  console.error(err);
+  setLoaderError('Could not load the basin geometry. Open the browser console for details.');
+});
+</script>
+
+</body>
+</html>

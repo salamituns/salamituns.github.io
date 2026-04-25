@@ -1,0 +1,97 @@
+{
+  "source": "darkdata series experience report (basins 01-06)",
+  "access_score_definition": "0 = inaccessible, 100 = direct CMS download",
+  "time_to_first_byte_s_definition": "seconds from issuing HEAD to first response byte (representative)",
+  "regulators": [
+    {
+      "state": "OK",
+      "agency": "OK Corporation Commission (OCC)",
+      "basin": "Anadarko",
+      "access_score": 100,
+      "method": "Direct CMS URLs",
+      "time_to_first_byte_s": 0.4,
+      "wells_per_minute": 600000,
+      "notes": "RBDMS shapefile, completion XLSX, orphan list, all on oklahoma.gov. 348 MB pulled in 11 seconds."
+    },
+    {
+      "state": "ND",
+      "agency": "NDIC Oil & Gas Division",
+      "basin": "Williston",
+      "access_score": 100,
+      "method": "Direct shapefile",
+      "time_to_first_byte_s": 0.5,
+      "wells_per_minute": 200000,
+      "notes": "OGD_Wells.zip + OGD_Horizontals.zip, single click each. Cleanest per-state shapefile in the series."
+    },
+    {
+      "state": "PA",
+      "agency": "PA DEP via PASDA",
+      "basin": "Appalachia",
+      "access_score": 95,
+      "method": "Direct shapefile + UNCONVENTI flag",
+      "time_to_first_byte_s": 0.7,
+      "wells_per_minute": 60000,
+      "notes": "Conv/Unconv shapefile + Historic WPA wells, single click each. The only state that publishes its own dark/lit verdict (UNCONVENTI Y/N)."
+    },
+    {
+      "state": "KS",
+      "agency": "Kansas Geological Survey (KGS)",
+      "basin": "Kansas + Anadarko",
+      "access_score": 90,
+      "method": "Bulk CSV + LAS archive",
+      "time_to_first_byte_s": 1.0,
+      "wells_per_minute": 50000,
+      "notes": "Bulk well CSV (183 MB) + KGS public LAS archive (24K logs). Survey-driven, research-friendly."
+    },
+    {
+      "state": "OH",
+      "agency": "OH DNR DOG_Services",
+      "basin": "Appalachia",
+      "access_score": 75,
+      "method": "ArcGIS REST, paginated",
+      "time_to_first_byte_s": 1.2,
+      "wells_per_minute": 90000,
+      "notes": "No bulk ZIP. Public REST endpoint with maxRecordCount 1000. 242K wells in 243 paginated requests, ~3 minutes total."
+    },
+    {
+      "state": "WV",
+      "agency": "WV DEP Office of Oil and Gas",
+      "basin": "Appalachia",
+      "access_score": 50,
+      "method": "Direct XLSX, but unjoined",
+      "time_to_first_byte_s": 0.9,
+      "wells_per_minute": 200000,
+      "notes": "2016 well-location XLSX downloads cleanly. But its PERMIT_ID does not link to the H6A horizontal-production API. The data exists; it is not joined."
+    },
+    {
+      "state": "MT",
+      "agency": "MT BOGC",
+      "basin": "Williston",
+      "access_score": 75,
+      "method": "Direct shapefile, no horizontal flag",
+      "time_to_first_byte_s": 1.0,
+      "wells_per_minute": 200000,
+      "notes": "WellSurface shapefile downloads, but ships no horizontal-well indicator. Half the lit/dark proxy is unreachable."
+    },
+    {
+      "state": "NM",
+      "agency": "NM OCD",
+      "basin": "Permian",
+      "access_score": 80,
+      "method": "Direct shapefile + ONGARD",
+      "time_to_first_byte_s": 0.8,
+      "wells_per_minute": 80000,
+      "notes": "New Mexico OCD ONGARD wells download, plus PRE-ONGARD placeholder for legacy operators that never migrated."
+    },
+    {
+      "state": "TX",
+      "agency": "TX Railroad Commission",
+      "basin": "Eagle Ford + Permian (TX) + Anadarko (TX)",
+      "access_score": 5,
+      "method": "JSF/PrimeFaces session portal + EBCDIC mainframe",
+      "time_to_first_byte_s": null,
+      "wells_per_minute": 0,
+      "notes": "Bulk well-data downloads live behind a Java Server Faces session portal with 5-minute timeouts. Older records are EBCDIC mainframe dumps. Per-well lat/lon, vintage, and dark/lit are not pullable without browser automation. The state did not migrate."
+    }
+  ]
+}

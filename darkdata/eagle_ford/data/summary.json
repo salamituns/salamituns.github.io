@@ -1,0 +1,28 @@
+{
+  "total_wells": null,
+  "pct_dark": null,
+  "series_position": "06 of 06 (finale)",
+  "reason_no_wells_csv": "TX RRC publishes its bulk well data through a JSF/PrimeFaces session portal with 5-minute timeouts, backed by EBCDIC mainframe dumps. Per-well lat/lon, vintage, and dark/lit are not extractable without browser automation we do not perform. Eagle Ford ships without per-well data on purpose.",
+  "basin_au_count": 7,
+  "tx_counties_intersected": 76,
+  "eia_dpr_months": 210,
+  "eia_dpr_period_start": "2007-01",
+  "eia_dpr_period_end": "2024-06",
+  "eagle_ford_oil_peak": {
+    "month": "2015-03",
+    "bbl_per_day": 1720864.3
+  },
+  "eagle_ford_rig_peak": {
+    "month": "2012-05",
+    "rig_count": 279.0
+  },
+  "oil_2014_dec_bbl_per_day": 1689024.0,
+  "oil_2024_dec_bbl_per_day": null,
+  "notes": [
+    "Basin clip: USGS Eagle Ford Group Assessment Unit boundaries (2018), 7 AUs unioned.",
+    "No per-well data is published. The basin map shows only the AU polygon and the 76 Texas counties that intersect it.",
+    "EIA Drilling Productivity Report provides aggregate monthly Eagle Ford production and rig count, January 2007 to present.",
+    "The regulatory_comparison.json file ranks 9 state regulators by data accessibility based on the actual experience of pulling each basin in this series.",
+    "Per-well dark/lit cannot be measured for Texas. The regulatory architecture itself is the dark-data verdict."
+  ]
+}

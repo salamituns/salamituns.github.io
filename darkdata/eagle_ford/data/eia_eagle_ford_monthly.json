@@ -1,0 +1,1267 @@
+{
+  "source": "EIA Drilling Productivity Report (DPR), Eagle Ford Region",
+  "unit_oil": "barrels/day",
+  "unit_gas": "thousand cubic feet/day",
+  "data": [
+    {
+      "month": "2007-01",
+      "rig_count": 51.3,
+      "oil_total_bbl": 53993.8,
+      "gas_total_mcf": 1599376.8
+    },
+    {
+      "month": "2007-02",
+      "rig_count": 55.8,
+      "oil_total_bbl": 56284.7,
+      "gas_total_mcf": 1651074.9
+    },
+    {
+      "month": "2007-03",
+      "rig_count": 58.4,
+      "oil_total_bbl": 54825.6,
+      "gas_total_mcf": 1657453.1
+    },
+    {
+      "month": "2007-04",
+      "rig_count": 56.0,
+      "oil_total_bbl": 56734.2,
+      "gas_total_mcf": 1656997.6
+    },
+    {
+      "month": "2007-05",
+      "rig_count": 55.0,
+      "oil_total_bbl": 56679.6,
+      "gas_total_mcf": 1621792.8
+    },
+    {
+      "month": "2007-06",
+      "rig_count": 60.0,
+      "oil_total_bbl": 54167.3,
+      "gas_total_mcf": 1643265.0
+    },
+    {
+      "month": "2007-07",
+      "rig_count": 63.0,
+      "oil_total_bbl": 53085.9,
+      "gas_total_mcf": 1640546.4
+    },
+    {
+      "month": "2007-08",
+      "rig_count": 60.0,
+      "oil_total_bbl": 53005.6,
+      "gas_total_mcf": 1629161.7
+    },
+    {
+      "month": "2007-09",
+      "rig_count": 60.0,
+      "oil_total_bbl": 54341.0,
+      "gas_total_mcf": 1637332.5
+    },
+    {
+      "month": "2007-10",
+      "rig_count": 53.0,
+      "oil_total_bbl": 52472.4,
+      "gas_total_mcf": 1632634.2
+    },
+    {
+      "month": "2007-11",
+      "rig_count": 56.0,
+      "oil_total_bbl": 53983.1,
+      "gas_total_mcf": 1637989.0
+    },
+    {
+      "month": "2007-12",
+      "rig_count": 58.0,
+      "oil_total_bbl": 53315.4,
+      "gas_total_mcf": 1631348.6
+    },
+    {
+      "month": "2008-01",
+      "rig_count": 55.0,
+      "oil_total_bbl": 53310.3,
+      "gas_total_mcf": 1633402.7
+    },
+    {
+      "month": "2008-02",
+      "rig_count": 49.0,
+      "oil_total_bbl": 53796.0,
+      "gas_total_mcf": 1636666.2
+    },
+    {
+      "month": "2008-03",
+      "rig_count": 60.0,
+      "oil_total_bbl": 55752.1,
+      "gas_total_mcf": 1654652.7
+    },
+    {
+      "month": "2008-04",
+      "rig_count": 67.0,
+      "oil_total_bbl": 54712.2,
+      "gas_total_mcf": 1635077.6
+    },
+    {
+      "month": "2008-05",
+      "rig_count": 71.0,
+      "oil_total_bbl": 54578.2,
+      "gas_total_mcf": 1648757.7
+    },
+    {
+      "month": "2008-06",
+      "rig_count": 64.0,
+      "oil_total_bbl": 54893.4,
+      "gas_total_mcf": 1676479.5
+    },
+    {
+      "month": "2008-07",
+      "rig_count": 64.0,
+      "oil_total_bbl": 53790.6,
+      "gas_total_mcf": 1671919.5
+    },
+    {
+      "month": "2008-08",
+      "rig_count": 68.0,
+      "oil_total_bbl": 54541.0,
+      "gas_total_mcf": 1648910.9
+    },
+    {
+      "month": "2008-09",
+      "rig_count": 67.0,
+      "oil_total_bbl": 53847.7,
+      "gas_total_mcf": 1559411.1
+    },
+    {
+      "month": "2008-10",
+      "rig_count": 73.0,
+      "oil_total_bbl": 57690.0,
+      "gas_total_mcf": 1670038.3
+    },
+    {
+      "month": "2008-11",
+      "rig_count": 72.0,
+      "oil_total_bbl": 58373.4,
+      "gas_total_mcf": 1681536.0
+    },
+    {
+      "month": "2008-12",
+      "rig_count": 62.0,
+      "oil_total_bbl": 57285.7,
+      "gas_total_mcf": 1677854.8
+    },
+    {
+      "month": "2009-01",
+      "rig_count": 46.0,
+      "oil_total_bbl": 55306.1,
+      "gas_total_mcf": 1706291.3
+    },
+    {
+      "month": "2009-02",
+      "rig_count": 39.0,
+      "oil_total_bbl": 55003.8,
+      "gas_total_mcf": 1694277.5
+    },
+    {
+      "month": "2009-03",
+      "rig_count": 37.0,
+      "oil_total_bbl": 53305.3,
+      "gas_total_mcf": 1669957.8
+    },
+    {
+      "month": "2009-04",
+      "rig_count": 37.0,
+      "oil_total_bbl": 53962.7,
+      "gas_total_mcf": 1640885.4
+    },
+    {
+      "month": "2009-05",
+      "rig_count": 32.0,
+      "oil_total_bbl": 50835.5,
+      "gas_total_mcf": 1604115.6
+    },
+    {
+      "month": "2009-06",
+      "rig_count": 30.0,
+      "oil_total_bbl": 49165.2,
+      "gas_total_mcf": 1580403.0
+    },
+    {
+      "month": "2009-07",
+      "rig_count": 34.0,
+      "oil_total_bbl": 48387.7,
+      "gas_total_mcf": 1576924.8
+    },
+    {
+      "month": "2009-08",
+      "rig_count": 39.0,
+      "oil_total_bbl": 47723.6,
+      "gas_total_mcf": 1560495.0
+    },
+    {
+      "month": "2009-09",
+      "rig_count": 46.0,
+      "oil_total_bbl": 49404.5,
+      "gas_total_mcf": 1520812.2
+    },
+    {
+      "month": "2009-10",
+      "rig_count": 43.0,
+      "oil_total_bbl": 50642.6,
+      "gas_total_mcf": 1513930.2
+    },
+    {
+      "month": "2009-11",
+      "rig_count": 46.0,
+      "oil_total_bbl": 53420.4,
+      "gas_total_mcf": 1576967.9
+    },
+    {
+      "month": "2009-12",
+      "rig_count": 62.0,
+      "oil_total_bbl": 53893.5,
+      "gas_total_mcf": 1598738.4
+    },
+    {
+      "month": "2010-01",
+      "rig_count": 64.0,
+      "oil_total_bbl": 54555.6,
+      "gas_total_mcf": 1681521.5
+    },
+    {
+      "month": "2010-02",
+      "rig_count": 76.0,
+      "oil_total_bbl": 55461.9,
+      "gas_total_mcf": 1739624.6
+    },
+    {
+      "month": "2010-03",
+      "rig_count": 89.0,
+      "oil_total_bbl": 61848.3,
+      "gas_total_mcf": 1735649.9
+    },
+    {
+      "month": "2010-04",
+      "rig_count": 96.0,
+      "oil_total_bbl": 64303.8,
+      "gas_total_mcf": 1715424.1
+    },
+    {
+      "month": "2010-05",
+      "rig_count": 98.0,
+      "oil_total_bbl": 69741.0,
+      "gas_total_mcf": 1790375.4
+    },
+    {
+      "month": "2010-06",
+      "rig_count": 104.0,
+      "oil_total_bbl": 77793.0,
+      "gas_total_mcf": 1820558.7
+    },
+    {
+      "month": "2010-07",
+      "rig_count": 119.0,
+      "oil_total_bbl": 82804.7,
+      "gas_total_mcf": 1804987.6
+    },
+    {
+      "month": "2010-08",
+      "rig_count": 131.0,
+      "oil_total_bbl": 86569.4,
+      "gas_total_mcf": 1824999.7
+    },
+    {
+      "month": "2010-09",
+      "rig_count": 140.0,
+      "oil_total_bbl": 95766.7,
+      "gas_total_mcf": 1857078.6
+    },
+    {
+      "month": "2010-10",
+      "rig_count": 149.0,
+      "oil_total_bbl": 102814.8,
+      "gas_total_mcf": 1916638.4
+    },
+    {
+      "month": "2010-11",
+      "rig_count": 145.0,
+      "oil_total_bbl": 119216.1,
+      "gas_total_mcf": 2001837.0
+    },
+    {
+      "month": "2010-12",
+      "rig_count": 143.0,
+      "oil_total_bbl": 139523.1,
+      "gas_total_mcf": 2129147.2
+    },
+    {
+      "month": "2011-01",
+      "rig_count": 155.0,
+      "oil_total_bbl": 142876.8,
+      "gas_total_mcf": 2165784.2
+    },
+    {
+      "month": "2011-02",
+      "rig_count": 157.0,
+      "oil_total_bbl": 154365.7,
+      "gas_total_mcf": 2176789.8
+    },
+    {
+      "month": "2011-03",
+      "rig_count": 157.0,
+      "oil_total_bbl": 174846.6,
+      "gas_total_mcf": 2254445.8
+    },
+    {
+      "month": "2011-04",
+      "rig_count": 171.0,
+      "oil_total_bbl": 189603.9,
+      "gas_total_mcf": 2350492.8
+    },
+    {
+      "month": "2011-05",
+      "rig_count": 179.0,
+      "oil_total_bbl": 213036.0,
+      "gas_total_mcf": 2422611.3
+    },
+    {
+      "month": "2011-06",
+      "rig_count": 195.0,
+      "oil_total_bbl": 230673.6,
+      "gas_total_mcf": 2432679.8
+    },
+    {
+      "month": "2011-07",
+      "rig_count": 206.0,
+      "oil_total_bbl": 263608.2,
+      "gas_total_mcf": 2569657.3
+    },
+    {
+      "month": "2011-08",
+      "rig_count": 236.0,
+      "oil_total_bbl": 296608.8,
+      "gas_total_mcf": 2727980.0
+    },
+    {
+      "month": "2011-09",
+      "rig_count": 242.0,
+      "oil_total_bbl": 330647.6,
+      "gas_total_mcf": 2906495.5
+    },
+    {
+      "month": "2011-10",
+      "rig_count": 237.0,
+      "oil_total_bbl": 358324.9,
+      "gas_total_mcf": 2943556.2
+    },
+    {
+      "month": "2011-11",
+      "rig_count": 239.0,
+      "oil_total_bbl": 400510.2,
+      "gas_total_mcf": 3118851.2
+    },
+    {
+      "month": "2011-12",
+      "rig_count": 247.0,
+      "oil_total_bbl": 425173.2,
+      "gas_total_mcf": 3260681.0
+    },
+    {
+      "month": "2012-01",
+      "rig_count": 251.0,
+      "oil_total_bbl": 455716.4,
+      "gas_total_mcf": 3350912.7
+    },
+    {
+      "month": "2012-02",
+      "rig_count": 249.0,
+      "oil_total_bbl": 483007.6,
+      "gas_total_mcf": 3378572.0
+    },
+    {
+      "month": "2012-03",
+      "rig_count": 265.0,
+      "oil_total_bbl": 507939.5,
+      "gas_total_mcf": 3441985.0
+    },
+    {
+      "month": "2012-04",
+      "rig_count": 269.0,
+      "oil_total_bbl": 553033.8,
+      "gas_total_mcf": 3466064.0
+    },
+    {
+      "month": "2012-05",
+      "rig_count": 279.0,
+      "oil_total_bbl": 588276.9,
+      "gas_total_mcf": 3621897.2
+    },
+    {
+      "month": "2012-06",
+      "rig_count": 274.0,
+      "oil_total_bbl": 614887.2,
+      "gas_total_mcf": 3704298.6
+    },
+    {
+      "month": "2012-07",
+      "rig_count": 270.0,
+      "oil_total_bbl": 646560.8,
+      "gas_total_mcf": 3765882.1
+    },
+    {
+      "month": "2012-08",
+      "rig_count": 268.0,
+      "oil_total_bbl": 692499.3,
+      "gas_total_mcf": 3935260.9
+    },
+    {
+      "month": "2012-09",
+      "rig_count": 262.0,
+      "oil_total_bbl": 699421.9,
+      "gas_total_mcf": 4051233.3
+    },
+    {
+      "month": "2012-10",
+      "rig_count": 260.0,
+      "oil_total_bbl": 743990.6,
+      "gas_total_mcf": 4151848.6
+    },
+    {
+      "month": "2012-11",
+      "rig_count": 259.0,
+      "oil_total_bbl": 779068.9,
+      "gas_total_mcf": 4300877.4
+    },
+    {
+      "month": "2012-12",
+      "rig_count": 261.0,
+      "oil_total_bbl": 813713.7,
+      "gas_total_mcf": 4276892.6
+    },
+    {
+      "month": "2013-01",
+      "rig_count": 258.0,
+      "oil_total_bbl": 848802.1,
+      "gas_total_mcf": 4377581.3
+    },
+    {
+      "month": "2013-02",
+      "rig_count": 258.0,
+      "oil_total_bbl": 894871.7,
+      "gas_total_mcf": 4593483.3
+    },
+    {
+      "month": "2013-03",
+      "rig_count": 251.0,
+      "oil_total_bbl": 934064.3,
+      "gas_total_mcf": 4757315.4
+    },
+    {
+      "month": "2013-04",
+      "rig_count": 257.0,
+      "oil_total_bbl": 950465.0,
+      "gas_total_mcf": 4851432.4
+    },
+    {
+      "month": "2013-05",
+      "rig_count": 258.0,
+      "oil_total_bbl": 1013258.5,
+      "gas_total_mcf": 5036833.9
+    },
+    {
+      "month": "2013-06",
+      "rig_count": 252.0,
+      "oil_total_bbl": 1067261.7,
+      "gas_total_mcf": 5192906.4
+    },
+    {
+      "month": "2013-07",
+      "rig_count": 257.0,
+      "oil_total_bbl": 1099213.1,
+      "gas_total_mcf": 5251080.0
+    },
+    {
+      "month": "2013-08",
+      "rig_count": 260.0,
+      "oil_total_bbl": 1118155.0,
+      "gas_total_mcf": 5226698.8
+    },
+    {
+      "month": "2013-09",
+      "rig_count": 261.0,
+      "oil_total_bbl": 1146356.5,
+      "gas_total_mcf": 5300195.3
+    },
+    {
+      "month": "2013-10",
+      "rig_count": 253.0,
+      "oil_total_bbl": 1139012.6,
+      "gas_total_mcf": 5228999.6
+    },
+    {
+      "month": "2013-11",
+      "rig_count": 256.0,
+      "oil_total_bbl": 1158322.8,
+      "gas_total_mcf": 5175962.4
+    },
+    {
+      "month": "2013-12",
+      "rig_count": 262.0,
+      "oil_total_bbl": 1226574.4,
+      "gas_total_mcf": 5388630.2
+    },
+    {
+      "month": "2014-01",
+      "rig_count": 260.0,
+      "oil_total_bbl": 1250753.8,
+      "gas_total_mcf": 5379799.8
+    },
+    {
+      "month": "2014-02",
+      "rig_count": 258.0,
+      "oil_total_bbl": 1292457.4,
+      "gas_total_mcf": 5488627.7
+    },
+    {
+      "month": "2014-03",
+      "rig_count": 261.0,
+      "oil_total_bbl": 1315788.8,
+      "gas_total_mcf": 5660709.8
+    },
+    {
+      "month": "2014-04",
+      "rig_count": 261.0,
+      "oil_total_bbl": 1385586.6,
+      "gas_total_mcf": 5898345.5
+    },
+    {
+      "month": "2014-05",
+      "rig_count": 260.0,
+      "oil_total_bbl": 1393693.2,
+      "gas_total_mcf": 6044794.4
+    },
+    {
+      "month": "2014-06",
+      "rig_count": 261.0,
+      "oil_total_bbl": 1461028.2,
+      "gas_total_mcf": 6200610.1
+    },
+    {
+      "month": "2014-07",
+      "rig_count": 261.0,
+      "oil_total_bbl": 1505599.1,
+      "gas_total_mcf": 6231498.9
+    },
+    {
+      "month": "2014-08",
+      "rig_count": 256.0,
+      "oil_total_bbl": 1522650.2,
+      "gas_total_mcf": 6284183.7
+    },
+    {
+      "month": "2014-09",
+      "rig_count": 257.0,
+      "oil_total_bbl": 1530596.9,
+      "gas_total_mcf": 6299361.2
+    },
+    {
+      "month": "2014-10",
+      "rig_count": 268.0,
+      "oil_total_bbl": 1563200.0,
+      "gas_total_mcf": 6398056.8
+    },
+    {
+      "month": "2014-11",
+      "rig_count": 264.0,
+      "oil_total_bbl": 1603204.4,
+      "gas_total_mcf": 6500340.7
+    },
+    {
+      "month": "2014-12",
+      "rig_count": 256.0,
+      "oil_total_bbl": 1689024.0,
+      "gas_total_mcf": 6890247.9
+    },
+    {
+      "month": "2015-01",
+      "rig_count": 235.0,
+      "oil_total_bbl": 1679948.2,
+      "gas_total_mcf": 6871452.0
+    },
+    {
+      "month": "2015-02",
+      "rig_count": 192.0,
+      "oil_total_bbl": 1708921.9,
+      "gas_total_mcf": 7045925.4
+    },
+    {
+      "month": "2015-03",
+      "rig_count": 157.0,
+      "oil_total_bbl": 1720864.3,
+      "gas_total_mcf": 7040123.3
+    },
+    {
+      "month": "2015-04",
+      "rig_count": 137.0,
+      "oil_total_bbl": 1672231.9,
+      "gas_total_mcf": 7004675.6
+    },
+    {
+      "month": "2015-05",
+      "rig_count": 121.0,
+      "oil_total_bbl": 1638300.0,
+      "gas_total_mcf": 6946136.5
+    },
+    {
+      "month": "2015-06",
+      "rig_count": 112.0,
+      "oil_total_bbl": 1586732.0,
+      "gas_total_mcf": 6909080.4
+    },
+    {
+      "month": "2015-07",
+      "rig_count": 110.0,
+      "oil_total_bbl": 1589346.2,
+      "gas_total_mcf": 7051728.4
+    },
+    {
+      "month": "2015-08",
+      "rig_count": 108.0,
+      "oil_total_bbl": 1530865.4,
+      "gas_total_mcf": 6942258.5
+    },
+    {
+      "month": "2015-09",
+      "rig_count": 99.0,
+      "oil_total_bbl": 1515840.8,
+      "gas_total_mcf": 7066420.6
+    },
+    {
+      "month": "2015-10",
+      "rig_count": 90.0,
+      "oil_total_bbl": 1510240.3,
+      "gas_total_mcf": 7038964.1
+    },
+    {
+      "month": "2015-11",
+      "rig_count": 83.0,
+      "oil_total_bbl": 1479628.0,
+      "gas_total_mcf": 6865615.0
+    },
+    {
+      "month": "2015-12",
+      "rig_count": 87.0,
+      "oil_total_bbl": 1482676.0,
+      "gas_total_mcf": 6909062.2
+    },
+    {
+      "month": "2016-01",
+      "rig_count": 76.0,
+      "oil_total_bbl": 1444915.6,
+      "gas_total_mcf": 6655980.3
+    },
+    {
+      "month": "2016-02",
+      "rig_count": 59.0,
+      "oil_total_bbl": 1396055.0,
+      "gas_total_mcf": 6585351.2
+    },
+    {
+      "month": "2016-03",
+      "rig_count": 47.0,
+      "oil_total_bbl": 1347934.5,
+      "gas_total_mcf": 6509780.1
+    },
+    {
+      "month": "2016-04",
+      "rig_count": 42.0,
+      "oil_total_bbl": 1315997.7,
+      "gas_total_mcf": 6510434.4
+    },
+    {
+      "month": "2016-05",
+      "rig_count": 32.0,
+      "oil_total_bbl": 1258474.8,
+      "gas_total_mcf": 6508499.4
+    },
+    {
+      "month": "2016-06",
+      "rig_count": 33.0,
+      "oil_total_bbl": 1227753.3,
+      "gas_total_mcf": 6474935.1
+    },
+    {
+      "month": "2016-07",
+      "rig_count": 36.0,
+      "oil_total_bbl": 1202447.6,
+      "gas_total_mcf": 6346980.4
+    },
+    {
+      "month": "2016-08",
+      "rig_count": 40.0,
+      "oil_total_bbl": 1178855.9,
+      "gas_total_mcf": 6193715.6
+    },
+    {
+      "month": "2016-09",
+      "rig_count": 40.0,
+      "oil_total_bbl": 1183283.3,
+      "gas_total_mcf": 6036746.1
+    },
+    {
+      "month": "2016-10",
+      "rig_count": 35.0,
+      "oil_total_bbl": 1175791.0,
+      "gas_total_mcf": 5984549.0
+    },
+    {
+      "month": "2016-11",
+      "rig_count": 39.0,
+      "oil_total_bbl": 1170725.1,
+      "gas_total_mcf": 5911383.2
+    },
+    {
+      "month": "2016-12",
+      "rig_count": 47.0,
+      "oil_total_bbl": 1172031.8,
+      "gas_total_mcf": 5746869.5
+    },
+    {
+      "month": "2017-01",
+      "rig_count": 57.0,
+      "oil_total_bbl": 1178819.2,
+      "gas_total_mcf": 5738839.5
+    },
+    {
+      "month": "2017-02",
+      "rig_count": 69.0,
+      "oil_total_bbl": 1199097.2,
+      "gas_total_mcf": 5777291.7
+    },
+    {
+      "month": "2017-03",
+      "rig_count": 80.0,
+      "oil_total_bbl": 1193704.3,
+      "gas_total_mcf": 5710335.5
+    },
+    {
+      "month": "2017-04",
+      "rig_count": 89.0,
+      "oil_total_bbl": 1176595.3,
+      "gas_total_mcf": 5796685.6
+    },
+    {
+      "month": "2017-05",
+      "rig_count": 98.0,
+      "oil_total_bbl": 1180366.1,
+      "gas_total_mcf": 5907790.9
+    },
+    {
+      "month": "2017-06",
+      "rig_count": 96.0,
+      "oil_total_bbl": 1170617.4,
+      "gas_total_mcf": 6040259.1
+    },
+    {
+      "month": "2017-07",
+      "rig_count": 90.0,
+      "oil_total_bbl": 1170010.0,
+      "gas_total_mcf": 6189594.9
+    },
+    {
+      "month": "2017-08",
+      "rig_count": 87.0,
+      "oil_total_bbl": 1050047.1,
+      "gas_total_mcf": 5788403.8
+    },
+    {
+      "month": "2017-09",
+      "rig_count": 83.0,
+      "oil_total_bbl": 1173143.9,
+      "gas_total_mcf": 6034062.8
+    },
+    {
+      "month": "2017-10",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1253865.9,
+      "gas_total_mcf": 6292718.3
+    },
+    {
+      "month": "2017-11",
+      "rig_count": 77.0,
+      "oil_total_bbl": 1288835.2,
+      "gas_total_mcf": 6382780.2
+    },
+    {
+      "month": "2017-12",
+      "rig_count": 80.0,
+      "oil_total_bbl": 1309422.8,
+      "gas_total_mcf": 6257453.5
+    },
+    {
+      "month": "2018-01",
+      "rig_count": 79.0,
+      "oil_total_bbl": 1264190.6,
+      "gas_total_mcf": 6091557.4
+    },
+    {
+      "month": "2018-02",
+      "rig_count": 81.0,
+      "oil_total_bbl": 1254664.5,
+      "gas_total_mcf": 6101818.2
+    },
+    {
+      "month": "2018-03",
+      "rig_count": 84.0,
+      "oil_total_bbl": 1283781.1,
+      "gas_total_mcf": 6236903.9
+    },
+    {
+      "month": "2018-04",
+      "rig_count": 88.0,
+      "oil_total_bbl": 1296030.2,
+      "gas_total_mcf": 6222368.0
+    },
+    {
+      "month": "2018-05",
+      "rig_count": 90.0,
+      "oil_total_bbl": 1292476.8,
+      "gas_total_mcf": 6286241.3
+    },
+    {
+      "month": "2018-06",
+      "rig_count": 94.0,
+      "oil_total_bbl": 1332098.6,
+      "gas_total_mcf": 6322396.3
+    },
+    {
+      "month": "2018-07",
+      "rig_count": 93.0,
+      "oil_total_bbl": 1309147.6,
+      "gas_total_mcf": 6293049.2
+    },
+    {
+      "month": "2018-08",
+      "rig_count": 90.0,
+      "oil_total_bbl": 1331208.2,
+      "gas_total_mcf": 6388236.1
+    },
+    {
+      "month": "2018-09",
+      "rig_count": 90.0,
+      "oil_total_bbl": 1365125.6,
+      "gas_total_mcf": 6391781.6
+    },
+    {
+      "month": "2018-10",
+      "rig_count": 91.0,
+      "oil_total_bbl": 1317540.2,
+      "gas_total_mcf": 6379724.7
+    },
+    {
+      "month": "2018-11",
+      "rig_count": 93.0,
+      "oil_total_bbl": 1372580.4,
+      "gas_total_mcf": 6464655.6
+    },
+    {
+      "month": "2018-12",
+      "rig_count": 95.0,
+      "oil_total_bbl": 1392978.7,
+      "gas_total_mcf": 6532848.6
+    },
+    {
+      "month": "2019-01",
+      "rig_count": 94.0,
+      "oil_total_bbl": 1351130.5,
+      "gas_total_mcf": 6389640.8
+    },
+    {
+      "month": "2019-02",
+      "rig_count": 94.0,
+      "oil_total_bbl": 1355915.0,
+      "gas_total_mcf": 6358550.1
+    },
+    {
+      "month": "2019-03",
+      "rig_count": 93.0,
+      "oil_total_bbl": 1342340.7,
+      "gas_total_mcf": 6346400.7
+    },
+    {
+      "month": "2019-04",
+      "rig_count": 88.0,
+      "oil_total_bbl": 1370914.4,
+      "gas_total_mcf": 6444624.9
+    },
+    {
+      "month": "2019-05",
+      "rig_count": 86.0,
+      "oil_total_bbl": 1365944.9,
+      "gas_total_mcf": 6527804.7
+    },
+    {
+      "month": "2019-06",
+      "rig_count": 86.0,
+      "oil_total_bbl": 1379164.0,
+      "gas_total_mcf": 6666092.2
+    },
+    {
+      "month": "2019-07",
+      "rig_count": 82.0,
+      "oil_total_bbl": 1380608.8,
+      "gas_total_mcf": 6725843.4
+    },
+    {
+      "month": "2019-08",
+      "rig_count": 82.0,
+      "oil_total_bbl": 1363734.8,
+      "gas_total_mcf": 6804596.6
+    },
+    {
+      "month": "2019-09",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1400251.3,
+      "gas_total_mcf": 6896238.1
+    },
+    {
+      "month": "2019-10",
+      "rig_count": 74.0,
+      "oil_total_bbl": 1416038.1,
+      "gas_total_mcf": 6903227.1
+    },
+    {
+      "month": "2019-11",
+      "rig_count": 73.0,
+      "oil_total_bbl": 1400889.9,
+      "gas_total_mcf": 6938102.1
+    },
+    {
+      "month": "2019-12",
+      "rig_count": 74.0,
+      "oil_total_bbl": 1417355.0,
+      "gas_total_mcf": 6965764.8
+    },
+    {
+      "month": "2020-01",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1404167.5,
+      "gas_total_mcf": 6912974.8
+    },
+    {
+      "month": "2020-02",
+      "rig_count": 81.0,
+      "oil_total_bbl": 1397102.8,
+      "gas_total_mcf": 6842495.9
+    },
+    {
+      "month": "2020-03",
+      "rig_count": 77.0,
+      "oil_total_bbl": 1393521.5,
+      "gas_total_mcf": 6803266.2
+    },
+    {
+      "month": "2020-04",
+      "rig_count": 50.0,
+      "oil_total_bbl": 1290442.4,
+      "gas_total_mcf": 6536671.9
+    },
+    {
+      "month": "2020-05",
+      "rig_count": 28.0,
+      "oil_total_bbl": 928316.6,
+      "gas_total_mcf": 5502838.5
+    },
+    {
+      "month": "2020-06",
+      "rig_count": 15.0,
+      "oil_total_bbl": 1002996.7,
+      "gas_total_mcf": 5584818.2
+    },
+    {
+      "month": "2020-07",
+      "rig_count": 12.0,
+      "oil_total_bbl": 1103739.5,
+      "gas_total_mcf": 5698649.5
+    },
+    {
+      "month": "2020-08",
+      "rig_count": 10.0,
+      "oil_total_bbl": 1130988.0,
+      "gas_total_mcf": 5797008.6
+    },
+    {
+      "month": "2020-09",
+      "rig_count": 10.0,
+      "oil_total_bbl": 1115397.4,
+      "gas_total_mcf": 5718257.6
+    },
+    {
+      "month": "2020-10",
+      "rig_count": 18.0,
+      "oil_total_bbl": 1122660.1,
+      "gas_total_mcf": 5576561.6
+    },
+    {
+      "month": "2020-11",
+      "rig_count": 25.0,
+      "oil_total_bbl": 1115082.8,
+      "gas_total_mcf": 5542804.5
+    },
+    {
+      "month": "2020-12",
+      "rig_count": 28.0,
+      "oil_total_bbl": 1079141.9,
+      "gas_total_mcf": 5470774.3
+    },
+    {
+      "month": "2021-01",
+      "rig_count": 30.0,
+      "oil_total_bbl": 1053725.6,
+      "gas_total_mcf": 5495993.8
+    },
+    {
+      "month": "2021-02",
+      "rig_count": 31.0,
+      "oil_total_bbl": 891444.7,
+      "gas_total_mcf": 4884320.8
+    },
+    {
+      "month": "2021-03",
+      "rig_count": 32.0,
+      "oil_total_bbl": 1103489.1,
+      "gas_total_mcf": 5774854.7
+    },
+    {
+      "month": "2021-04",
+      "rig_count": 35.0,
+      "oil_total_bbl": 1108487.2,
+      "gas_total_mcf": 5898478.8
+    },
+    {
+      "month": "2021-05",
+      "rig_count": 35.0,
+      "oil_total_bbl": 1088752.0,
+      "gas_total_mcf": 5826728.0
+    },
+    {
+      "month": "2021-06",
+      "rig_count": 36.0,
+      "oil_total_bbl": 1083655.8,
+      "gas_total_mcf": 5771952.3
+    },
+    {
+      "month": "2021-07",
+      "rig_count": 36.0,
+      "oil_total_bbl": 1102777.6,
+      "gas_total_mcf": 5841635.6
+    },
+    {
+      "month": "2021-08",
+      "rig_count": 38.0,
+      "oil_total_bbl": 1108794.8,
+      "gas_total_mcf": 5765494.6
+    },
+    {
+      "month": "2021-09",
+      "rig_count": 38.0,
+      "oil_total_bbl": 1120384.6,
+      "gas_total_mcf": 6055293.2
+    },
+    {
+      "month": "2021-10",
+      "rig_count": 40.0,
+      "oil_total_bbl": 1082240.0,
+      "gas_total_mcf": 6161046.3
+    },
+    {
+      "month": "2021-11",
+      "rig_count": 44.0,
+      "oil_total_bbl": 1088903.9,
+      "gas_total_mcf": 6210251.9
+    },
+    {
+      "month": "2021-12",
+      "rig_count": 47.0,
+      "oil_total_bbl": 1086742.5,
+      "gas_total_mcf": 6141650.4
+    },
+    {
+      "month": "2022-01",
+      "rig_count": 51.0,
+      "oil_total_bbl": 1066724.6,
+      "gas_total_mcf": 6002369.1
+    },
+    {
+      "month": "2022-02",
+      "rig_count": 57.0,
+      "oil_total_bbl": 1057692.5,
+      "gas_total_mcf": 6110938.0
+    },
+    {
+      "month": "2022-03",
+      "rig_count": 61.0,
+      "oil_total_bbl": 1063221.9,
+      "gas_total_mcf": 6268139.5
+    },
+    {
+      "month": "2022-04",
+      "rig_count": 66.0,
+      "oil_total_bbl": 1088097.4,
+      "gas_total_mcf": 6509369.5
+    },
+    {
+      "month": "2022-05",
+      "rig_count": 70.0,
+      "oil_total_bbl": 1083312.5,
+      "gas_total_mcf": 6561267.3
+    },
+    {
+      "month": "2022-06",
+      "rig_count": 73.0,
+      "oil_total_bbl": 1120182.0,
+      "gas_total_mcf": 6744144.0
+    },
+    {
+      "month": "2022-07",
+      "rig_count": 75.0,
+      "oil_total_bbl": 1104573.6,
+      "gas_total_mcf": 6678553.2
+    },
+    {
+      "month": "2022-08",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1112376.1,
+      "gas_total_mcf": 6778669.3
+    },
+    {
+      "month": "2022-09",
+      "rig_count": 76.0,
+      "oil_total_bbl": 1131643.5,
+      "gas_total_mcf": 6765034.0
+    },
+    {
+      "month": "2022-10",
+      "rig_count": 76.0,
+      "oil_total_bbl": 1134930.0,
+      "gas_total_mcf": 6830174.6
+    },
+    {
+      "month": "2022-11",
+      "rig_count": 76.0,
+      "oil_total_bbl": 1107979.7,
+      "gas_total_mcf": 6879361.5
+    },
+    {
+      "month": "2022-12",
+      "rig_count": 76.0,
+      "oil_total_bbl": 1084996.2,
+      "gas_total_mcf": 6907637.2
+    },
+    {
+      "month": "2023-01",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1113826.5,
+      "gas_total_mcf": 7003402.7
+    },
+    {
+      "month": "2023-02",
+      "rig_count": 78.0,
+      "oil_total_bbl": 1131914.6,
+      "gas_total_mcf": 7129866.3
+    },
+    {
+      "month": "2023-03",
+      "rig_count": 77.0,
+      "oil_total_bbl": 1178493.0,
+      "gas_total_mcf": 7511182.5
+    },
+    {
+      "month": "2023-04",
+      "rig_count": 73.0,
+      "oil_total_bbl": 1157273.0,
+      "gas_total_mcf": 7415307.8
+    },
+    {
+      "month": "2023-05",
+      "rig_count": 66.0,
+      "oil_total_bbl": 1184825.7,
+      "gas_total_mcf": 7480467.4
+    },
+    {
+      "month": "2023-06",
+      "rig_count": 61.0,
+      "oil_total_bbl": 1186016.2,
+      "gas_total_mcf": 7375424.6
+    },
+    {
+      "month": "2023-07",
+      "rig_count": 58.0,
+      "oil_total_bbl": 1190286.2,
+      "gas_total_mcf": 7452286.1
+    },
+    {
+      "month": "2023-08",
+      "rig_count": 55.0,
+      "oil_total_bbl": 1167054.8,
+      "gas_total_mcf": 7329547.3
+    },
+    {
+      "month": "2023-09",
+      "rig_count": 53.0,
+      "oil_total_bbl": 1176105.1,
+      "gas_total_mcf": 7631901.1
+    },
+    {
+      "month": "2023-10",
+      "rig_count": 55.0,
+      "oil_total_bbl": 1151876.3,
+      "gas_total_mcf": 7645370.0
+    },
+    {
+      "month": "2023-11",
+      "rig_count": 55.0,
+      "oil_total_bbl": 1142218.1,
+      "gas_total_mcf": 7651199.6
+    },
+    {
+      "month": "2023-12",
+      "rig_count": 55.0,
+      "oil_total_bbl": 1114821.3,
+      "gas_total_mcf": 7555283.4
+    },
+    {
+      "month": "2024-01",
+      "rig_count": 57.0,
+      "oil_total_bbl": 1053353.4,
+      "gas_total_mcf": 7322253.7
+    },
+    {
+      "month": "2024-02",
+      "rig_count": 56.0,
+      "oil_total_bbl": 1102065.4,
+      "gas_total_mcf": 7457930.2
+    },
+    {
+      "month": "2024-03",
+      "rig_count": 58.0,
+      "oil_total_bbl": 1101768.7,
+      "gas_total_mcf": 7417201.6
+    },
+    {
+      "month": "2024-04",
+      "rig_count": 59.0,
+      "oil_total_bbl": 1100145.2,
+      "gas_total_mcf": 7373211.4
+    },
+    {
+      "month": "2024-05",
+      "rig_count": null,
+      "oil_total_bbl": 1102201.3,
+      "gas_total_mcf": 7343949.9
+    },
+    {
+      "month": "2024-06",
+      "rig_count": null,
+      "oil_total_bbl": 1106007.9,
+      "gas_total_mcf": 7322615.9
+    }
+  ]
+}
