@@ -573,6 +573,12 @@ function buildLayers() {
       data: basinFc,
       stroked: true, filled: true,
       getFillColor: f => viewModeFill(f.properties),
+      // Without updateTriggers, deck.gl caches accessor results and a view-mode
+      // toggle would not re-evaluate getFillColor. Bumping the trigger when
+      // currentMode changes forces a fill recompute on every feature.
+      updateTriggers: {
+        getFillColor: currentMode,
+      },
       getLineColor: [14, 14, 14, 220],
       lineWidthMinPixels: 1.2,
       pickable: true,
